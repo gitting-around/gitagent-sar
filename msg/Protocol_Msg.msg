@@ -1,0 +1,9 @@
+string performative
+string sender
+int32 rank
+string receiver
+string language
+string ontology
+string urgency
+string content
+string timestamp

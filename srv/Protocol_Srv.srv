@@ -1,0 +1,11 @@
+string performative
+string sender
+int32 rank
+string language
+string ontology
+string urgency
+string reply_with
+string content
+string protocol
+---
+string reply_to
