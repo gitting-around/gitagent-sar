@@ -3,6 +3,7 @@
 #Framework v1.0
 import sys
 from threading import Lock
+import random
 
 class Knowledge0:
 	def __init__(self):
@@ -25,7 +26,7 @@ class Knowledge0:
 		self.depend_myself = 0
 		self.collected_reward = 0
 
-		self.old_state = 1
+		self.old_state = 0
 		
 		## These vars are manipulated by multiple threads ###
 		self.current_client = []
@@ -36,6 +37,10 @@ class Knowledge0:
 
 		self.client_index = -1
 		self.old_client_index = -1
+
+		#Agent cultures
+		#Array - [total helpfulness, total expertise, total load]
+		self.culture = [-1,-1,-1]
 
 		#follows the indexing of known_people
 		self.helping_interactions = []
@@ -65,3 +70,6 @@ class Knowledge0:
 		self.HIGH = 0.7
 		self.LOW = 0.3
 		self.step = 0.05
+
+		#Knowledge regarding position in a 2D space
+		self.position2D = [random.randint(0,30), random.randint(0,30)]

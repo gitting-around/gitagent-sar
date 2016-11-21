@@ -1,0 +1,5 @@
+<launch>
+	<arg name="id"/>
+	<node pkg="gitagent" type="pseudo_planner.py" name="brain_node" output="log" launch-prefix="xterm -e">
+	</node>	
+</launch>

@@ -1,0 +1,10 @@
+%% Agent configuration file %%%%
+Energy=1000
+Velocity=50
+Sensors="[list]"
+Actuators="[list]"
+Motors="[list]"
+StartLocation="2,2"
+Abilities="[list]"
+Resources="[list]"
+Services="[list]"

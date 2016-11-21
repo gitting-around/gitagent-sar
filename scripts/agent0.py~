@@ -14,7 +14,11 @@ from threading import Lock
 import random
 
 class Agent0:
-	def __init__(self, ID, inputs, outputs, services, init_knowledge, languages, protocols, willingness, simulation, popSize, provaNr, depend_nr):
+	def __init__(self, ID, inputs, outputs, services, init_knowledge, languages, protocols, willingness, simulation, popSize, provaNr, depend_nr, battery, sensors, actuators, motors):
+
+		#logging class
+		self.log = mylogging.Logging(popSize, provaNr, ID, willingness[1], depend_nr)
+
 		#They will contain arrays of topic's names ###
 		self.inputs = inputs
 		self.publish_bcast = []
@@ -35,23 +39,31 @@ class Agent0:
 		##############################################
 
 		#Contains info specific to the internal state of the agent such as: state, health attributes etc.
-		self.mycore = core_aboutme.Core(willingness, ID)
-
+		self.mycore = core_aboutme.Core(willingness, ID, battery, sensors, actuators, motors)
+		self.log.write_log_file(self.log.stdout_log, 'init gitagent ' + str(self.mycore.sensmot) + '\n')
 		#Contains mixed info #########################
 		self.myknowledge = knowledge.Knowledge0()
 
 		#use simulation functions
 		self.simulation = simulation
 
-		#logging class
-		self.log = mylogging.Logging(popSize, provaNr, ID, willingness[1], depend_nr)
-
 	def fsm(self):
 		while True:
 			self.change_selfstate()
+			#normally you might want to estimate a value that corresponds to the cost of each cycle
+			self.mycore.battery_change(-1)
+			self.mycore.sensory_motor_state_mockup()
 			self.mycore.check_health()
 			#funksioni meposhte mund te ekzekutohet ne paralel --> per tu zhvilluar me tej ne nje moment te dyte
 			self.publish2sensormotor(self.services)
+			self.log.write_log_file(self.log.stdout_log, '[fsm ' + str(self.simulation.fsm) + '] current state: ' + str(self.mycore.state) + '\n')
+
+			##MOVE ###############################################################################
+			self.myknowledge.position2D = self.simulation.move(self.myknowledge.position2D)
+			self.log.write_log_file(self.log.stdout_log, '[fsm ' + str(self.simulation.fsm) + '] self.myknowledge.position2D: ' + str(self.myknowledge.position2D) + '\n')
+			self.publish_bcast[1].publish(self.mycore.create_message(self.myknowledge.position2D, 'position'))
+			######################################################################################
+
 			self.fsm_step()
 
 	def fsm_step(self):
@@ -68,8 +80,12 @@ class Agent0:
 		elif self.mycore.state == 4:
 			self.dead()
 
+		#time.sleep(1)	
+
 	def change_selfstate(self):
 		print 'ADAPTIVE STATE: ', self.adaptive_state
+		self.log.write_log_file(self.log.stdout_log, '[fsm ' + str(self.simulation.fsm) + '] adaptive state: ' + str(self.adaptive_state) + '\n')
+
 		self.myknowledge.lock.acquire()
 		if True in self.adaptive_state:
 			self.log.write_log_file(self.log.stdout_log, '[fsm ' + str(self.simulation.fsm) + '] current client_index: ' + str(self.myknowledge.client_index) + '\n')
@@ -78,7 +94,7 @@ class Agent0:
 			self.myknowledge.client_index = self.adaptive_state.index(True)
 
 			self.log.write_log_file(self.log.stdout_log, '[fsm ' + str(self.simulation.fsm) + '] ' + str(self.adaptive_state) + ' ' + str(self.myknowledge.current_client) + '\n')
-			self.old_state = self.mycore.state
+			self.myknowledge.old_state = self.mycore.state
 			self.mycore.state = 1
 			self.log.write_log_file(self.log.stdout_log, '[fsm ' + str(self.simulation.fsm) + '] ' + str(self.adaptive_state) + ' ' + str(self.myknowledge.current_client) + '\n')
 			self.adaptive_state[self.adaptive_state.index(True)] = False
@@ -87,7 +103,7 @@ class Agent0:
 	def idle(self):
 		print 'im in idle'
 		self.simulation.idle = self.simulation.inc_iterationstamps(self.simulation.idle)
-
+		self.log.write_log_file(self.log.stdout_log, '[fsm ' + str(self.simulation.idle) + ']\n')
 		self.generate_goal()
 		self.commit2goal()
 
@@ -118,6 +134,7 @@ class Agent0:
 		if iteration <= service[1] and not depend:
 			print 'iteration: ', iteration
 			self.myknowledge.iteration = self.myknowledge.iteration + 1
+			self.log.write_log_file(self.log.stdout_log, '[run_step ' + str(self.simulation.execute) + '] Doing task %d, iteration: %d\n' % (service[0], iteration))
 
 			if self.myknowledge.iteration > service[1]:
 				self.mycore.state = 0
@@ -312,7 +329,7 @@ class Agent0:
 			if len(self.myknowledge.service) > 4:
 				self.myknowledge.attempted_jobs_depend = self.myknowledge.attempted_jobs_depend + 1
 
-			self.log.write_log_file(self.log.stdout_log, '[wander ' + str(self.simulation.idle) + '] Chosen service: ' + str(self.service) + '\n')
+			self.log.write_log_file(self.log.stdout_log, '[wander ' + str(self.simulation.idle) + '] Chosen service: ' + str(self.myknowledge.service) + '\n')
 
 			self.mycore.state = 2
 		else:
@@ -344,6 +361,9 @@ class Agent0:
 		pass
 
 	def evaluate_selfmending(self):
+		pass
+
+	def update_culture(self, help, expertise, load):
 		pass
 
 	def debug_self(self):
@@ -416,7 +436,7 @@ class Agent0:
 			if not self.myknowledge.client_index == -1:
 				self.myknowledge.lock.acquire()
 				self.myknowledge.service_req[self.myknowledge.client_index] = -1
-				self.myknowledge.service_resp_content[self.myknowledge.client_index] = -1 #<----- changed this today
+				self.myknowledge.service_resp_content[self.myknowledge.client_index] = -1
 				self.myknowledge.service_resp[self.myknowledge.client_index] = True
 				self.myknowledge.lock.release()
 			
@@ -489,8 +509,7 @@ class Agent0:
 	def publish2sensormotor(self, raw_content):
 		if not rospy.is_shutdown():
 			print rospy.get_name()
-			self.publish_bcast[0].publish(self.mycore.create_message(raw_content))
-			rospy.sleep(2)	
+			self.publish_bcast[0].publish(self.mycore.create_message(raw_content, ''))
 		else:
 			print 'rospy is shutdown'
 

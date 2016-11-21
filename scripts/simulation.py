@@ -3,6 +3,7 @@
 #Framework v1.0
 import sys
 import random
+import math
 
 class Simulation0:
 	def __init__(self):
@@ -23,14 +24,31 @@ class Simulation0:
 		#self.stdout_callback = 'RESULT/pop_size.'+str(popSize) +'/prova.'+str(provaNr)+'/stdout_callback' + str(ID) + '_' + str(delta) +'_'+ str(depend_nr)
 		#self.stdout_handle = 'RESULT/pop_size.'+str(popSize) +'/prova.'+str(provaNr)+'/stdout_handle' + str(ID) + '_' + str(delta) +'_'+ str(depend_nr)
 
+	def execute_task(self, task):
+		pass
+
+	#moves randomly
+	def move(self, xypos):
+
+		minimum = -10
+		maximum = 10
+		xupdate = random.uniform(minimum, maximum)
+		yupdate = random.uniform(minimum, maximum)
+		xypos[0] = xypos[0] + xupdate
+		xypos[1] = xypos[1] + yupdate
+
+		return xypos
+
 	def inc_iterationstamps(self, iteration_stamp):
 		iteration_stamp = iteration_stamp + 1
 		return iteration_stamp
 
 	#trick to emulate the selection of a couple of services the agent can provide
 	def select_services(self, agent_id, depend_nr): 
+		# Anatomy of service
+		# [id, iterations, energy, reward, [mandatory resources], [optional resources], permission, urgency, estimated_time, [known dependencies (no array for now, just one)]]
 		try: 	#try to do it with relative paths
-			filename = '/home/mfi01/catkin_ws/src/GITagent/scripts/services_list_' + str(depend_nr)
+			filename = '/home/mfi01/catkin_ws/src/gitagent/scripts/service_spec/services_list_' + str(depend_nr)
 			service_file = open(filename, 'r')
 
 			active_servs = []

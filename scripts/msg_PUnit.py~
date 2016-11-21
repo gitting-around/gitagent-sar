@@ -59,12 +59,15 @@ class PUnit:
 		print data.content.split('\n', 1)[0]
 		if self.new_plan(data.content.split('\n', 1)[0]) and not rospy.is_shutdown():
 			self.publish_brain.publish(data)
-			print 'PUBLISHED new Plan'
+			print 'PUBLISHED new individual'
 		else:
 			print 'NOT a new plan, so IGNORE'
 
 	def new_plan(self, plan_id):
 		if not self.last_plan == plan_id:
+			print 'new_plan'
+			print self.last_plan
+			print plan_id
 			self.last_plan = plan_id
 			return True
 		else:

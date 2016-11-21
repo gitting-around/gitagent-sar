@@ -9,6 +9,7 @@ from gitagent.srv import *
 import traceback
 import time
 from threading import Lock
+import numpy as np
 
 class GitAgent(agent0.Agent0):
 
@@ -19,14 +20,38 @@ class GitAgent(agent0.Agent0):
 		self.simulation.callback_bc = self.simulation.inc_iterationstamps(self.simulation.callback_bc)
 		print 'SIM', self.simulation.callback_bc
 
+		self.register_new_people(data)
+
+	def register_new_people(self, data):
+		print 'REGISTERING new people'
+
 		self.log.write_log_file(self.log.stdout_callback, '[callback ' + str(self.simulation.callback_bc) + '][ROSPY] I am: %d, I heard %d\n' % (self.mycore.ID, int(data.sender)))
-		
-		guy_id_srv = [int(data.sender), -1]
-		guy_id_srv.append([int(x) for x in filter(None, data.content.split('|'))])
-		exp = []
-		for x in range(0, len(guy_id_srv[2])):
-			exp.append(-1)
-		guy_id_srv.append(exp)
+		guy_id_srv = []
+		if not data.performative == 'highlevelplan':
+			guy_id_srv = [int(data.sender), -1]
+			guy_id_srv.append([int(x) for x in filter(None, data.content.split('|'))])
+			exp = []
+			self.log.write_log_file(self.log.stdout_callback, '[callback ' + str(self.simulation.callback_bc) + '] ' + str(guy_id_srv) + '\n')
+			self.log.write_log_file(self.log.stdout_callback, '[callback ' + str(self.simulation.callback_bc) + '] ' + str(guy_id_srv[2]) + '\n')
+			for x in range(0, len(guy_id_srv[2])):
+				exp.append(-1)
+			guy_id_srv.append(exp)
+			self.log.write_log_file(self.log.stdout_callback, '[callback ' + str(self.simulation.callback_bc) + '] ' + str(guy_id_srv) + '\n')
+		else:
+			guy_id_srv = [int(data.sender), -1]
+			guy_id_srv.append([])
+			exp = []
+			guy_id_srv.append(exp)
+
+			#careful task4me in these trials is an array with one element
+			task4me = self.register_new_plan(data)
+			self.myknowledge.lock.acquire()
+			self.myknowledge.service_req.append(task4me[0])
+			self.myknowledge.current_client.append(int(data.sender))
+			self.myknowledge.service_resp.append(False)
+			self.myknowledge.service_resp_content.append(-1)
+			self.adaptive_state.append(True)
+			self.myknowledge.lock.release()
 
 		self.myknowledge.lock.acquire()
 		self.myknowledge.known_people.append(guy_id_srv)
@@ -50,6 +75,23 @@ class GitAgent(agent0.Agent0):
 		self.myknowledge.lock.release()
 		self.log.write_log_file(self.log.stdout_callback, '[callback ' + str(self.simulation.callback_bc) + '] capability_expertise ' + str(self.myknowledge.capability_expertise) + '\n')
 
+	def register_new_plan(self, data):
+		print 'NEW PLAN gotten'
+		self.log.write_log_file(self.log.stdout_callback, '[callback ' + str(self.simulation.callback_bc) +' new plan gotten. Change to adapt for the task in the plan that concerns the agent \n')
+		task4me = []
+		plan = data.content.split('\n')
+
+		plan.pop(0)
+		print plan
+
+		for x in plan:
+			x = x.split('|')
+			if int(x[0]) == self.mycore.ID:
+				print 'found task that concerns me'
+				task4me = [int(s) for s in x[1].split(' ')]
+				print task4me
+		return task4me
+
 	def init_inputs(self, inputs):
 		for x in inputs:
 			rospy.Subscriber(x[0], Protocol_Msg, getattr(self, x[1]))
@@ -58,11 +100,9 @@ class GitAgent(agent0.Agent0):
 		idx = -1
 
 		print 'HANDLING'
-
 		self.myknowledge.lock.acquire()
 		self.simulation.handle = self.simulation.handle + 1
 		local_handle = self.simulation.handle
-		print 'HANDLING2'
 		if int(request.sender) in self.myknowledge.current_client:
 			idx = self.myknowledge.current_client.index(int(request.sender))
 			self.myknowledge.service_resp[idx] = False
@@ -136,23 +176,17 @@ class GitAgent(agent0.Agent0):
 			self.log.write_log_file(self.log.stdout_log, '[call_serve ' + str(self.simulation.call) + '] ' + 'resp1.outgoing: %s\n' % resp1.reply_to)
 			if not int(resp1.reply_to) == -1:
 				self.myknowledge.lock.acquire()
-				self.log.write_log_file(self.log.stdout_log, '[call_serve ' + str(self.simulation.call) + '] 1')
 				self.myknowledge.helping_interactions[anyone_index] = self.myknowledge.helping_interactions[anyone_index] + 1
-				self.log.write_log_file(self.log.stdout_log, '[call_serve ' + str(self.simulation.call) + '] 2')
 				self.myknowledge.lock.release()
 
 				if int(resp1.reply_to) == 1:
 					self.myknowledge.lock.acquire()
-					self.log.write_log_file(self.log.stdout_log, '[call_serve ' + str(self.simulation.call) + '] 3')
 					self.myknowledge.capability_expertise[anyone_index][service_idx][0] = self.myknowledge.capability_expertise[anyone_index][service_idx][0] + 1
-					self.log.write_log_file(self.log.stdout_log, '[call_serve ' + str(self.simulation.call) + '] 4')
 					self.myknowledge.lock.release()
 
 			#Calculate perceived willingness
 			self.myknowledge.lock.acquire()
-			self.log.write_log_file(self.log.stdout_log, '[call_serve ' + str(self.simulation.call) + '] 5')
 			self.myknowledge.known_people[anyone_index][1] = self.myknowledge.helping_interactions[anyone_index]/float(self.myknowledge.total_interactions[anyone_index])
-			self.log.write_log_file(self.log.stdout_log, '[call_serve ' + str(self.simulation.call) + '] 6')
 			self.myknowledge.lock.release()
 
 			self.log.write_log_file(self.log.stdout_log, '[call_serve ' + str(self.simulation.call) + '] ' + 'perceived willingness from server: %d, is: %f\n' % (server, self.myknowledge.known_people[anyone_index][1]))
@@ -162,12 +196,30 @@ class GitAgent(agent0.Agent0):
 			self.myknowledge.lock.release()
 
 			self.log.write_log_file(self.log.stdout_log, '[call_serve ' + str(self.simulation.call) + '] ' + 'perceived expertise from server: %d, is: %f\n' % (server, self.myknowledge.known_people[anyone_index][3][service_idx]) + '[call_serve ' + str(self.simulation.call) + '] ' + 'capability expertise: ' + str(self.myknowledge.capability_expertise) + '\n')
-			
+
+			#Update perceived culture
+			self.update_culture(float(sum(self.myknowledge.helping_interactions))/float(sum(self.myknowledge.total_interactions)),self.myknowledge.capability_expertise,1)
+
 			return resp1.reply_to
 		except rospy.ServiceException, e:
 			self.log.write_log_file(self.log.stdout_log, '[call_serve ' + str(self.simulation.call) + '] ' + 'Service call failed: %s, at time %s'%(e, str(time.time())))
 			self.myknowledge.conn_reset = self.myknowledge.conn_reset + 1
 			pass
+
+	def update_culture(self, help, expertise, load):
+		#self.myknowledge.culture = [x + y for x, y in zip(self.myknowledge.culture, [help, expertise, load])]
+		#expertise = [[[2,4],[3,5],[1,2]], [[3,3],[3,7],[1,2]], [[5,6],[7,8],[1,2]]]
+
+		self.myknowledge.culture[0] = help
+
+		total_expertise = np.sum(np.sum(expertise, axis=1),axis=0)
+		self.myknowledge.culture[1] = float(total_expertise[0])/float(total_expertise[1])
+
+		self.myknowledge.culture[2] = load
+		self.log.write_log_file(self.log.stdout_log, '[call_serve ' + str(self.simulation.call) + '] ' + 'Culture: ' + str(self.myknowledge.culture) + ' ' + str([help, expertise, load]) + '\n')
+
+		self.log.write_log_file(self.log.stdout_log, '[call_serve ' + str(self.simulation.call) + '] ' + 'Culture: ' +str(help)+'\n')
+		
 
 if __name__=='__main__':
 
@@ -189,21 +241,29 @@ if __name__=='__main__':
 	depends = rospy.get_param('brain_node/myDepend')
 	##############################################################################
 
-	#define the inputs/outputs to the agent (sensors, such as vision, tactile, message input etc)###
-	#they will be given as topic names
-	#this example consists of only the message channel
+	#Define the inputs/outputs to the agent (sensors, such as vision, tactile, message input etc)###
+	#They will be given as topic names
+	#This example consists of only the message channel
 	#[[topic_name, callback_function], [], ...]
 	inputs = [['bcasts_brain', 'bcasts_brain_callback']]
-	outputs = ['bcasts']
-	#give a list of function names that represent the capabilities of the agent
+	sensors = [200]
+
+	outputs = ['bcasts', 'agent_position']
+	actuators = [200]
+	motors = []
+	#Give a list of function names that represent the capabilities of the agent
 	sim = simulation.Simulation0()
 	#From the list of services select 30% (this number can be modified) for the agent to be providing - at random
 	#[id time energy reward ...] ... -> dependencies on other services for instance 4 5 2 1
-	#active_servs format: [[5, 100, 3705, 42], [6, 97, 5736, 19], [9, 96, 9156, 4]]
+	#Active_servs format: [[5, 100, 3705, 42], [6, 97, 5736, 19], [9, 96, 9156, 4]]
 	active_servs = sim.select_services(agent_id, depends)
+
+	#Health specification
+        battery = 10000
 	################################################################################################
 	
-	agent = GitAgent(agent_id, inputs, outputs, active_servs, ['njohuri rreth pilafit'], ['shqip'], ['FIPA-ish'], [theta, delta], sim, 2, 1, depends)
+	agent = GitAgent(agent_id, inputs, outputs, active_servs, ['njohuri rreth pilafit'], ['shqip'], ['FIPA-ish'], [theta, delta], sim, 2, 1, depends, battery, sensors, actuators, motors)
+	agent.log.write_log_file(agent.log.stdout_log, 'active_serve ' + str(active_servs) + '\n')
 
 	try:
 		agent.fsm()

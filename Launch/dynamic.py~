@@ -28,10 +28,6 @@ def write_launch_file(nr_agents, theta, delta, depends):
 		launch.write('	<group ns="environment">\n')
 
 		launch.write('	</group>\n')
-
-		launch.write('	<group ns="pseudo-planner">\n')
-		launch.write('		<include file="$(find gitagent)/Launch/pseudo_planner.launch"> </include>\n')
-		launch.write('	</group>\n')
 		
 		launch.write('</launch>\n')
 		launch.close()
