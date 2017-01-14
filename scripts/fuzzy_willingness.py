@@ -10,6 +10,8 @@ from skfuzzy import control as ctrl
 #Define some parameters
 hmin = 400
 hmax = 4000
+#hmin = 1
+#hmax = 200000000
 hdiff = 10
 
 unitmin = 0
@@ -62,17 +64,17 @@ rules.append(ctrl.Rule(best_agent['poor'] & health['average'] & abil_res['all_&o
 ## View rules graphically
 #rule1.view()
 
-tipping_ctrl = ctrl.ControlSystem(rules)
-tipping = ctrl.ControlSystemSimulation(tipping_ctrl)
-tipping.input['health'] = 2000
-tipping.input['best_agent'] = 0.5
-tipping.input['abil_res'] = 0.7
-tipping.input['own_progress'] = 0.3
+interact_ctrl = ctrl.ControlSystem(rules)
+interact = ctrl.ControlSystemSimulation(interact_ctrl)
+interact.input['health'] = 1000
+interact.input['best_agent'] = 0.5
+interact.input['abil_res'] = 0.7
+interact.input['own_progress'] = 0.3
 
-tipping.compute()
+interact.compute()
 
-print tipping.output['willingness']
-willingness.view(sim=tipping)
+print interact.output['willingness']
+willingness.view(sim=interact)
 
 #while True:
 #	pass

@@ -1,8 +1,16 @@
 # Define the goal
-uint32 dishwasher_id  # Specify which dishwasher we want to use
+string performative
+string sender
+int32 rank
+string receiver
+string language
+string ontology
+string urgency
+string content
+string timestamp
 ---
 # Define the result
-uint32 total_dishes_cleaned
+uint32 act_outcome
 ---
 # Define a feedback message
-float32 percent_complete
+float32 time2finish

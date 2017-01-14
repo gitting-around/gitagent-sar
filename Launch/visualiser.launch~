@@ -1,0 +1,5 @@
+<launch>
+	<arg name="id"/>
+	<node pkg="gitagent" type="visualizer-node.py" name="auxilliary_node2" output="log">
+	</node>	
+</launch>
