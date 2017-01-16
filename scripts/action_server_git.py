@@ -64,9 +64,9 @@ class GitActionServer:
         #self.execute_condition.acquire()
 
         try:
-            rospy.logdebug("A new goal %shas been recieved by the single goal action server", goal.get_goal_id().id)
+            rospy.logdebug("A new goal %s has been recieved by the single goal action server", goal.get_goal_id().id)
 
-            rospy.loginfo("A new goal %shas been recieved by the single goal action server", goal.get_goal_id().id)
+            rospy.loginfo("A new goal %s has been recieved by the single goal action server", goal.get_goal_id().id)
 
             if self.execute_callback:
                 #Start new thread on execute()

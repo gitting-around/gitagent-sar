@@ -80,7 +80,7 @@ class GitAgent(agent0.Agent0):
         self.myknowledge.total_interactions.append(0)
         temp_values = []
         for x in range(0, len(guy_id_srv[2])):
-            temp_values.append([1, 1])
+            temp_values.append([0, 0])
         self.myknowledge.capability_expertise.append(temp_values)
         self.myknowledge.lock.release()
 
@@ -460,6 +460,12 @@ if __name__ == '__main__':
 
         # Gamma request goodness
         for x in agent.simulation.gamma_req_goodness:
+            agent.log.write_log_file(results_filename, str(x) + ' ')
+
+        agent.log.write_log_file(results_filename, '\n')
+        #pdb.set_trace()
+        # exec_times
+        for x in agent.simulation.exec_times_depend:
             agent.log.write_log_file(results_filename, str(x) + ' ')
 
         sys.stderr = orig_stderr

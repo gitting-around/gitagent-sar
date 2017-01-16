@@ -81,6 +81,7 @@ class Simulation0:
         self.theta = []
         self.theta_health = []
         self.theta_bool = []
+        self.exec_times_depend = []
 
         self.gamma_esteem = []
         self.gamma_tu = []

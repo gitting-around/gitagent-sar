@@ -75,19 +75,25 @@ class Agent0:
 
         self.reason = 'Deafult: None'
 
+        self.start = time.time()
+
         time.sleep(10)
 
     ##############################################################################################
     def my_hook(self):
         print self.reason
-        self.log.write_log_file(self.log.stdout_log, '[fsm ' + str(self.simulation.fsm) + '] ' + self.reason + '\n')
+        msg = '[fsm ' + str(self.simulation.fsm) + '] ' + self.reason + '\n'
+        # self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
 
     def fsm(self):
         while not rospy.is_shutdown():
             # Simulation stopping criterion
-            if (sum(self.simulation.generated_tasks) + 1) > self.simulation.STOP:
-                self.log.write_log_file(self.log.stdout_log, '[fsm %d] Simulation finished. Number of tasks done: %d\n'
-                                    % (self.simulation.fsm, self.simulation.stopINC))
+            #if sum(self.simulation.generated_tasks) + 1 > self.simulation.STOP:
+            if (time.time() - self.start) > 300:
+                msg = '[fsm %d] Simulation finished. Number of generated tasks: %d\n' % (self.simulation.fsm, sum(self.simulation.generated_tasks))
+                # self.log.write_log_file(self.log.stdout_log, msg)
+                rospy.loginfo(msg)
                 # Send kill signal to msgPUnit
                 self.publish_bcast[0].publish(self.mycore.create_message('DIE', 'DIE'))
                 self.reason = 'Simulation end'
@@ -102,14 +108,16 @@ class Agent0:
             self.mycore.check_health()
             # funksioni meposhte mund te ekzekutohet ne paralel --> per tu zhvilluar me tej ne nje moment te dyte
             self.publish2sensormotor(self.services)
-            self.log.write_log_file(self.log.stdout_log, '[fsm ' + str(self.simulation.fsm) + '] current state: ' + str(
-                self.mycore.state) + '\n')
+            msg = '[fsm ' + str(self.simulation.fsm) + '] current state: ' + str(self.mycore.state) + '\n'
+            # self.log.write_log_file(self.log.stdout_log, msg)
+            rospy.loginfo(msg)
 
             ##MOVE ###############################################################################
             self.myknowledge.position2D = self.simulation.move(self.myknowledge.position2D)
-            self.log.write_log_file(self.log.stdout_log,
-                                    '[fsm ' + str(self.simulation.fsm) + '] self.myknowledge.position2D: ' + str(
-                                        self.myknowledge.position2D) + '\n')
+            msg = '[fsm ' + str(self.simulation.fsm) + '] self.myknowledge.position2D: ' + str(self.myknowledge.position2D) + '\n'
+            # self.log.write_log_file(self.log.stdout_log, msg)
+            rospy.loginfo(msg)
+
             self.publish_bcast[1].publish(self.mycore.create_message(self.myknowledge.position2D, 'position'))
             ######################################################################################
 
@@ -140,7 +148,9 @@ class Agent0:
                                 '[fsm ' + str(self.simulation.fsm) + ']  result ' + str(result.act_outcome) + '\n')
 
     def active(self):
-        self.log.write_log_file(self.log.stdout_log, '[fsm ' + str(self.simulation.fsm) + ']  Goal just sent!\n')
+        msg = '[fsm ' + str(self.simulation.fsm) + ']  Goal just sent!\n'
+        # self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
 
     def feedback(self, feedback):
         self.log.write_log_file(self.log.stdout_log,
@@ -176,11 +186,15 @@ class Agent0:
         # rospy.loginfo('Asking agent with id: %d, for help', agent_id)
 
         client = actionlib.SimpleActionClient(agent_id, doMeFavorAction)
-        client.wait_for_server()
-        self.log.write_log_file(self.log.stdout_log, '[fsm ' + str(self.simulation.fsm) + '-block]  ' + str(
-            rospy.get_name()) + '\nI am requesting a favor\n')
-        # print rospy.get_name()
-        # print 'I am requesting a favor'
+        if not client.wait_for_server(timeout=rospy.Duration(60)):
+            msg = '[fsm ' + str(self.simulation.fsm) + '- blocking call - BEGIN]  ' + str(rospy.get_name()) + ' -> Couldn\'t connect to server \n'
+            # self.log.write_log_file(self.log.stdout_log, msg)
+            rospy.loginfo(msg)
+            return -1
+
+        msg = '[fsm ' + str(self.simulation.fsm) + '- blocking call - BEGIN]  ' + str(rospy.get_name()) + ' -> I am requesting a favor\n'
+        # self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
 
         goal2str = self.mycore.goal2string(goal)
         # self.log.write_log_file(self.log.stdout_log, '[fsm ' + str(self.simulation.fsm) + ']  ' + goal2str + '\n')
@@ -189,25 +203,27 @@ class Agent0:
                                        receiver=agent_id, language='shqip', ontology='laraska', urgency='none',
                                        content=goal2str, timestamp=time.strftime('%X', time.gmtime()))
 
-        self.log.write_log_file(self.log.stdout_log,
-                                '[fsm ' + str(self.simulation.fsm) + ']  ' + str(formatted_goal) + '\n')
+        msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call]  ' + str(formatted_goal) + '\n'
+        # self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
 
         # client.send_goal(formatted_goal, self.done, self.active, self.feedback)
         self.myknowledge.total_interactions[agent_idx] += 1
         client.send_goal(formatted_goal)
-        self.log.write_log_file(self.log.stdout_log, '[fsm ' + str(self.simulation.fsm) + '-block] Goal sent!!\n')
 
-        self.log.write_log_file(self.log.stdout_log,
-                                '[fsm ' + str(self.simulation.fsm) + '-block] goal state %s\n' % client.get_state())
-        # client.wait_for_result() # Set timeout to 15 seconds
+        msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call] Goal sent. Goal state %s\n' % client.get_state()
+        # self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
 
         if client.wait_for_result(timeout=rospy.Duration(15)):
-            self.log.write_log_file(self.log.stdout_log,
-                                    '[fsm ' + str(self.simulation.fsm) + '-block] server returned\n')
+            msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call] server returned\n'
+            # self.log.write_log_file(self.log.stdout_log, msg)
+            rospy.loginfo(msg)
             result = client.get_result()
         else:
-            self.log.write_log_file(self.log.stdout_log,
-                                    '[fsm ' + str(self.simulation.fsm) + '-block] server did not return\n')
+            msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call] server did not return\n'
+            # self.log.write_log_file(self.log.stdout_log, msg)
+            rospy.loginfo(msg)
             result = 12
 
         # Update profile of the agent asked for help
@@ -221,43 +237,36 @@ class Agent0:
                         task_idx = x[2].index(t)
                         break
                 break
-        self.log.write_log_file(self.log.stdout_log,
-                                '[fsm ' + str(self.simulation.fsm) + '-block] task_id %d, task_idx %d, agent_tasks %s\n'
-                                % (task_id, task_idx, self.myknowledge.known_people[agent_idx][2]))
+
+        msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call] task_id %d, task_idx %d, agent_tasks %s\n' % (task_id, task_idx, self.myknowledge.known_people[agent_idx][2])
+        # self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
+
         self.myknowledge.lock.acquire()
-        # rospy.loginfo('Result from agent with id: %d, is: %d', agent_id, result)
+
+        self.myknowledge.capability_expertise[agent_idx][task_idx][1] += 1
+        self.myknowledge.total_interactions[agent_idx] += 1
 
         if not result == 12:
             self.myknowledge.helping_interactions[agent_idx] += 1
             if result == 1:
-                self.myknowledge.completed_jobs += 1
-                self.myknowledge.completed_jobs_depend += 1
                 self.myknowledge.capability_expertise[agent_idx][task_idx][0] += 1
 
-        # Update perceived helpfulness and expertise
-        # print self.myknowledge.known_people[agent_idx][1]
-        # print self.myknowledge.helping_interactions[agent_idx]
-        # print self.myknowledge.total_interactions[agent_idx]
         self.myknowledge.known_people[agent_idx][1] = self.myknowledge.helping_interactions[agent_idx] \
                                                       / float(self.myknowledge.total_interactions[agent_idx])
-
-        self.log.write_log_file(self.log.stdout_log,
-                                '[fsm ' + str(self.simulation.fsm) + '-block] perceived helpfulness %f\n' %
-                                self.myknowledge.known_people[agent_idx][1])
 
         self.myknowledge.known_people[agent_idx][3][task_idx] = \
         self.myknowledge.capability_expertise[agent_idx][task_idx][0] \
         / float(
             self.myknowledge.capability_expertise[agent_idx][task_idx][1])
 
-        self.log.write_log_file(self.log.stdout_log,
-                                '[fsm ' + str(self.simulation.fsm) + '-block] capability expertise %f\n'
-                                % self.myknowledge.known_people[agent_idx][3][task_idx])
-
         self.myknowledge.lock.release()
 
-        self.log.write_log_file(self.log.stdout_log,
-                                '[fsm ' + str(self.simulation.fsm) + '-block] Result ' + str(result) + '\n')
+        msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call - END] perceived helpfulness %f\n' % self.myknowledge.known_people[agent_idx][1]
+        msg += '[fsm ' + str(self.simulation.fsm) + '- blocking_call] capability expertise %f\n' % self.myknowledge.known_people[agent_idx][3][task_idx]
+        msg += '[fsm ' + str(self.simulation.fsm) + '- blocking_call] Result ' + str(result) + '\n'
+        # self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
 
         return result
 
@@ -274,9 +283,10 @@ class Agent0:
         goalh = goalhandle.get_goal()
         # self.log.write_log_file(self.log.stdout_log, '[execute_git] getting goal: %s\n' % goal)
         goal = self.mycore.string2goalPlan(goalh.content, self.log)
-        self.log.write_log_file(self.log.stdout_log,
-                                '[execute_git %d] goal: %s\n' % (int(goal[0]['senderID']), str(goal)))
-        rospy.loginfo('Agent with id: %d, requested assistance', int(goal[0]['senderID']))
+
+        msg = '[execute_git %d- BEGIN] Goal: %s\n' % (int(goal[0]['senderID']), str(goal))
+        self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
 
         # Check if I have already gotten smth from this sender, in that case it's already in the queue, just change task_status to 0
         try:
@@ -285,76 +295,70 @@ class Agent0:
                 index for (index, d) in enumerate(self.keep_track_threads) if d['senderId'] == int(goal[0]['senderID']))
             self.keep_track_threads[index]['task_status'] = 0
             # print 'Guy currently in list: %d' % index
-            self.log.write_log_file(self.log.stdout_log,
-                                    '[execute_git %d] Guy currently in list: %d\n' % (int(goal[0]['senderID']), index))
+            msg = '[execute_git %d] Guy currently in list: %d\n' % (int(goal[0]['senderID']), index)
+            self.log.write_log_file(self.log.stdout_log, msg)
+            rospy.loginfo(msg)
+
         except StopIteration:
             # we can check first element in potential array goal, because the sender for each task is the same
             self.keep_track_threads.append({'senderId': int(goal[0]['senderID']), 'task_status': 0})
             index = len(self.keep_track_threads) - 1
-            self.log.write_log_file(self.log.stdout_log,
-                                    '[execute_git %d] New guy: %d\n' % (int(goal[0]['senderID']), index))
+            msg = '[execute_git %d] Guy currently in list: %d\n' % (int(goal[0]['senderID']), index)
+            self.log.write_log_file(self.log.stdout_log, msg)
+            rospy.loginfo(msg)
             # It is assumed that the senderId is unique, that is the server cannot get 2 a second task from an agent, without returning with the first.
             # {senderID:task_status}
             # self.keep_track_threads.append({data.sender:0})
-        self.log.write_log_file(self.log.stdout_log, '[execute_git %d] Threads: %s\n' % (
-        int(goal[0]['senderID']), str(self.keep_track_threads)))
 
-        # Put task in a queue, make thread wait until task status is set to success/fail -- might be possible to add a timeout for that
-        self.queueGoalHandles.put(goalhandle)
-        # self.log.write_log_file(self.log.stdout_log, '[execute_git %d] %s\n' % str(self.queueGoalHandles))
+        msg = '[execute_git %d] Threads: %s\n' % (int(goal[0]['senderID']), str(self.keep_track_threads))
+        self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
+
+        # it seems that I have mixed up the queues. goalhandles I need only manipulate in execute_git. the goal themselves and the keep_track_threads are manipulated by the main thread!
+        # self.queueGoalHandles.put(goalhandle)
+
         self.myknowledge.plan_pending_eval.put(goal)
-        self.log.write_log_file(self.log.stdout_log, '[execute_git %d] %s\n' % (
-        int(goal[0]['senderID']), str(self.myknowledge.plan_pending_eval)))
+        #self.log.write_log_file(self.log.stdout_log, '[execute_git %d] %s\n' % (int(goal[0]['senderID']), str(self.myknowledge.plan_pending_eval)))
         self.myknowledge.lock.release()
-        self.log.write_log_file(self.log.stdout_log,
-                                '[execute_git %d] Current goal status: %s\n' % (
-                                int(goal[0]['senderID']), goalhandle.get_goal_status()))
 
         timeout = time.time() + 10  # set timeout to be 10 seconds
         # self.log.write_log_file(self.log.stdout_log, '[execute_git %d] timeout: %s\n' % (int(goal[0]['senderID']), str(timeout)))
+
+        msg = '[execute_git %d] Current goal status: %s\n' % (int(goal[0]['senderID']), goalhandle.get_goal_status())
+        self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
 
         while self.keep_track_threads[index]['task_status'] == 0:
             # self.log.write_log_file(self.log.stdout_log, '[execute_git] Current goal status: %s\n' % goalhandle.get_goal_status())
             # Let the thread wait for 10 sec, if nothing then return with -1 ~ FAIL
             if time.time() > timeout:
-                rospy.loginfo('Request for agent with id: %d dropped', int(goal[0]['senderID']))
-                self.log.write_log_file(self.log.stdout_log,
-                                        '[execute_git %d] request dropped\n' % int(goal[0]['senderID']))
-                self.server.git_accept_new_goal(goalhandle)
-
-                self.log.write_log_file(self.log.stdout_log,
-                                '[execute_git %d] Current goal status: %s\n' % (
-                                int(goal[0]['senderID']), goalhandle.get_goal_status()))
-
                 self.keep_track_threads[index]['task_status'] = 12
+                msg = '[execute_git %d] request dropped. Threads %s\n' % (int(goal[0]['senderID']), str(self.keep_track_threads))
+                self.log.write_log_file(self.log.stdout_log, msg)
+                rospy.loginfo(msg)
                 break
 
-        # self.log.write_log_file(self.log.stdout_log, '[execute_git] Task execution pending\n')
-        # During execution some feedback might be available
-        # self.server.publish_result(0,49)
-        # print 'Thread: ' + str(self.keep_track_threads[index]['task_status']) + ' has returned (task_status)'
+        self.server.git_accept_new_goal(goalhandle)
 
-        rospy.loginfo('Request for agent with id: %d returned with status: %s', int(goal[0]['senderID']),
-                      str(self.keep_track_threads[index]['task_status']))
+        msg = '[execute_git %d] Current goal status: %s. Threads %s\n' % (int(goal[0]['senderID']), goalhandle.get_goal_status(), str(self.keep_track_threads))
+        self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
 
-        self.log.write_log_file(self.log.stdout_log, '[execute_git %d] Thread has returned'
-                                                     ' with status: %d\n' % (int(goal[0]['senderID']),
-                                                    self.keep_track_threads[index]['task_status']))
         result.act_outcome = self.keep_track_threads[index]['task_status']
 
-        self.log.write_log_file(self.log.stdout_log,
-                                '[execute_git %d] Before set succeeded\n' % int(goal[0]['senderID']))
         self.server.set_succeeded(goalhandle, result)
-        self.log.write_log_file(self.log.stdout_log,
-                                '[execute_git %d] Current goal status: %s\n' % (
-                                int(goal[0]['senderID']), goalhandle.get_goal_status()))
+        msg = '[execute_git %d] Current goal status: %s. Threads %s\n' % (int(goal[0]['senderID']), goalhandle.get_goal_status(), str(self.keep_track_threads))
+        self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
+
         # self.server.set_succeeded(goalhandle)
         self.myknowledge.lock.acquire()
         self.keep_track_threads[index]['task_status'] = 10
         self.myknowledge.lock.release()
-        self.log.write_log_file(self.log.stdout_log,
-                                '[execute_git %d] Threads: %s\nResult %s\n' % (
-                                int(goal[0]['senderID']), str(self.keep_track_threads), str(result)))
+
+        msg = '[execute_git %d - END] Threads: %s\nResult %s\n' % (int(goal[0]['senderID']), str(self.keep_track_threads), str(result))
+        self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
 
     def execute(self, data):
         # Do lots of awesome groundbreaking robot stuff here
@@ -391,41 +395,33 @@ class Agent0:
 
     def change_selfstate_v2(self):
         if not self.myknowledge.plan_pending_eval.empty():
-            self.log.write_log_file(self.log.stdout_log,
-                                    '[fsm ' + str(self.simulation.fsm) + '] adaptive state: True\n')
+            msg = '[fsm ' + str(self.simulation.fsm) + '] adaptive state: True\n'
+            # self.log.write_log_file(self.log.stdout_log, msg)
+            rospy.loginfo(msg)
 
             self.myknowledge.lock.acquire()
             self.myknowledge.old_state = self.mycore.state
             self.mycore.state = 1
-            self.log.write_log_file(self.log.stdout_log,
-                                    '[fsm ' + str(self.simulation.fsm) + '] Old state, and current state:' + str(
-                                        self.myknowledge.old_state) + str(
-                                        self.mycore.state) + '\n')
+            msg = '[fsm ' + str(self.simulation.fsm) + '] Old state, and current state:' + str(self.myknowledge.old_state) + str(self.mycore.state) + '\n'
+            # self.log.write_log_file(self.log.stdout_log, msg)
+            rospy.loginfo(msg)
             self.myknowledge.lock.release()
         else:
-            self.log.write_log_file(self.log.stdout_log,
-                                    '[fsm ' + str(self.simulation.fsm) + '] adaptive state: False\n')
+            msg = '[fsm ' + str(self.simulation.fsm) + '] adaptive state: False\n'
+            # self.log.write_log_file(self.log.stdout_log, msg)
+            rospy.loginfo(msg)
 
     def eval_temp_2(self):
-
-        self.log.write_log_file(self.log.stdout_log, '[adapt ' + str(self.simulation.interact) + ']\n')
-
-        rate_depend = -1000
-
-        if self.myknowledge.attempted_jobs == 0:
-            self_esteem = 0.0
-        else:
-            self_esteem = 1.0 * self.myknowledge.completed_jobs / self.myknowledge.attempted_jobs
-
-        if self.myknowledge.attempted_jobs_depend == 0:
-            rate_depend = 0.0
-        else:
-            rate_depend = 1.0 * self.myknowledge.completed_jobs_depend / self.myknowledge.attempted_jobs_depend
-
+        msg = '[adapt ' + str(self.simulation.interact) + ' BEGIN]\n'
+        # self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
         ## Take plan-request out of queue, and put the tasks into the queue for tasks the agent has committed to
         # careful with the queues below, there is no handling if it is empty!!
         # pdb.set_trace()
         plan = self.myknowledge.plan_pending_eval.get()
+        msg = '[adapt' + str(self.simulation.interact) + '] plan gotten from queue \n' + str(plan)
+        # self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
         # print 'This is the newly gotten plan ' + str(plan)
         aID = int(plan[0]['senderID'])
         aIDx = -1
@@ -434,90 +430,80 @@ class Agent0:
         for x in self.myknowledge.known_people:
             if x[0] == aID:
                 aIDx = self.myknowledge.known_people.index(x)
-                self.log.write_log_file(self.log.stdout_log, 'aIDX = %d\n' % aIDx)
+                msg = '[adapt %d] aIDX = %d\n' % (self.simulation.interact, aIDx)
+                # self.log.write_log_file(self.log.stdout_log, msg)
+                rospy.loginfo(msg)
                 break
         if not aIDx == -1:
-            self.log.write_log_file(self.log.stdout_log, 'in known people\n')
+            # It is not success but PERCEIVED WILLINGNESS
             success = self.myknowledge.known_people[aIDx][1]
+            msg = '[adapt %d] In known people, success = %f\n' % (self.simulation.interact, success)
+            # self.log.write_log_file(self.log.stdout_log, msg)
+            rospy.loginfo(msg)
         else:
-            self.log.write_log_file(self.log.stdout_log, 'in known people\n')
-            success = 0.0
+            success = -1.0
+            msg = '[adapt %d] Not in known people, success = %f\n' % (self.simulation.interact, success)
+            # self.log.write_log_file(self.log.stdout_log, msg)
+            rospy.loginfo(msg)
 
         ## Here put the new fuzzy evaluation function
         # accept = True
-        dependencies_abil, dependencies_res, req_missing, task_importance, task_urgency, culture = self.simulation.sim_dependencies(self.myknowledge.service)
+        #pdb.set_trace()
+        dependencies_abil, dependencies_res, req_missing, task_importance, task_urgency, culture = self.simulation.sim_dependencies(plan[0])
         req_goodness = random.random()
 
         accept, gamma = self.mycore.give_help(sum([self.mycore.sensmot, self.mycore.battery]), dependencies_abil,
                                        dependencies_res,
                                        self.mycore.self_esteem, task_urgency, task_importance, culture, req_goodness, success)
         # print accept
-        self.log.write_log_file(self.log.stdout_log,
-                                '[adapt ' + str(self.simulation.interact) + '] accept ' + str(accept) + '\n')
+        msg = '[adapt %d] Accept = %f\n' % (self.simulation.interact, accept)
+        msg += '[adapt %d] Plan ' + str(plan) + '\n'
+        # self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
 
-        gh = self.queueGoalHandles.get()
-        self.log.write_log_file(self.log.stdout_log,
-                                    '[adapt' + str(
-                                        self.simulation.interact) + '] Current goal status: %s\n' % gh.get_goal_status())
         if accept:
             self.myknowledge.attempted_jobs += 1
-            self.log.write_log_file(self.log.stdout_log, '[adapt ' + str(self.simulation.interact) + '] adapted\n')
-            # Take plan-request out of queue, and put the tasks into the queue for tasks the agent has committed to
-            # careful with the queues below, there is no handling if it is empty!!
 
-            self.server.git_accept_new_goal(gh)
-            self.log.write_log_file(self.log.stdout_log,
-                                    '[adapt' + str(
-                                        self.simulation.interact) + '] Current goal status: %s\n' % gh.get_goal_status())
-
-            self.log.write_log_file(self.log.stdout_log,
-                                    '[adapt ' + str(self.simulation.interact) + '] ' + str(plan) + '\n\n')
+            msg = '[adapt ' + str(self.simulation.interact) + '] Adopted plan: ' + str(plan) + '\n'
+            # self.log.write_log_file(self.log.stdout_log, msg)
+            rospy.loginfo(msg)
 
             for x in plan:
-                self.log.write_log_file(self.log.stdout_log,
-                                        '[adapt ' + str(self.simulation.interact) + '] ' + str(x) + '\n')
+                msg = '[adapt ' + str(self.simulation.interact) + '] Task in plan: ' + str(x) + '\n'
+                # self.log.write_log_file(self.log.stdout_log, msg)
+                rospy.loginfo(msg)
                 self.myknowledge.task_queue.put(x)
 
-            self.log.write_log_file(self.log.stdout_log,
-                                    '[adapt ' + str(self.simulation.interact) + '] put tasks in queue\n')
+            msg = '[adapt %d] Tasks put in queue\n' % self.simulation.interact
+            # self.log.write_log_file(self.log.stdout_log, msg)
+            rospy.loginfo(msg)
 
             self.myknowledge.count_posReq += 1
-            self.myknowledge.attempted_jobs += 1
 
             self.myknowledge.lock.acquire()
             self.mycore.state = 2
             self.myknowledge.lock.release()
 
-            # self.myknowledge.service = self.services[self.myknowledge.task_idx]
-
-            self.myknowledge.helping = True
-            self.log.write_log_file(self.log.stdout_log,
-                                    '[adapt ' + str(self.simulation.interact) + '] helping: ' + str(
-                                        self.myknowledge.helping) + '\n')
         else:
             # print 'keep at what you\'re doing'
-            self.log.write_log_file(self.log.stdout_log, '[adapt ' + str(self.simulation.interact) + '] do not adapt\n')
-            self.server.git_accept_new_goal(gh)
-            # self.server.set_preempted(gh)
-            self.log.write_log_file(self.log.stdout_log,
-                                    '[adapt' + str(
-                                        self.simulation.interact) + '] Current goal status: %s\n' % gh.get_goal_status())
+            msg = '[adapt %d] Do not adapt\n' % self.simulation.interact
+            # self.log.write_log_file(self.log.stdout_log, msg)
+            rospy.loginfo(msg)
 
             index = next(index for (index, d) in enumerate(self.keep_track_threads) if d['senderId'] == aID)
 
             if self.is_thread_active(aID):
 
                 self.keep_track_threads[index]['task_status'] = 12
-                # self.keep_track_threads[0]['task_status'] = 1
-                self.log.write_log_file(self.log.stdout_log,
-                                        '[adapt' + str(self.simulation.interact) + '] Threads %s\n' % str(
-                                            self.keep_track_threads))
+                msg = '[adapt' + str(self.simulation.interact) + '] Threads %s\n' % str(self.keep_track_threads)
+                # self.log.write_log_file(self.log.stdout_log, msg)
+                rospy.loginfo(msg)
             else:
                 self.keep_track_threads[index]['task_status'] = 10
-
-                self.log.write_log_file(self.log.stdout_log,
-                                        '[adapt' + str(self.simulation.interact) + '] Not adapted, but thread not active anymore. Threads %s\n' % str(
-                                            self.keep_track_threads))
+                msg = '[adapt' + str(self.simulation.interact) + '] Not adapted, but thread not active anymore. Threads %s\n' % str(
+                                            self.keep_track_threads)
+                # self.log.write_log_file(self.log.stdout_log, msg)
+                rospy.loginfo(msg)
 
             self.myknowledge.lock.acquire()
             self.mycore.state = self.myknowledge.old_state
@@ -537,6 +523,9 @@ class Agent0:
             self.simulation.gamma_health.append(sum([self.mycore.sensmot, self.mycore.battery]))
             self.simulation.gamma_bool.append(accept)
             self.simulation.gamma_req_goodness.append(req_goodness)
+            msg = '[adapt' + str(self.simulation.interact) + ' END] \n'
+            # self.log.write_log_file(self.log.stdout_log, msg)
+            rospy.loginfo(msg)
 
     def amIHelping(self, sender):
         if not sender == self.mycore.ID:
@@ -547,7 +536,9 @@ class Agent0:
     def idle(self):
         # print 'im in idle'
         self.simulation.idle = self.simulation.inc_iterationstamps(self.simulation.idle)
-        self.log.write_log_file(self.log.stdout_log, '[fsm ' + str(self.simulation.idle) + '] idle\n')
+        msg = '[fsm ' + str(self.simulation.idle) + '] idle\n'
+        # self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
         self.generate_goal_v2()
         self.commit2goal()
 
@@ -572,54 +563,58 @@ class Agent0:
     def execute_v2(self):
         self.simulation.execute = self.simulation.inc_iterationstamps(self.simulation.execute)
 
-        self.log.write_log_file(self.log.stdout_log,
-                                '[execute ' + str(self.simulation.execute) + ']' + str(self.myknowledge.service) + '\n')
-        self.log.write_log_file(self.log.stdout_log, '[execute ' + str(self.simulation.execute) + ']' + str(
-            self.myknowledge.service_id) + '\n')
-        self.log.write_log_file(self.log.stdout_log, '[execute ' + str(self.simulation.execute) + ']' + str(
-            self.myknowledge.iteration) + '\n')
+        msg = '[execute ' + str(self.simulation.execute) + ' BEGIN] Current service ' + str(self.myknowledge.service) + '\n'
+        msg += '[execute ' + str(self.simulation.execute) + '] id ' + str(self.myknowledge.service_id) + '\n'
+        msg += '[execute ' + str(self.simulation.execute) + '] nr of iterations ' + str(self.myknowledge.iteration) + '\n'
+        # self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
 
         if self.myknowledge.service_id == -1 and self.myknowledge.iteration == -1:
             if not self.myknowledge.task_queue.empty():
                 self.myknowledge.service = self.myknowledge.task_queue.get()
-                self.log.write_log_file(self.log.stdout_log, '[execute ' + str(self.simulation.execute) + ']' + str(
-                    self.myknowledge.service) + '\n')
+                msg = '[execute ' + str(self.simulation.execute) + ']' + str(
+                    self.myknowledge.service) + '\n'
+                # self.log.write_log_file(self.log.stdout_log, msg)
 
                 self.myknowledge.service_id = int(self.myknowledge.service['id'])
-                self.log.write_log_file(self.log.stdout_log, '[execute ' + str(self.simulation.execute) + ']' + str(
-                    self.myknowledge.service_id) + '\n')
+
+                msg += '[execute ' + str(self.simulation.execute) + ']' + str(self.myknowledge.service_id) + '\n'
 
                 self.myknowledge.iteration = 1
-                self.log.write_log_file(self.log.stdout_log, '[execute ' + str(self.simulation.execute) + ']' + str(
-                    self.myknowledge.iteration) + '\n')
 
-                ## Detect task difficulty - from nr of required services
+                msg += '[execute ' + str(self.simulation.execute) + ']' + str(self.myknowledge.iteration) + '\n'
+
+                # Detect task difficulty - from nr of required services
                 self.myknowledge.difficulty = self.simulation.detect_difficulty(self.myknowledge.service)
                 self.simulation.no_tasks_attempted[self.myknowledge.difficulty] += 1
 
-                self.log.write_log_file(self.log.stdout_log,
-                                        '[execute ' + str(self.simulation.execute) + '] Difficulty: ' + str(
-                                            self.myknowledge.difficulty) + '\n')
+                msg += '[execute ' + str(self.simulation.execute) + '] Difficulty: ' + str(self.myknowledge.difficulty) + '\n'
+                rospy.loginfo(msg)
 
                 if not int(self.myknowledge.service['senderID'] == self.mycore.ID):
                     if self.is_thread_active(int(self.myknowledge.service['senderID'])):
-                        self.log.write_log_file(self.log.stdout_log, '[execute ' + str(self.simulation.execute)
-                                                + ']I am helping someone and their thread is still active\n')
+                        msg = '[execute ' + str(self.simulation.execute) + ']I am helping someone and their thread is still active\n'
+                        rospy.loginfo(msg)
+
                         self.execute_step_v4()
                     else:
-                        self.log.write_log_file(self.log.stdout_log, '[execute ' + str(self.simulation.execute)
-                                                + ']Thread not active anymore\n')
+                        msg = '[execute ' + str(self.simulation.execute) + ']Thread not active anymore\n'
+                        rospy.loginfo(msg)
                 else:
+                    msg = '[execute ' + str(self.simulation.execute) + '] Working for myself\n'
+                    rospy.loginfo(msg)
                     self.execute_step_v4()
             else:
                 self.mycore.state = 0
-                self.log.write_log_file(self.log.stdout_log,
-                                        '[execute ' + str(self.simulation.execute) + '] My state: ' + str(
-                                            self.mycore.state) + '\n')
+                msg = '[execute ' + str(self.simulation.execute) + '] My state: ' + str(self.mycore.state) + '\n'
+                rospy.loginfo(msg)
         else:
-            self.log.write_log_file(self.log.stdout_log,
-                                    '[execute ' + str(self.simulation.execute) + '] continue working\n')
+            msg = '[execute ' + str(self.simulation.execute) + '] continue working\n'
+            rospy.loginfo(msg)
             self.execute_step_v4()
+
+        msg = '[execute ' + str(self.simulation.execute) + 'END]\n'
+        rospy.loginfo(msg)
 
     def execute_step_v2(self):
         dependencies = self.simulation.sim_dependencies(self.myknowledge.service)
@@ -708,26 +703,25 @@ class Agent0:
 
     ##Make requests to action server
     def execute_step_v4(self):
-        self.log.write_log_file(self.log.stdout_log,
-                                '[run_step ' + str(self.simulation.execute) + '] in execute_step\n')
+        msg = '[run_step ' + str(self.simulation.execute) + ' BEGIN] in execute_step\n'
+        rospy.loginfo(msg)
         # print 'in execute_step'
+        # pdb.set_trace()
         dependencies_abil, dependencies_res, req_missing, task_importance, task_urgency, culture = self.simulation.sim_dependencies(
             self.myknowledge.service)
         # print 'after dep'
-
+        culture = self.eval_culture()
         # This returns the best candidate id, and success measure
         success_chance, candidate_id, candidate_idx = self.mycore.best_candidate(self.myknowledge.known_people,
                                                                                  self.myknowledge.service, self.log)
 
         if candidate_id == self.myknowledge.service['senderID'] and not self.mycore.ID == self.myknowledge.service['senderID']:
-            self.log.write_log_file(self.log.stdout_log,
-                                    '[run_step ' + str(self.simulation.execute) + '] do not ask the same agent that asked you for help')
+            msg = '[run_step ' + str(self.simulation.execute) + '] do not ask the same agent that asked you for help'
+            rospy.loginfo(msg)
             success_chance = -1.0
 
-        self.log.write_log_file(self.log.stdout_log,
-                                '[run_step ' + str(self.simulation.execute) + '] inputs: %f, %f, health: %f\n' % (
-                                    dependencies_abil, dependencies_res,
-                                    sum([self.mycore.sensmot, self.mycore.battery])))
+        msg = '[run_step ' + str(self.simulation.execute) + '] inputs: %f, %f, health: %f\n' % (dependencies_abil, dependencies_res, sum([self.mycore.sensmot, self.mycore.battery]))
+        rospy.loginfo(msg)
 
         start_time = timeit.default_timer()
         depend, theta = self.mycore.ask_4help(sum([self.mycore.sensmot, self.mycore.battery]), dependencies_abil,
@@ -737,15 +731,14 @@ class Agent0:
         #     [sum([self.mycore.sensmot, self.mycore.battery]), 0.7, dependencies, 0.5])
         self.simulation.fuzzy_time.append(timeit.default_timer() - start_time)
 
-        self.log.write_log_file(self.log.stdout_log,
-                                '[run_step ' + str(self.simulation.execute) + '] ask for help: ' + str(
-                                    depend) + '\n')
+        msg = '[run_step ' + str(self.simulation.execute) + '] ask for help: ' + str(depend) + '\n'
+        rospy.loginfo(msg)
 
         if req_missing and not depend:
             self.simulation.required_missing_noreq = self.simulation.required_missing_noreq + 1
-            self.log.write_log_file(self.log.stdout_log, '[run_step ' + str(
-                self.simulation.execute) + '] There should have been a request: ' + str(
-                self.simulation.required_missing_noreq / float(self.simulation.required_missing)) + '\n')
+            msg = '[run_step ' + str( self.simulation.execute) + '] There should have been a request: ' + \
+                  str(self.simulation.required_missing_noreq / float(self.simulation.required_missing)) + '\n'
+            rospy.loginfo(msg)
 
         result = 0
 
@@ -755,38 +748,40 @@ class Agent0:
                 self.simulation.requests[self.myknowledge.difficulty] = self.simulation.requests[
                                                                             self.myknowledge.difficulty] + 1
 
-                self.log.write_log_file(self.log.stdout_log, '[run_step ' + str(
-                    self.simulation.execute) + '] difficulty: %f, delay: %f, addi: %f\n' % (
+                msg = '[run_step ' + str(
+                    self.simulation.execute) + '] Ask for help. Difficulty: %f, delay: %f, addi: %f\n' % (
                                             self.myknowledge.difficulty,
                                             self.simulation.delay[self.myknowledge.difficulty],
-                                            self.simulation.additional_delay[self.myknowledge.difficulty]))
-                self.log.write_log_file(self.log.stdout_log, '[run_step ' + str(
-                    self.simulation.execute) + '] Ask for help\n\n')
-
-                # WRITE FUNCTION TO SELECT THE BEST KNOWN CANDIDATE -- you have this in Gitagent
-                # if self.mycore.ID == 1:
-                ######### Use the best agent known -- obviously a hardcoded value will not be used in future
+                                            self.simulation.additional_delay[self.myknowledge.difficulty])
+                rospy.loginfo(msg)
+                #pdb.set_trace()
                 agent2ask = '/robot' + str(candidate_id) + '/brain_node'
-                self.log.write_log_file(self.log.stdout_log, 'agent2ask is: ' +
-                                        str(agent2ask) + '\n')
+                msg = '[run_step ' + str(
+                    self.simulation.execute) + '] agent2ask is: ' + str(agent2ask) + '\n'
+                rospy.loginfo(msg)
                 ######### Make request to action_server
                 # self.call_action_server(self.myknowledge.service, agent2ask)
                 # print 'before blocking call'
-                start = timeit.default_timer()
+                start = time.time()
                 result = self.call_blocking_action_server(self.myknowledge.service, agent2ask, candidate_idx)
 
                 # TIME THE SERVER'S RESPONSE!!
-                exec_time =  timeit.default_timer() - start
+                exec_time =  time.time() - start
+                self.simulation.exec_times_depend.append(exec_time)
                 self.simulation.exec_times[self.myknowledge.difficulty] = self.simulation.exec_times[
                                                                               self.myknowledge.difficulty] + exec_time
-                self.log.write_log_file(self.log.stdout_log, 'exec_time: ' +
-                                        str(exec_time) + '\n')
+                msg = '[run_step ' + str(self.simulation.execute) + '] exec_time: ' + str(exec_time) + '\n'
+                rospy.loginfo(msg)
                 self.myknowledge.service_id = -1
                 self.myknowledge.iteration = -1
 
                 # Assume that less energy is consumed when asking for help -- someone else is doing the deed
                 self.mycore.battery_change(0.2 * int(self.myknowledge.service['energy']))
-                self.simulation.no_tasks_depend_completed[self.myknowledge.difficulty] += 1
+
+                if result == 1:
+                    msg = '[run_step ' + str(self.simulation.execute) + '] depend SUCCESS\n'
+                    rospy.loginfo(msg)
+                    self.simulation.no_tasks_depend_completed[self.myknowledge.difficulty] += 1
             else:
                 # Count noones serves to identify those case in which the agent does not know anyone that could be of help
                 self.myknowledge.COUNT_noones += 1
@@ -796,20 +791,21 @@ class Agent0:
                 # Assume that less energy is consumed when asking for help -- someone else is doing the deed
                 self.mycore.battery_change(0.2 * int(self.myknowledge.service['energy']))
 
-                self.log.write_log_file(self.log.stdout_log, 'No one to ask\n')
-                self.log.write_log_file(self.log.stdout_log, str(self.myknowledge.known_people) + '\n')
+                msg = '[run_step ' + str(self.simulation.execute) + '] No one to ask. Known peple ' + str(self.myknowledge.known_people) + '\n'
+                rospy.loginfo(msg)
 
         else:
             exec_time = self.simulation.delay[self.myknowledge.difficulty]
-            self.log.write_log_file(self.log.stdout_log, '[run_step ' + str(
-                self.simulation.execute) + '] Do it yourself\n ...Wait for %f\n' % exec_time)
+            msg = '[run_step ' + str(self.simulation.execute) + '] Do it yourself\n ...Wait for %f\n' % exec_time
+            rospy.loginfo(msg)
+
             self.simulation.exec_times[self.myknowledge.difficulty] = self.simulation.exec_times[
                                                                           self.myknowledge.difficulty] + exec_time
-
-            self.log.write_log_file(self.log.stdout_log, '[run_step ' + str(
+            msg = '[run_step ' + str(
                 self.simulation.execute) + '] difficulty: %f, delay: %f, addi: %f\n' % (
                                         self.myknowledge.difficulty, self.simulation.delay[self.myknowledge.difficulty],
-                                        self.simulation.additional_delay[self.myknowledge.difficulty]))
+                                        self.simulation.additional_delay[self.myknowledge.difficulty])
+            rospy.loginfo(msg)
             result = 1
 
             time.sleep(exec_time)
@@ -822,16 +818,14 @@ class Agent0:
             self.simulation.no_tasks_completed[self.myknowledge.difficulty] += 1
 
         # In case I am helping some other agent, trigger response here
-        self.log.write_log_file(self.log.stdout_log,
-                                '[run_step ' + str(self.simulation.execute) + '] sender: %d\n' % int(
-                                    self.myknowledge.service['senderID']))
+        msg = '[run_step ' + str(self.simulation.execute) + '] sender: %d\n' % int(self.myknowledge.service['senderID'])
+        rospy.loginfo(msg)
+
         # pdb.set_trace()
         if self.amIHelping(int(self.myknowledge.service['senderID'])):
             # You need to count loops
-
-            self.log.write_log_file(self.log.stdout_log,
-                                    '[run_step ' + str(self.simulation.execute) + '] service %s, threads: %s\n' % (
-                                    self.myknowledge.service, str(self.keep_track_threads)))
+            msg = '[run_step ' + str(self.simulation.execute) + '] service %s, threads: %s\n' % (self.myknowledge.service, str(self.keep_track_threads))
+            rospy.loginfo(msg)
 
             index = next(index for (index, d) in enumerate(self.keep_track_threads) if d['senderId'] == int(self.myknowledge.service['senderID']))
 
@@ -840,14 +834,13 @@ class Agent0:
                     self.keep_track_threads[index]['task_status'] = 1
                 else:
                     self.keep_track_threads[index]['task_status'] = 0
-                self.log.write_log_file(self.log.stdout_log,
-                                        '[run_step ' + str(self.simulation.execute) + '] Threads %s\n' % str(
-                                            self.keep_track_threads))
+
+                msg = '[run_step ' + str(self.simulation.execute) + '] Threads %s\n' % str(self.keep_track_threads)
+                rospy.loginfo(msg)
             else:
                 self.keep_track_threads[index]['task_status'] = 10
-                self.log.write_log_file(self.log.stdout_log,
-                                        '[run_step ' + str(self.simulation.execute) + '] End of task, but thread not active anymore Threads %s\n' % str(
-                                            self.keep_track_threads))
+                msg = '[run_step ' + str(self.simulation.execute) + '] End of task, but thread not active anymore Threads %s\n' % str(self.keep_track_threads)
+                rospy.loginfo(msg)
 
         if (sum(self.simulation.no_tasks_attempted) - sum(self.simulation.no_tasks_depend_attempted)) == 0:
             self.mycore.self_esteem = 0.0
@@ -873,8 +866,8 @@ class Agent0:
             self.simulation.stopINC += 1
             print 'STOP INC: %d' % self.simulation.stopINC
 
-        self.log.write_log_file(self.log.stdout_log, '[run_step ' + str(
-            self.simulation.execute) + '] STOP INC: %d\n' % self.simulation.stopINC)
+        msg = '[run_step ' + str(self.simulation.execute) + ' END] STOP INC: %d\n' % self.simulation.stopINC
+        rospy.loginfo(msg)
 
     def regenerate(self):
         # print 'im in regenerate'
@@ -962,11 +955,15 @@ class Agent0:
                     difficulty = self.simulation.generated_tasks.index(x)
                     break
 
+            if sum(self.simulation.generated_tasks) > 150:
+                self.simulation.generated_tasks = [0,0,0]
+
             if difficulty == -1:
                 return
 
             self.simulation.generated_tasks[difficulty] += 1
-            self.log.write_log_file(self.log.stdout_log, '[generate goal ' + str(self.simulation.idle) + '] ' + str(self.simulation.generated_tasks) + '\n')
+            msg = '[generate goal ' + str(self.simulation.idle) + ' BEGIN] ' + str(self.simulation.generated_tasks) + '\n'
+            rospy.loginfo(msg)
 
             senderId = self.mycore.ID
             planId = -random.randint(1, 100)
@@ -988,21 +985,23 @@ class Agent0:
                       'equipment': equipment, 'startLoc': startLoc, 'reward': reward, 'resources': res,
                       'reward': reward, 'noAgents': noAgents}]
 
-            self.log.write_log_file(self.log.stdout_log,
-                                    '[generate goal ' + str(self.simulation.idle) + '] Chosen service: ' + str(
-                                        tasks) + '\n')
+            #msg = '[generate goal ' + str(self.simulation.idle) + '] Chosen service: ' + str(tasks) + '\n'
+            #rospy.loginfo(msg)
 
             for x in tasks:
-                self.log.write_log_file(self.log.stdout_log,
-                                        '[generate goal ' + str(self.simulation.idle) + '] ' + str(x) + '\n')
+                msg = '[generate goal ' + str(self.simulation.idle) + '] ' + str(x) + '\n'
+                rospy.loginfo(msg)
                 self.myknowledge.task_queue.put(x)
 
             self.myknowledge.lock.acquire()
             self.mycore.state = 2
             self.myknowledge.lock.release()
         else:
-            self.log.write_log_file(self.log.stdout_log, '[generate goal ' + str(
-                self.simulation.idle) + '] do nothing - zot jepi atij qe rri kot :DD\n')
+            msg = '[generate goal ' + str(self.simulation.idle) + '] do nothing - zot jepi atij qe rri kot :DD\n'
+            rospy.loginfo(msg)
+
+        msg = '[generate goal ' + str(self.simulation.idle) + ' END]\n'
+        rospy.loginfo(msg)
 
     def plan2goal(self):
         pass
@@ -1031,8 +1030,20 @@ class Agent0:
     def evaluate_selfmending(self):
         pass
 
-    def update_culture(self, help, expertise, load):
-        pass
+    # help, expertise, load)
+    def eval_culture(self):
+        help = 0.0
+        no_people = 0.0
+
+        for x in self.myknowledge.known_people:
+            help += x[0]
+            no_people += 1
+
+        if no_people == 0.0:
+            return -1.0
+        else:
+            culture = help/float(no_people)
+            return culture
 
     def debug_self(self):
         pass
@@ -1218,7 +1229,8 @@ class Agent0:
             # print rospy.get_name()
             self.publish_bcast[0].publish(self.mycore.create_message(raw_content, ''))
         else:
-            print 'rospy is shutdown'
+            self.reason = 'Unknown reason - publish2sensormotor'
+            rospy.on_shutdown(self.my_hook)
 
     def init_serve(self, agentid):
         myservice = '/robot' + str(agentid) + '/serve'

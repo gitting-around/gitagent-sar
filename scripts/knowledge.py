@@ -71,7 +71,6 @@ class Knowledge0:
 
         self.known_people = []
         # If an agent receives a request from another, without it being in its list, it will be put here
-        self.known_people = []
 
         self.moving_delta = []
         self.moving_delta_sorted = []

@@ -97,7 +97,7 @@ class Core:
             return False, theta
 
     # Function will return True if decided to give help, or False otherwise
-    def give_help(self, health, abilities, resources, self_esteem, task_urgency, task_importance, culture, request_goodness, success):
+    def give_help(self, health, abilities, resources, self_esteem, task_urgency, task_importance, culture, request_goodness, perceived_help):
         # pdb.set_trace()
         self.give = True
         gamma = 1.0
@@ -118,9 +118,9 @@ class Core:
                         self.factor_track_give[3] += 1
                         gamma = -1.0
                     else:
-                        if success < self.LOW:
+                        if perceived_help < self.LOW:
                             self.factor_track_give[4] += 1
-                            gamma = success
+                            gamma = perceived_help
                         else:
                             if self.state == 2:
                                 if task_urgency > self.LOW or task_importance > self.LOW:
