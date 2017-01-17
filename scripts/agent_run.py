@@ -268,12 +268,12 @@ if __name__ == '__main__':
     theta = rospy.get_param('brain_node/myTheta')
     depends = rospy.get_param('brain_node/myDepend')
     ##############################################################################
-    stderr_file = '/home/mfi01/.ros/RESULT/error_brain' + str(agent_id)
+    stderr_file = '/home/mfi01/catkin_ws/results/error_brain' + str(agent_id)
     f = open(stderr_file, 'w+')
     orig_stderr = sys.stderr
     sys.stderr = f
 
-    stdout_file = '/home/mfi01/.ros/RESULT/stdout_brain'
+    stdout_file = '/home/mfi01/catkin_ws/results/stdout_brain'
     s = open(stdout_file, 'w+')
     orig_stdout = sys.stdout
     rospy.loginfo('Agent with id: %d, delta: %f, theta: %f, has started successfully', agent_id, delta, theta)
@@ -324,7 +324,7 @@ if __name__ == '__main__':
         # Write out number of help requests and approx finishing time
         agent.log.write_log_file(agent.log.stdout_log, 'in finally')
         # pdb.set_trace()
-        results_filename = '~/catkin_ws/results/test/pop_size.' + str(popSize) + '/prova.' + str(
+        results_filename = '/home/mfi01/catkin_ws/results/test/pop_size.' + str(popSize) + '/prova.' + str(
             provaNr) + '/results_' + str(agent_id) + '_' + str(delta) + '_' + str(depends)
 
         # Write out times it takes for the logic to return

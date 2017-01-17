@@ -23,6 +23,6 @@
 	<group ns="environment">
 	</group>
 	<group ns="auxilliary">
-		<include file="$(find gitagent)/Launch/visualiser.launch"> </include>
+	<!--	<include file="$(find gitagent)/Launch/visualiser.launch"> </include> -->
 	</group>
 </launch>

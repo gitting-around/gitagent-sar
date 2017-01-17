@@ -80,12 +80,12 @@ class Visualizer():
 
 
 if __name__ == '__main__':
-    stderr_file = '/home/mfi01/.ros/RESULT/error_viz'
+    stderr_file = '/home/mfi01/catkin_ws/results/error_viz'
     f = open(stderr_file, 'w+')
     orig_stderr = sys.stderr
     sys.stderr = f
 
-    stdout_file = '/home/mfi01/.ros/RESULT/stdout_viz'
+    stdout_file = '/home/mfi01/catkin_ws/results/stdout_viz'
     s = open(stdout_file, 'w+')
     orig_stdout = sys.stdout
     try:
