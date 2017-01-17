@@ -841,6 +841,8 @@ class Agent0:
                 self.keep_track_threads[index]['task_status'] = 10
                 msg = '[run_step ' + str(self.simulation.execute) + '] End of task, but thread not active anymore Threads %s\n' % str(self.keep_track_threads)
                 rospy.loginfo(msg)
+        else:
+            self.simulation.no_self_tasks_completed[self.myknowledge.difficulty] += 1
 
         if (sum(self.simulation.no_tasks_attempted) - sum(self.simulation.no_tasks_depend_attempted)) == 0:
             self.mycore.self_esteem = 0.0
@@ -960,6 +962,8 @@ class Agent0:
 
             if difficulty == -1:
                 return
+            else:
+                self.simulation.no_self_tasks_attempted[difficulty] += 1
 
             self.simulation.generated_tasks[difficulty] += 1
             msg = '[generate goal ' + str(self.simulation.idle) + ' BEGIN] ' + str(self.simulation.generated_tasks) + '\n'

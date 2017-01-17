@@ -324,7 +324,7 @@ if __name__ == '__main__':
         # Write out number of help requests and approx finishing time
         agent.log.write_log_file(agent.log.stdout_log, 'in finally')
         # pdb.set_trace()
-        results_filename = '/home/mfi01/catkin_ws/results/test/pop_size.' + str(popSize) + '/prova.' + str(
+        results_filename = '~/catkin_ws/results/test/pop_size.' + str(popSize) + '/prova.' + str(
             provaNr) + '/results_' + str(agent_id) + '_' + str(delta) + '_' + str(depends)
 
         # Write out times it takes for the logic to return
@@ -356,6 +356,10 @@ if __name__ == '__main__':
         for x in agent.simulation.no_tasks_completed:
             agent.log.write_log_file(results_filename, str(x) + ' ')
         for x in agent.simulation.no_tasks_depend_completed:
+            agent.log.write_log_file(results_filename, str(x) + ' ')
+        for x in agent.simulation.no_self_tasks_completed:
+            agent.log.write_log_file(results_filename, str(x) + ' ')
+        for x in agent.simulation.no_self_tasks_completed:
             agent.log.write_log_file(results_filename, str(x) + ' ')
 
         agent.log.write_log_file(results_filename, '\n')

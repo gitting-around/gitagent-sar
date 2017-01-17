@@ -47,6 +47,8 @@ class Simulation0:
         self.no_tasks_depend_attempted = [0, 0, 0]
         self.no_tasks_depend_completed = [0, 0, 0]
 
+        self.no_self_tasks_attempted = [0, 0, 0]
+        self.no_self_tasks_completed = [0, 0, 0]
         # Contains the time consumed by the fuzzy algorithm on each run
         self.fuzzy_time = []
 
