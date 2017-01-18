@@ -14,7 +14,7 @@ class Knowledge0:
 
         # use this variable to count the instances in which an agent asks for help the same agent who asked it for help in the first place
         self.count_posReq = 0
-        self.COUNT_noones = 0
+        self.COUNT_noones = [0,0,0]
         self.count_loops = 0
 
         self.steps_b4_equilibrium = 100

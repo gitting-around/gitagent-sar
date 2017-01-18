@@ -30,7 +30,7 @@ class Core:
         # Keep track of which factor has influenced the decision to give help
         # health abilities resources self-esteem task_urgency task_importance
         self.factor_track = [0, 0, 0, 0, 0, 0]
-        self.factor_track_give = [0, 0, 0, 0, 0, 0]
+        self.factor_track_give = [0, 0, 0, 0, 0, 0, 0]
         # start always in idle
         self.state = 0
 
@@ -79,16 +79,19 @@ class Core:
                 else:
                     if self_esteem < self.HIGH:
                         if task_urgency > self.LOW or task_importance > self.LOW:
-                            theta = max([task_urgency, task_importance])
+                            #theta = max([task_urgency, task_importance])
+                            theta = (task_importance + task_importance)/float(2)
                             self.factor_track[3] += 1
                         else:
                             if culture > self.LOW and best_candidate > self.LOW:
-                                theta = max([culture, best_candidate])
+                                #theta = max([culture, best_candidate])
+                                theta = (culture + best_candidate)/float(2)
                                 self.factor_track[4] += 1
                     else:
                         if culture > self.HIGH and best_candidate > self.HIGH:
                             if task_urgency > self.LOW or task_importance > self.LOW:
-                                theta = max([task_urgency, task_importance])
+                                #theta = max([task_urgency, task_importance])
+                                theta = (task_importance + task_urgency)/float(2)
                                 self.factor_track[5] += 1
 
         if random.random() <= theta:
@@ -118,14 +121,18 @@ class Core:
                         self.factor_track_give[3] += 1
                         gamma = -1.0
                     else:
-                        if perceived_help < self.LOW:
+                        if self_esteem < self.LOW:
                             self.factor_track_give[4] += 1
-                            gamma = perceived_help
+                            gamma = self_esteem
                         else:
-                            if self.state == 2:
-                                if task_urgency > self.LOW or task_importance > self.LOW:
-                                    self.factor_track_give[5] += 1
-                                    gamma = min([task_urgency, task_importance])
+                            if perceived_help < self.LOW:
+                                self.factor_track_give[5] += 1
+                                gamma = perceived_help
+                            else:
+                                if self.state == 2:
+                                    if task_urgency > self.LOW or task_importance > self.LOW:
+                                        self.factor_track_give[6] += 1
+                                        gamma = (task_urgency + task_importance)/float(2)
 
         if random.random() <= gamma:
             return True, gamma

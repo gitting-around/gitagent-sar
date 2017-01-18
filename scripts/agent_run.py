@@ -357,9 +357,11 @@ if __name__ == '__main__':
             agent.log.write_log_file(results_filename, str(x) + ' ')
         for x in agent.simulation.no_tasks_depend_completed:
             agent.log.write_log_file(results_filename, str(x) + ' ')
-        for x in agent.simulation.no_self_tasks_completed:
+        for x in agent.simulation.no_self_tasks_attempted:
             agent.log.write_log_file(results_filename, str(x) + ' ')
         for x in agent.simulation.no_self_tasks_completed:
+            agent.log.write_log_file(results_filename, str(x) + ' ')
+        for x in agent.myknowledge.COUNT_noones:
             agent.log.write_log_file(results_filename, str(x) + ' ')
 
         agent.log.write_log_file(results_filename, '\n')

@@ -161,7 +161,7 @@ class Simulation0:
             dependency_abil = 1.0
 
         if optional < len(service['resources']):
-            dependency_res = 0.6
+            dependency_res = optional/float(len(service['resources']))
         else:
             dependency_res = 1.0
 
