@@ -866,8 +866,7 @@ class Agent0:
 
                     # TIME THE SERVER'S RESPONSE!!
                     exec_time = time.time() - start
-                    self.simulation.exec_times[self.myknowledge.difficulty] = self.simulation.exec_times[
-                                                                                  self.myknowledge.difficulty] + exec_time
+
                     msg = '[run_step ' + str(self.simulation.execute) + '] exec_time: ' + str(exec_time) + '\n'
                     rospy.loginfo(msg)
                     self.myknowledge.service_id = -1
@@ -879,6 +878,8 @@ class Agent0:
                     if result == 1:
                         msg = '[run_step ' + str(self.simulation.execute) + '] depend SUCCESS\n'
                         rospy.loginfo(msg)
+                        self.simulation.exec_times[self.myknowledge.difficulty] = self.simulation.exec_times[
+                                                                                  self.myknowledge.difficulty] + exec_time
                         self.simulation.exec_times_depend.append(exec_time)
                         self.simulation.no_tasks_depend_completed[self.myknowledge.difficulty] += 1
                         self.simulation.no_tasks_completed[self.myknowledge.difficulty] += 1

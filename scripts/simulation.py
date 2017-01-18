@@ -29,7 +29,7 @@ class Simulation0:
         self.additional_delay = [5, 10, 20]
 
         # Time taken by tasks of different difficulties, easy, medium, hard
-        self.delay = [5, 15, 25]
+        self.delay = [1, 7, 14]
 
         self.dep_prob = 0.2
 
