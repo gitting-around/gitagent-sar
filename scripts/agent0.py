@@ -94,7 +94,7 @@ class Agent0:
         while not rospy.is_shutdown():
             # Simulation stopping criterion
             # if sum(self.simulation.generated_tasks) + 1 > self.simulation.STOP:
-            if (time.time() - self.start) > 500:
+            if (time.time() - self.start) > 600:
                 msg = '[fsm %d] Simulation finished. Number of generated tasks: %d\n' % (
                 self.simulation.fsm, sum(self.simulation.no_self_tasks_attempted))
                 # self.log.write_log_file(self.log.stdout_log, msg)
@@ -682,6 +682,7 @@ class Agent0:
                             rospy.loginfo(msg)
                     else:
                         msg = '[execute ' + str(self.simulation.execute) + '] Working for myself\n'
+                        self.simulation.no_self_tasks_attempted[self.myknowledge.difficulty] += 1
                         rospy.loginfo(msg)
                         self.execute_step_v4()
                 else:
@@ -865,7 +866,6 @@ class Agent0:
 
                     # TIME THE SERVER'S RESPONSE!!
                     exec_time = time.time() - start
-                    self.simulation.exec_times_depend.append(exec_time)
                     self.simulation.exec_times[self.myknowledge.difficulty] = self.simulation.exec_times[
                                                                                   self.myknowledge.difficulty] + exec_time
                     msg = '[run_step ' + str(self.simulation.execute) + '] exec_time: ' + str(exec_time) + '\n'
@@ -879,7 +879,9 @@ class Agent0:
                     if result == 1:
                         msg = '[run_step ' + str(self.simulation.execute) + '] depend SUCCESS\n'
                         rospy.loginfo(msg)
+                        self.simulation.exec_times_depend.append(exec_time)
                         self.simulation.no_tasks_depend_completed[self.myknowledge.difficulty] += 1
+                        self.simulation.no_tasks_completed[self.myknowledge.difficulty] += 1
                 else:
                     # Count noones serves to identify those case in which the agent does not know anyone that could be of help
                     self.myknowledge.COUNT_noones[self.myknowledge.difficulty] += 1
@@ -934,7 +936,7 @@ class Agent0:
                     if result == 1:
                         self.keep_track_threads[index]['task_status'] = 1
                     else:
-                        self.keep_track_threads[index]['task_status'] = 0
+                        self.keep_track_threads[index]['task_status'] = 2
 
                     msg = '[run_step ' + str(self.simulation.execute) + '] Threads %s\n' % str(self.keep_track_threads)
                     rospy.loginfo(msg)
@@ -945,7 +947,8 @@ class Agent0:
                         self.keep_track_threads)
                     rospy.loginfo(msg)
             else:
-                self.simulation.no_self_tasks_completed[self.myknowledge.difficulty] += 1
+                if result == 1:
+                    self.simulation.no_self_tasks_completed[self.myknowledge.difficulty] += 1
 
             if (sum(self.simulation.no_tasks_attempted) - sum(self.simulation.no_tasks_depend_attempted)) == 0:
                 self.mycore.self_esteem = 0.0
@@ -1060,8 +1063,6 @@ class Agent0:
                 etime = [130, 1300, 2300]
 
                 difficulty = random.randint(0,2)
-
-                self.simulation.no_self_tasks_attempted[difficulty] += 1
 
                 msg = '[generate goal ' + str(self.simulation.idle) + ' BEGIN] ' + str(
                     self.simulation.no_self_tasks_attempted) + ' difficulty: ' + str(difficulty) + '\n'

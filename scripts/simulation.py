@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # Parent class of agent, implementing the core parts of the theoretical concept
 # Framework v1.0
-import sys
 import random
-import math
 import time
-import pdb
+from numpy import *
+
+import matplotlib.pyplot as plt;
+
+plt.rcdefaults()
 
 
 class Simulation0:
@@ -24,16 +26,17 @@ class Simulation0:
         self.hell = 0
 
         ##Default value for delay when request is issued
-        self.additional_delay = [0.05, 0.1, 0.2]
+        self.additional_delay = [5, 10, 20]
 
         # Time taken by tasks of different difficulties, easy, medium, hard
-        self.delay = [0.1, 0.5, 1.0]
+        self.delay = [5, 15, 25]
 
         self.dep_prob = 0.2
 
         ##Values to be measured
         # First element contains requests produced by easy tasks, second by medium, third by difficult tasks
         self.requests = [0, 0, 0]
+        self.requests_received = [0, 0, 0]
 
         # Plans received: easy, medium, difficult
         self.no_plans = [0, 0, 0]
@@ -99,6 +102,9 @@ class Simulation0:
     # self.stdout_log = 'RESULT/pop_size.'+str(popSize) +'/prova.'+str(provaNr)+'/stdout_' + str(ID) + '_' + str(delta) +'_'+ str(depend_nr)
     # self.stdout_callback = 'RESULT/pop_size.'+str(popSize) +'/prova.'+str(provaNr)+'/stdout_callback' + str(ID) + '_' + str(delta) +'_'+ str(depend_nr)
     # self.stdout_handle = 'RESULT/pop_size.'+str(popSize) +'/prova.'+str(provaNr)+'/stdout_handle' + str(ID) + '_' + str(delta) +'_'+ str(depend_nr)
+
+    def create_bar_plot(self):
+        pass
 
     def detect_difficulty(self, service):
         if len(service['abilities']) == 1:
