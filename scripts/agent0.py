@@ -1071,7 +1071,7 @@ class Agent0:
 
                 senderId = self.mycore.ID
                 planId = -random.randint(1, 100)
-                tID = random.randint(1, 3)
+                tID = random.randint(1, 9)
                 iterations = it[difficulty]
                 energy = en[difficulty]
                 reward = re[difficulty]
