@@ -94,7 +94,7 @@ class Agent0:
         while not rospy.is_shutdown():
             # Simulation stopping criterion
             # if sum(self.simulation.generated_tasks) + 1 > self.simulation.STOP:
-            if (time.time() - self.start) > 100:
+            if (time.time() - self.start) > 500:
                 msg = '[fsm %d] Simulation finished. Number of generated tasks: %d\n' % (
                 self.simulation.fsm, sum(self.simulation.no_self_tasks_attempted))
                 # self.log.write_log_file(self.log.stdout_log, msg)

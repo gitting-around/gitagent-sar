@@ -2,14 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b995885d-766a-4760-8666-0a12a93d8380" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launch/agent_0.5_0.7_10.launch" afterPath="$PROJECT_DIR$/Launch/agent_0.5_0.7_10.launch" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/agent0.py" afterPath="$PROJECT_DIR$/scripts/agent0.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/agent_run.py" afterPath="$PROJECT_DIR$/scripts/agent_run.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/core_aboutme.py" afterPath="$PROJECT_DIR$/scripts/core_aboutme.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/knowledge.py" afterPath="$PROJECT_DIR$/scripts/knowledge.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/simulation.py" afterPath="$PROJECT_DIR$/scripts/simulation.py" />
     </list>
     <ignored path="gitagent.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -32,12 +25,11 @@
       <file leaf-file-name="agent0.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/agent0.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="467" column="26" selection-start-line="467" selection-start-column="26" selection-end-line="467" selection-end-column="26" />
+            <state relative-caret-position="389">
+              <caret line="96" column="45" selection-start-line="96" selection-start-column="45" selection-end-line="96" selection-end-column="45" />
               <folding>
                 <element signature="e#627#3037#0" expanded="false" />
                 <element signature="e#3169#3455#0" expanded="false" />
-                <element signature="e#3484#6034#0" expanded="false" />
                 <element signature="e#6068#6689#0" expanded="false" />
                 <element signature="e#6734#7049#0" expanded="false" />
                 <element signature="e#7081#7233#0" expanded="false" />
@@ -56,6 +48,7 @@
                 <element signature="e#30793#34311#0" expanded="false" />
                 <element signature="e#34352#36042#0" expanded="false" />
                 <element signature="e#36138#39738#0" expanded="false" />
+                <element signature="e#39810#50582#0" expanded="false" />
                 <element signature="e#50618#50796#0" expanded="false" />
                 <element signature="e#50826#51340#0" expanded="false" />
                 <element signature="e#51473#51477#0" expanded="false" />
@@ -890,12 +883,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/agent0.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="467" column="26" selection-start-line="467" selection-start-column="26" selection-end-line="467" selection-end-column="26" />
+        <state relative-caret-position="389">
+          <caret line="96" column="45" selection-start-line="96" selection-start-column="45" selection-end-line="96" selection-end-column="45" />
           <folding>
             <element signature="e#627#3037#0" expanded="false" />
             <element signature="e#3169#3455#0" expanded="false" />
-            <element signature="e#3484#6034#0" expanded="false" />
             <element signature="e#6068#6689#0" expanded="false" />
             <element signature="e#6734#7049#0" expanded="false" />
             <element signature="e#7081#7233#0" expanded="false" />
@@ -914,6 +906,7 @@
             <element signature="e#30793#34311#0" expanded="false" />
             <element signature="e#34352#36042#0" expanded="false" />
             <element signature="e#36138#39738#0" expanded="false" />
+            <element signature="e#39810#50582#0" expanded="false" />
             <element signature="e#50618#50796#0" expanded="false" />
             <element signature="e#50826#51340#0" expanded="false" />
             <element signature="e#51473#51477#0" expanded="false" />
