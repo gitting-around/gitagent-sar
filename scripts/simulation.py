@@ -29,14 +29,17 @@ class Simulation0:
         self.additional_delay = [5, 10, 20]
 
         # Time taken by tasks of different difficulties, easy, medium, hard
-        self.delay = [1, 7, 14]
+        self.delay = [10, 15, 20]
 
         self.dep_prob = 0.2
 
         ##Values to be measured
         # First element contains requests produced by easy tasks, second by medium, third by difficult tasks
         self.requests = [0, 0, 0]
+        self.requests_success = [0, 0, 0]
         self.requests_received = [0, 0, 0]
+        self.requests_rec_accept = [0, 0, 0]
+        self.requests_rec_success = [0, 0, 0]
 
         # Plans received: easy, medium, difficult
         self.no_plans = [0, 0, 0]

@@ -64,6 +64,49 @@ class Core:
                   best_candidate):
         self.ask = False
         theta = -1.0
+        # 4400 is the starting value for energy
+        health /= float(4800)
+
+        if health < self.LOW:
+            self.factor_track[0] += 1
+            theta = 1.0
+        else:
+            if abilities < self.LOW:
+                theta = 1.0
+                self.factor_track[1] += 1
+            else:
+                if resources < self.LOW:
+                    theta = 1.0
+                    self.factor_track[2] += 1
+                else:
+                    if self_esteem < self.HIGH:
+                        if task_urgency > self.LOW or task_importance > self.LOW:
+                            #theta = max([task_urgency, task_importance])
+                            theta = (task_importance + task_importance)/float(2)
+                            self.factor_track[3] += 1
+                        else:
+                            if culture > self.LOW and best_candidate > self.LOW:
+                                #theta = max([culture, best_candidate])
+                                theta = (culture + best_candidate)/float(2)
+                                self.factor_track[4] += 1
+                    else:
+                        if culture > self.HIGH and best_candidate > self.HIGH:
+                            if task_urgency > self.LOW or task_importance > self.LOW:
+                                #theta = max([task_urgency, task_importance])
+                                theta = (task_importance + task_urgency)/float(2)
+                                self.factor_track[5] += 1
+
+        if random.random() <= theta:
+            return True, theta
+        else:
+            return False, theta
+
+    def ask_5help(self, health, abilities, resources, self_esteem, task_urgency, task_importance, culture,
+                  best_candidate):
+        self.ask = False
+        theta = -1.0
+        # 4400 is the starting value for energy
+        health /= float(4800)
 
         if health < self.LOW:
             self.factor_track[0] += 1
@@ -200,7 +243,7 @@ class Core:
         return success_chance, agent_id, agent_idx
 
     def battery_change(self, change):
-        self.battery = self.battery + change
+        self.battery = self.battery - change
 
     # It might be possible to introduce random issues here, i.e. aggravate the change of 'health'
     def sensory_motor_state_mockup(self):

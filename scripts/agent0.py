@@ -531,8 +531,12 @@ class Agent0:
             # self.log.write_log_file(self.log.stdout_log, msg)
             rospy.loginfo(msg)
 
+            self.simulation.requests_received[len(plan[0]['abilities']) - 1] += 1
+
             if accept:
                 self.myknowledge.attempted_jobs += 1
+
+                self.simulation.requests_rec_accept[len(plan[0]['abilities']) - 1] += 1
 
                 msg = '[adapt ' + str(self.simulation.interact) + '] Adopted plan: ' + str(plan) + '\n'
                 # self.log.write_log_file(self.log.stdout_log, msg)
@@ -877,6 +881,8 @@ class Agent0:
 
                     if result == 1:
                         msg = '[run_step ' + str(self.simulation.execute) + '] depend SUCCESS\n'
+                        self.simulation.requests_success[self.myknowledge.difficulty] += 1
+
                         rospy.loginfo(msg)
                         self.simulation.exec_times[self.myknowledge.difficulty] = self.simulation.exec_times[
                                                                                   self.myknowledge.difficulty] + exec_time
@@ -925,6 +931,8 @@ class Agent0:
 
             # pdb.set_trace()
             if self.amIHelping(int(self.myknowledge.service['senderID'])):
+                if result == 1:
+                    self.simulation.requests_rec_success[self.myknowledge.difficulty] += 1
                 # You need to count loops
                 msg = '[run_step ' + str(self.simulation.execute) + '] service %s, threads: %s\n' % (
                 self.myknowledge.service, str(self.keep_track_threads))
@@ -968,7 +976,7 @@ class Agent0:
                 self.simulation.theta_deps.append(1)
             else:
                 self.simulation.theta_deps.append(0)
-            self.simulation.theta_health.append(sum([self.mycore.sensmot, self.mycore.battery]))
+            self.simulation.theta_health.append(sum([self.mycore.sensmot, self.mycore.battery])/float(4800))
             self.simulation.theta_bool.append(depend)
             # Inc to reach stop of simulation
             if self.myknowledge.service['senderID'] == self.mycore.ID:
@@ -1055,7 +1063,7 @@ class Agent0:
     def generate_goal_v2(self):
         try:
             self.begin += 1
-            if random.random() > 0.7:
+            if random.random() < 0.6:
                 it = [100, 400, 700]
                 en = [1, 10, 30]
                 re = [50, 150, 350]

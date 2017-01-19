@@ -363,6 +363,16 @@ if __name__ == '__main__':
             agent.log.write_log_file(results_filename, str(x) + ' ')
         for x in agent.myknowledge.COUNT_noones:
             agent.log.write_log_file(results_filename, str(x) + ' ')
+        for x in agent.simulation.requests:
+            agent.log.write_log_file(results_filename, str(x) + ' ')
+        for x in agent.simulation.requests_success:
+            agent.log.write_log_file(results_filename, str(x) + ' ')
+        for x in agent.simulation.requests_received:
+            agent.log.write_log_file(results_filename, str(x) + ' ')
+        for x in agent.simulation.requests_rec_accept:
+            agent.log.write_log_file(results_filename, str(x) + ' ')
+        for x in agent.simulation.requests_rec_success:
+            agent.log.write_log_file(results_filename, str(x) + ' ')
 
         agent.log.write_log_file(results_filename, '\n')
 
