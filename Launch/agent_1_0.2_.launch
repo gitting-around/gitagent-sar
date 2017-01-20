@@ -1,8 +1,8 @@
 <launch>
 	<arg name="id"/>
-	<node pkg="gitagent" type="agent_run.py" name="brain_node" output="log" launch-prefix="xterm -e">
+	<node pkg="gitagent" type="agent_run.py" name="brain_node" output="log" >
 		<param name="myID" value="$(arg id)" />
-		<param name="myTheta" value="0.5" />
+		<param name="myTheta" value="1.0" />
 		<param name="myDelta" value="0.2" />
 		<param name="myDepend" value="10" />
 		<param name="provaNr" value="2_1" />

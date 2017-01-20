@@ -50,7 +50,7 @@ class Core:
         # considered that the agent works properly
         self.battery_min = 300
         self.sensmot_min = 300
-        self.self_esteem = 1.0
+        self.self_esteem = 0.5
 
         # This could be an array, in which each element represents health over some dimension
         self.check_health()
@@ -101,8 +101,30 @@ class Core:
         else:
             return False, theta
 
-    def ask_5help(self, health, abilities, resources, self_esteem, task_urgency, task_importance, culture,
-                  best_candidate):
+    def ask_5help(self, health, abilities, resources):
+        self.ask = False
+        theta = -1.0
+        # 4400 is the starting value for energy
+        health /= float(4800)
+
+        if health < self.LOW:
+            self.factor_track[0] += 1
+            theta = 1.0
+        else:
+            if abilities < self.LOW:
+                theta = 1.0
+                self.factor_track[1] += 1
+            else:
+                if resources < self.LOW:
+                    theta = 1.0
+                    self.factor_track[2] += 1
+
+        if random.random() <= theta:
+            return True, theta
+        else:
+            return False, theta
+
+    def ask_6help(self, health, abilities, resources, self_esteem, t_urgency, t_importance, culture, best_candidate):
         self.ask = False
         theta = -1.0
         # 4400 is the starting value for energy
@@ -120,22 +142,7 @@ class Core:
                     theta = 1.0
                     self.factor_track[2] += 1
                 else:
-                    if self_esteem < self.HIGH:
-                        if task_urgency > self.LOW or task_importance > self.LOW:
-                            #theta = max([task_urgency, task_importance])
-                            theta = (task_importance + task_importance)/float(2)
-                            self.factor_track[3] += 1
-                        else:
-                            if culture > self.LOW and best_candidate > self.LOW:
-                                #theta = max([culture, best_candidate])
-                                theta = (culture + best_candidate)/float(2)
-                                self.factor_track[4] += 1
-                    else:
-                        if culture > self.HIGH and best_candidate > self.HIGH:
-                            if task_urgency > self.LOW or task_importance > self.LOW:
-                                #theta = max([task_urgency, task_importance])
-                                theta = (task_importance + task_urgency)/float(2)
-                                self.factor_track[5] += 1
+                    theta = np.mean([self_esteem, t_importance, t_urgency, culture, best_candidate])
 
         if random.random() <= theta:
             return True, theta

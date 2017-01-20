@@ -325,28 +325,13 @@ if __name__ == '__main__':
         agent.log.write_log_file(agent.log.stdout_log, 'in finally')
         # pdb.set_trace()
         results_filename = '/home/mfi01/catkin_ws/results/test/pop_size.' + str(popSize) + '/prova.' + str(
-            provaNr) + '/results_' + str(agent_id) + '_' + str(delta) + '_' + str(depends)
-
-        # Write out times it takes for the logic to return
-        for x in agent.simulation.fuzzy_time:
-            agent.log.write_log_file(results_filename, str(x) + ' ')
-
-        agent.log.write_log_file(results_filename, '\n')
-
-        # reqE      reqM        reqH        timeE       timeM       timeH
-
-        agent.log.write_log_file(results_filename, str(agent.simulation.requests[0]) + '         ' + str(agent.simulation.requests[1])
-                                 + '            ' + str(agent.simulation.requests[2]) + '       ' + str(agent.simulation.exec_times[0])
-                                 + '        ' + str(agent.simulation.exec_times[1]) + '         ' + str(agent.simulation.exec_times[2]) + '\n'
-                                 + str(agent.simulation.required_missing_noreq) + '\n')
+            provaNr) + '/results_' + str(agent_id) + '_' + str(delta) + '_' + str(theta)
 
         # Factor track
         for x in agent.mycore.factor_track:
             agent.log.write_log_file(results_filename, str(x) + ' ')
 
         agent.log.write_log_file(results_filename, '\n')
-        # Jobs attempted
-        agent.log.write_log_file(results_filename, '%d\n' % agent.myknowledge.attempted_jobs)
 
         # TA  TDA TC  TDC
         for x in agent.simulation.no_tasks_attempted:
@@ -424,7 +409,7 @@ if __name__ == '__main__':
                 agent.log.write_log_file(results_filename, str(0) + ' ')
 
         agent.log.write_log_file(results_filename, '\n')
-        #pdb.set_trace()
+        # pdb.set_trace()
         # Gamma
         for x in agent.simulation.gamma:
             agent.log.write_log_file(results_filename, str(x) + ' ')
@@ -435,54 +420,12 @@ if __name__ == '__main__':
             agent.log.write_log_file(results_filename, str(x) + ' ')
 
         agent.log.write_log_file(results_filename, '\n')
-        # Task urgency
-        for x in agent.simulation.gamma_tu:
-            agent.log.write_log_file(results_filename, str(x) + ' ')
-
-        agent.log.write_log_file(results_filename, '\n')
-        # Task importance
-        for x in agent.simulation.gamma_ti:
-            agent.log.write_log_file(results_filename, str(x) + ' ')
-
-        agent.log.write_log_file(results_filename, '\n')
-        # Culture
-        for x in agent.simulation.gamma_culture:
-            agent.log.write_log_file(results_filename, str(x) + ' ')
-
-        agent.log.write_log_file(results_filename, '\n')
-        # Candidate
-        for x in agent.simulation.gamma_candidate:
-            agent.log.write_log_file(results_filename, str(x) + ' ')
-
-        agent.log.write_log_file(results_filename, '\n')
-        # Dependencies (required)
-        for x in agent.simulation.gamma_deps:
-            agent.log.write_log_file(results_filename, str(x) + ' ')
-
-        agent.log.write_log_file(results_filename, '\n')
-        # Health
-        for x in agent.simulation.gamma_health:
-            agent.log.write_log_file(results_filename, str(x) + ' ')
-
-        agent.log.write_log_file(results_filename, '\n')
         # Gamma_bool
         for x in agent.simulation.gamma_bool:
             if x:
                 agent.log.write_log_file(results_filename, str(1) + ' ')
             else:
                 agent.log.write_log_file(results_filename, str(0) + ' ')
-
-        agent.log.write_log_file(results_filename, '\n')
-
-        # Gamma request goodness
-        for x in agent.simulation.gamma_req_goodness:
-            agent.log.write_log_file(results_filename, str(x) + ' ')
-
-        agent.log.write_log_file(results_filename, '\n')
-        #pdb.set_trace()
-        # exec_times
-        for x in agent.simulation.exec_times_depend:
-            agent.log.write_log_file(results_filename, str(x) + ' ')
 
         sys.stderr = orig_stderr
         f.close()

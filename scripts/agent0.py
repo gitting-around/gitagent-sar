@@ -57,6 +57,8 @@ class Agent0:
 
         ## Contains info specific to the internal state of the agent such as: state, health attributes etc.
         self.mycore = core_aboutme.Core(willingness, ID, conf['battery'], sensors, actuators, motors)
+        self.mycore.LOW = willingness[1]
+
         self.log.write_log_file(self.log.stdout_log, 'init gitagent ' + str(self.mycore.sensmot) + '\n')
         ## Contains mixed info ############################################################################
         self.myknowledge = knowledge.Knowledge0()
@@ -73,7 +75,7 @@ class Agent0:
         for x in range(1, 10):
             self.publish2sensormotor(self.services)
 
-        rospy.loginfo('Agent with id: %d, delta: %f, theta: %f', ID, willingness[1], willingness[0])
+        rospy.loginfo('Agent with id: %d, delta: %f, theta: %f, thetaLOW: %f', ID, willingness[1], willingness[0], self.mycore.LOW)
 
         self.reason = 'Deafult: None'
 
@@ -94,7 +96,7 @@ class Agent0:
         while not rospy.is_shutdown():
             # Simulation stopping criterion
             # if sum(self.simulation.generated_tasks) + 1 > self.simulation.STOP:
-            if (time.time() - self.start) > 1800:
+            if (time.time() - self.start) > 100:
                 msg = '[fsm %d] Simulation finished. Number of generated tasks: %d\n' % (
                 self.simulation.fsm, sum(self.simulation.no_self_tasks_attempted))
                 # self.log.write_log_file(self.log.stdout_log, msg)
@@ -141,6 +143,9 @@ class Agent0:
 
     def fsm_step(self):
         self.simulation.fsm = self.simulation.inc_iterationstamps(self.simulation.fsm)
+
+        msg = '[fsm_INFO] begin: %d, end: %d\n' % (self.begin, self.end)
+        rospy.loginfo(msg)
 
         if self.mycore.state == 0:
             self.idle()
@@ -199,8 +204,12 @@ class Agent0:
     def call_blocking_action_server(self, goal, agent_id, agent_idx):
         # print 'I am in blocking action server'
         # rospy.loginfo('Asking agent with id: %d, for help', agent_id)
+        msg = '[fsm ' + str(self.simulation.fsm) + '- blocking call - BEGIN]  ' + str(
+            rospy.get_name()) + ' -> I am requesting a favor\n'
+        # self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
+        self.begin += 1
         try:
-            self.begin += 1
             client = actionlib.SimpleActionClient(agent_id, doMeFavorAction)
             if not client.wait_for_server(timeout=rospy.Duration(60)):
                 msg = '[fsm ' + str(self.simulation.fsm) + '- blocking call - BEGIN]  ' + str(
@@ -208,11 +217,6 @@ class Agent0:
                 # self.log.write_log_file(self.log.stdout_log, msg)
                 rospy.loginfo(msg)
                 return -1
-
-            msg = '[fsm ' + str(self.simulation.fsm) + '- blocking call - BEGIN]  ' + str(
-                rospy.get_name()) + ' -> I am requesting a favor\n'
-            # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
 
             goal2str = self.mycore.goal2string(goal)
             # self.log.write_log_file(self.log.stdout_log, '[fsm ' + str(self.simulation.fsm) + ']  ' + goal2str + '\n')
@@ -305,21 +309,24 @@ class Agent0:
             msg += '[fsm ' + str(self.simulation.fsm) + '- blocking_call] Result ' + str(result) + '\n'
             # self.log.write_log_file(self.log.stdout_log, msg)
             rospy.loginfo(msg)
-            self.end += 1
 
             return result
 
         except:
-            rospy.loginfo("Unexpected error: " + str(sys.exc_info()[0]))
+            rospy.loginfo("Unexpected error: end]" + str(sys.exc_info()[0]))
             pass
+
+        self.end += 1
 
     def execute_git(self, goalhandle):
         # print 'I got a request'
         # Add tag to identify current thread
         # Task status: 12 ~ REJECT, 0 ~ PENDING, 1 ~ SUCCESS, 2 ~ FAIL 10 ~ no thread active
         # index = -1
+        msg = '[execute_git - BEGIN]\n'
+        rospy.loginfo(msg)
+        self.begin += 1
         try:
-            self.begin += 1
             feedback = doMeFavorFeedback()
             result = doMeFavorResult()
 
@@ -328,7 +335,7 @@ class Agent0:
             # self.log.write_log_file(self.log.stdout_log, '[execute_git] getting goal: %s\n' % goal)
             goal = self.mycore.string2goalPlan(goalh.content, self.log)
 
-            msg = '[execute_git %d- BEGIN] Goal: %s\n' % (int(goal[0]['senderID']), str(goal))
+            msg = '[execute_git %d] Goal: %s\n' % (int(goal[0]['senderID']), str(goal))
             self.log.write_log_file(self.log.stdout_log, msg)
             rospy.loginfo(msg)
 
@@ -407,11 +414,14 @@ class Agent0:
             int(goal[0]['senderID']), str(self.keep_track_threads), str(result))
             self.log.write_log_file(self.log.stdout_log, msg)
             rospy.loginfo(msg)
-            self.end += 1
+
 
         except:
             rospy.loginfo("Unexpected error: " + str(sys.exc_info()[0]))
             pass
+        msg = '[execute_git %d - END]\n' % int(goal[0]['senderID'])
+        rospy.loginfo(msg)
+        self.end += 1
 
     def execute(self, data):
         # Do lots of awesome groundbreaking robot stuff here
@@ -466,11 +476,12 @@ class Agent0:
             rospy.loginfo(msg)
 
     def eval_temp_2(self):
+
+        self.begin += 1
+        msg = '[adapt ' + str(self.simulation.interact) + ' BEGIN]\n'
+        # self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
         try:
-            self.begin += 1
-            msg = '[adapt ' + str(self.simulation.interact) + ' BEGIN]\n'
-            # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
             ## Take plan-request out of queue, and put the tasks into the queue for tasks the agent has committed to
             # careful with the queues below, there is no handling if it is empty!!
             # pdb.set_trace()
@@ -505,7 +516,7 @@ class Agent0:
             ## Here put the new fuzzy evaluation function
             # accept = True
             # pdb.set_trace()
-            dependencies_abil, dependencies_res, req_missing, task_importance, task_urgency, culture_notUSED = self.simulation.sim_dependencies(
+            dependencies_abil, dependencies_res, req_missing, task_importance, task_urgency, culture_notUSED = self.simulation.sim_dependencies_v2(
                 plan[0])
             req_goodness = random.random()
             culture = self.eval_culture()
@@ -581,28 +592,19 @@ class Agent0:
                 self.mycore.state = self.myknowledge.old_state
                 self.myknowledge.lock.release()
 
-                # Record
-                self.simulation.gamma_esteem.append(self.mycore.self_esteem)
-                self.simulation.gamma_tu.append(task_urgency)
-                self.simulation.gamma_ti.append(task_importance)
-                self.simulation.gamma_culture.append(culture)
-                self.simulation.gamma_candidate.append(success)
-                self.simulation.gamma.append(gamma)
-                if req_missing:
-                    self.simulation.gamma_deps.append(1)
-                else:
-                    self.simulation.gamma_deps.append(0)
-                self.simulation.gamma_health.append(sum([self.mycore.sensmot, self.mycore.battery]))
-                self.simulation.gamma_bool.append(accept)
-                self.simulation.gamma_req_goodness.append(req_goodness)
-                msg = '[adapt' + str(self.simulation.interact) + ' END] \n'
-                # self.log.write_log_file(self.log.stdout_log, msg)
-                rospy.loginfo(msg)
-                self.end += 1
+            # Record
+            self.simulation.gamma_esteem.append(self.mycore.self_esteem)
+            self.simulation.gamma.append(gamma)
+            self.simulation.gamma_bool.append(accept)
 
         except:
             rospy.loginfo("Unexpected error: " + str(sys.exc_info()[0]))
             pass
+
+        msg = '[adapt' + str(self.simulation.interact) + ' END] \n'
+        # self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
+        self.end += 1
 
     def amIHelping(self, sender):
         if not sender == self.mycore.ID:
@@ -613,7 +615,7 @@ class Agent0:
     def idle(self):
         # print 'im in idle'
         self.simulation.idle = self.simulation.inc_iterationstamps(self.simulation.idle)
-        msg = '[fsm ' + str(self.simulation.idle) + '] idle\n'
+        msg = '[idle ' + str(self.simulation.idle) + '] idle\n'
         # self.log.write_log_file(self.log.stdout_log, msg)
         rospy.loginfo(msg)
         self.generate_goal_v2()
@@ -801,7 +803,7 @@ class Agent0:
             rospy.loginfo(msg)
             # print 'in execute_step'
             # pdb.set_trace()
-            dependencies_abil, dependencies_res, req_missing, task_importance, task_urgency, culture_notUSED = self.simulation.sim_dependencies(
+            dependencies_abil, dependencies_res, req_missing, task_importance, task_urgency, culture_notUSED = self.simulation.sim_dependencies_v2(
                 self.myknowledge.service)
             # print 'after dep'
             culture = self.eval_culture()
@@ -827,21 +829,32 @@ class Agent0:
             rospy.loginfo(msg)
 
             start_time = time.time()
+
+            if self.mycore.willingness[0] == 1.0:
+                msg = '[run_step ' + str(self.simulation.execute) + '] value of theta ' + str(self.mycore.willingness[0]) + '\n'
+                depend, theta = self.mycore.ask_5help(sum([self.mycore.sensmot, self.mycore.battery]), dependencies_abil,
+                                                  dependencies_res)
+            elif self.mycore.willingness[0] == 2.0:
+                msg = '[run_step ' + str(self.simulation.execute) + '] value of theta ' + str(self.mycore.willingness[0]) + '\n'
+                depend, theta = self.mycore.ask_6help(sum([self.mycore.sensmot, self.mycore.battery]), dependencies_abil,
+                                                  dependencies_res, self.mycore.self_esteem, task_urgency, task_importance,
+                                                  culture, success_chance)
+            else:
+                msg = '[run_step ' + str(self.simulation.execute) + '] should not happen, value of theta ' + str(self.mycore.willingness[0]) + '\n'
+
+            rospy.loginfo(msg)
+
+            '''
             depend, theta = self.mycore.ask_4help(sum([self.mycore.sensmot, self.mycore.battery]), dependencies_abil,
                                                   dependencies_res, self.mycore.self_esteem, task_urgency, task_importance,
                                                   culture, success_chance)
+                                                  '''
             # depend_fuzzy = self.mycore.willing2ask_fuzzy(
             #     [sum([self.mycore.sensmot, self.mycore.battery]), 0.7, dependencies, 0.5])
             self.simulation.fuzzy_time.append(time.time() - start_time)
 
             msg = '[run_step ' + str(self.simulation.execute) + '] ask for help: ' + str(depend) + '\n'
             rospy.loginfo(msg)
-
-            if req_missing and not depend:
-                self.simulation.required_missing_noreq += 1
-                msg = '[run_step ' + str(self.simulation.execute) + '] There should have been a request: ' + \
-                      str(self.simulation.required_missing_noreq / float(self.simulation.required_missing)) + '\n'
-                rospy.loginfo(msg)
 
             result = 0
 
@@ -914,19 +927,22 @@ class Agent0:
                     self.myknowledge.difficulty, self.simulation.delay[self.myknowledge.difficulty],
                     self.simulation.additional_delay[self.myknowledge.difficulty])
                 rospy.loginfo(msg)
-                result = 1
-
+                #pdb.set_trace()
                 time.sleep(exec_time)
                 self.myknowledge.service_id = -1
                 self.myknowledge.iteration = -1
 
-                self.myknowledge.completed_jobs += 1
-                # diminish by the energy required by the task
-                self.mycore.battery_change(int(self.myknowledge.service['energy']))
-                self.simulation.no_tasks_completed[self.myknowledge.difficulty] += 1
+                if random.random() < 0.8:
+                    result = 1
+                    self.myknowledge.completed_jobs += 1
+                    self.simulation.no_tasks_completed[self.myknowledge.difficulty] += 1
+                else:
+                    result = 2
 
+            # diminish by the energy required by the task
+            self.mycore.battery_change(int(self.myknowledge.service['energy']))
             # In case I am helping some other agent, trigger response here
-            msg = '[run_step ' + str(self.simulation.execute) + '] sender: %d\n' % int(self.myknowledge.service['senderID'])
+            msg = '[run_step ' + str(self.simulation.execute) + '] sender: %d, result: %d\n' % (int(self.myknowledge.service['senderID']), result)
             rospy.loginfo(msg)
 
             # pdb.set_trace()
@@ -972,18 +988,13 @@ class Agent0:
             self.simulation.theta_culture.append(culture)
             self.simulation.theta_candidate.append(success_chance)
             self.simulation.theta.append(theta)
-            if req_missing:
-                self.simulation.theta_deps.append(1)
-            else:
-                self.simulation.theta_deps.append(0)
+            self.simulation.theta_deps.append(dependencies_abil)
+            self.simulation.theta_deps.append(dependencies_res)
             self.simulation.theta_health.append(sum([self.mycore.sensmot, self.mycore.battery])/float(4800))
             self.simulation.theta_bool.append(depend)
             # Inc to reach stop of simulation
-            if self.myknowledge.service['senderID'] == self.mycore.ID:
-                self.simulation.stopINC += 1
-                print 'STOP INC: %d' % self.simulation.stopINC
 
-            msg = '[run_step ' + str(self.simulation.execute) + ' END] STOP INC: %d\n' % self.simulation.stopINC
+            msg = '[run_step ' + str(self.simulation.execute) + ' END] \n'
             rospy.loginfo(msg)
             self.end += 1
 
@@ -1154,7 +1165,10 @@ class Agent0:
         no_people = 0.0
         rospy.loginfo('eval: ' + str(self.myknowledge.known_people) + '\n')
         for x in self.myknowledge.known_people:
-            help += x[1]
+            if x[1] < 0:
+                help += 0
+            else:
+                help += x[1]
             no_people += 1
 
         if no_people == 0.0:

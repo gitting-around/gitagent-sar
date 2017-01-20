@@ -29,7 +29,7 @@ class Simulation0:
         self.additional_delay = [5, 10, 20]
 
         # Time taken by tasks of different difficulties, easy, medium, hard
-        self.delay = [10, 15, 20]
+        self.delay = [0.5, 2.5, 5]
 
         self.dep_prob = 0.2
 
@@ -178,6 +178,29 @@ class Simulation0:
         task_urgency = random.random()
         culture = random.random()
         best_candidate = random.random()
+
+        return dependency_abil, dependency_res, req_missing, task_importance, task_urgency, culture
+
+    def sim_dependencies_v2(self, service):
+        # Each ability and resource adds to the probability of a dependency being raised -- considering abilities as required, and resources as optional for the sake of current implementation simplicity
+        # Abilities are considered as required, whilst resources as optional -- this of course could be changed based on the
+        # needs
+        dependency_abil = 0
+        dependency_res = 0
+        for x in service['abilities']:
+            dependency_abil += random.random()
+
+        dependency_abil /= len(service['abilities'])
+
+        for x in service['resources']:
+            dependency_res += random.random()
+
+        dependency_res /= len(service['resources'])
+
+        task_importance = random.random()
+        task_urgency = random.random()
+        culture = random.random()
+        req_missing = False
 
         return dependency_abil, dependency_res, req_missing, task_importance, task_urgency, culture
 
