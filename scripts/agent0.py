@@ -96,7 +96,8 @@ class Agent0:
         while not rospy.is_shutdown():
             # Simulation stopping criterion
             # if sum(self.simulation.generated_tasks) + 1 > self.simulation.STOP:
-            if (time.time() - self.start) > 1800:
+            if (time.time() - self.start) > 300:
+                #pdb.set_trace()
                 msg = '[fsm %d] Simulation finished. Number of generated tasks: %d\n' % (
                 self.simulation.fsm, sum(self.simulation.no_self_tasks_attempted))
                 # self.log.write_log_file(self.log.stdout_log, msg)
@@ -132,7 +133,7 @@ class Agent0:
             self.fsm_step()
 
         msg = '[fsm %d] Rospy shutdown. Number of generated tasks: %d\n' % (
-        self.simulation.fsm, sum(self.simulation.generated_tasks))
+        self.simulation.fsm, sum(self.simulation.no_self_tasks_attempted))
         # self.log.write_log_file(self.log.stdout_log, msg)
         rospy.loginfo(msg)
         # Send kill signal to msgPUnit
@@ -310,13 +311,14 @@ class Agent0:
             # self.log.write_log_file(self.log.stdout_log, msg)
             rospy.loginfo(msg)
 
+            self.simulation.requests[self.myknowledge.difficulty] = self.simulation.requests[self.myknowledge.difficulty] + 1
+            self.end += 1
             return result
 
         except:
             rospy.loginfo("Unexpected error: end]" + str(sys.exc_info()[0]))
             pass
 
-        self.end += 1
 
     def execute_git(self, goalhandle):
         # print 'I got a request'
@@ -334,6 +336,8 @@ class Agent0:
             goalh = goalhandle.get_goal()
             # self.log.write_log_file(self.log.stdout_log, '[execute_git] getting goal: %s\n' % goal)
             goal = self.mycore.string2goalPlan(goalh.content, self.log)
+
+            self.simulation.requests_received[len(goal[0]['abilities']) - 1] += 1
 
             msg = '[execute_git %d] Goal: %s\n' % (int(goal[0]['senderID']), str(goal))
             self.log.write_log_file(self.log.stdout_log, msg)
@@ -541,8 +545,6 @@ class Agent0:
             )'''
             # self.log.write_log_file(self.log.stdout_log, msg)
             rospy.loginfo(msg)
-
-            self.simulation.requests_received[len(plan[0]['abilities']) - 1] += 1
 
             if accept:
                 self.myknowledge.attempted_jobs += 1
@@ -830,13 +832,14 @@ class Agent0:
 
             start_time = time.time()
 
+            energy_after_task = self.mycore.battery - int(self.myknowledge.service['energy'])
             if self.mycore.willingness[0] == 1.0:
-                msg = '[run_step ' + str(self.simulation.execute) + '] value of theta ' + str(self.mycore.willingness[0]) + '\n'
-                depend, theta = self.mycore.ask_5help(sum([self.mycore.sensmot, self.mycore.battery]), dependencies_abil,
+                msg = '[run_step ' + str(self.simulation.execute) + '] value of theta ' + str(self.mycore.willingness[0]) + ' energy after task: ' + str(energy_after_task) + '\n'
+                depend, theta = self.mycore.ask_5help(sum([self.mycore.sensmot, energy_after_task]), dependencies_abil,
                                                   dependencies_res)
             elif self.mycore.willingness[0] == 2.0:
-                msg = '[run_step ' + str(self.simulation.execute) + '] value of theta ' + str(self.mycore.willingness[0]) + '\n'
-                depend, theta = self.mycore.ask_6help(sum([self.mycore.sensmot, self.mycore.battery]), dependencies_abil,
+                msg = '[run_step ' + str(self.simulation.execute) + '] value of theta ' + str(self.mycore.willingness[0]) + ' energy after task: ' + str(energy_after_task) + '\n'
+                depend, theta = self.mycore.ask_6help(sum([self.mycore.sensmot, energy_after_task]), dependencies_abil,
                                                   dependencies_res, self.mycore.self_esteem, task_urgency, task_importance,
                                                   culture, success_chance)
             else:
@@ -861,8 +864,6 @@ class Agent0:
             if depend:
                 self.simulation.no_tasks_depend_attempted[self.myknowledge.difficulty] += 1
                 if not candidate_id == -1:
-                    self.simulation.requests[self.myknowledge.difficulty] = self.simulation.requests[
-                                                                                self.myknowledge.difficulty] + 1
 
                     msg = '[run_step ' + str(
                         self.simulation.execute) + '] Ask for help. Difficulty: %f, delay: %f, addi: %f\n' % (
@@ -902,6 +903,9 @@ class Agent0:
                         self.simulation.exec_times_depend.append(exec_time)
                         self.simulation.no_tasks_depend_completed[self.myknowledge.difficulty] += 1
                         self.simulation.no_tasks_completed[self.myknowledge.difficulty] += 1
+
+                    self.mycore.battery_change(0.2 * int(self.myknowledge.service['energy']))
+
                 else:
                     # Count noones serves to identify those case in which the agent does not know anyone that could be of help
                     self.myknowledge.COUNT_noones[self.myknowledge.difficulty] += 1
@@ -909,7 +913,7 @@ class Agent0:
                     self.myknowledge.iteration = -1
 
                     # Assume that less energy is consumed when asking for help -- someone else is doing the deed
-                    self.mycore.battery_change(0.2 * int(self.myknowledge.service['energy']))
+                    self.mycore.battery_change(0.002 * int(self.myknowledge.service['energy']))
 
                     msg = '[run_step ' + str(self.simulation.execute) + '] No one to ask. Known people ' + str(
                         self.myknowledge.known_people) + '\n'
@@ -939,8 +943,9 @@ class Agent0:
                 else:
                     result = 2
 
-            # diminish by the energy required by the task
-            self.mycore.battery_change(int(self.myknowledge.service['energy']))
+                # diminish by the energy required by the task
+                self.mycore.battery_change(int(self.myknowledge.service['energy']))
+
             # In case I am helping some other agent, trigger response here
             msg = '[run_step ' + str(self.simulation.execute) + '] sender: %d, result: %d\n' % (int(self.myknowledge.service['senderID']), result)
             rospy.loginfo(msg)
@@ -1005,6 +1010,12 @@ class Agent0:
     def regenerate(self):
         # print 'im in regenerate'
         self.simulation.regenerate = self.simulation.inc_iterationstamps(self.simulation.regenerate)
+        self.myknowledge.lock.acquire()
+        self.mycore.state = 0
+        self.myknowledge.lock.release()
+        self.mycore.battery += 4400 - self.mycore.battery
+        msg = '[fsm_INFO] I am in regenrate, switch to idle, state changed to %d, energy acquired %d' % (self.mycore.state, self.mycore.battery)
+        rospy.loginfo(msg)
 
         self.debug_self()
         self.fix_bugs()
@@ -1018,10 +1029,19 @@ class Agent0:
         self.evaluate_environment()
         self.evaluate_selfmending()
 
+        self.myknowledge.lock.acquire()
+        self.mycore.state = 3
+        self.myknowledge.lock.release()
+
+        msg = '[fsm_INFO] I am in dead, switch to regenerate, state changed to %d' % self.mycore.state
+        rospy.loginfo(msg)
+
+        '''
         self.publish_bcast[0].publish(self.mycore.create_message('DIE', 'DIE'))
         self.reason = 'Simulation end - in the dead state'
         rospy.signal_shutdown(self.reason)
         rospy.on_shutdown(self.my_hook)
+        '''
 
     # MUST be overriden in the child class, depending on the different types of inputs!
     def init_inputs(self, inputs):

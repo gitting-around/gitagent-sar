@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 mkdir ~/catkin_ws/results/test/pop_size.2/prova.2/sim1/
 mkdir ~/catkin_ws/results/test/pop_size.2/prova.2/sim2/
 mkdir ~/catkin_ws/results/test/pop_size.2/prova.2/sim1/trial1

@@ -123,7 +123,7 @@ def create_grouped_bar_plot(ave, name):
     plt.legend(['tc', 'ta', 'tdc', 'tda', 'stc', 'sta'], loc='upper right')
     plt.grid()
     extent = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-    fig.savefig(name+'_tasks.jpeg', bbox_inches=extent)
+    fig.savefig(name+'_tasks.jpeg', bbox_inches=extent.expanded(1.1, 1.2))
 
     ########################################################################################
     # Plot requests with respect to difficulty
@@ -135,24 +135,11 @@ def create_grouped_bar_plot(ave, name):
 
     # Create a bar with pre_score data,
     # in position pos,
-    plt.bar(pos,
-        #using df['pre_score'] data,
-        requests,
-        # of width
-        width,
-        # with alpha 0.5
-        alpha=0.5,
-        # with color
-        color='bisque',
-        # with label the first value in first_name
-        label='req')
-
-    # Create a bar with mid_score data,
-    # in position pos + some width buffer,
+    plt.bar(pos,requests,width,alpha=0.5,color='bisque',label='req')
     plt.bar([p + width for p in pos], requests_success, width, alpha=0.5, color='powderblue', label='req_s')
     plt.bar([p + width*2 for p in pos], requests_received, width, alpha=0.5, color='palegreen', label='req_rec')
     plt.bar([p + width*3 for p in pos], requests_accept, width, alpha=0.5, color='linen', label='req_rec_acc')
-    plt.bar([p + width*4 for p in pos], requests_success, width, alpha=0.5, color='paleturquoise', label='req_rec_s')
+    plt.bar([p + width*4 for p in pos], requests_acc_succ, width, alpha=0.5, color='paleturquoise', label='req_rec_s')
 
     # Set the y axis label
     ax.set_ylabel('Nr of Requests')
@@ -174,7 +161,7 @@ def create_grouped_bar_plot(ave, name):
     plt.legend(['req', 'req_s', 'req_rec', 'req_acc', 'req_rec_s'], loc='upper right')
     plt.grid()
     extent = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-    fig.savefig(name+'_requests.jpeg', bbox_inches=extent)
+    fig.savefig(name+'_requests.jpeg', bbox_inches=extent.expanded(1.1, 1.2))
 
     #########################################################
     fig, ax = plt.subplots(figsize=(10,10))
@@ -203,7 +190,7 @@ def create_grouped_bar_plot(ave, name):
     plt.legend(['Requests issued', 'Requests received', 'Req received success'], loc='upper right')
     plt.grid()
     extent = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-    fig.savefig(name+'_percent.jpeg', bbox_inches=extent)
+    fig.savefig(name+'_percent.jpeg', bbox_inches=extent.expanded(1.1, 1.2))
 
     #plt.show()
 
@@ -276,10 +263,11 @@ if __name__ == '__main__':
     name = sys.argv[1]
     for x in range(2, len(sys.argv)):
         fname = sys.argv[x]
+        print fname
         factor_track, tasks, theta, esteem, tu, ti, culture, candido, deps, health, theta_bool, gamma, gamma_esteem, gamma_bool = read_from_file(fname)
         params4file.append((factor_track, tasks, theta, esteem, tu, ti, culture, candido, deps, health, theta_bool, gamma, gamma_esteem, gamma_bool))
         someparams.append(tasks)
-        print fname
+        print '\n\n'
 
     someparams = np.array(someparams)
     print someparams
@@ -298,5 +286,22 @@ if __name__ == '__main__':
 
     '''create_2D_graph([theta, theta_bool, esteem, tu, ti, culture, candido, deps, health],
                     ['theta', 'theta_bool', 'esteem', 'tu', 'ti', 'culture', 'candido', 'deps', 'health'])'''
+
     create_2D_graph([theta, theta_bool], ['theta', 'theta_bool'], name)
+    create_2D_graph([theta, esteem], ['theta', 'theta_esteem'], name)
+    create_2D_graph([theta, ti], ['theta', 'theta_ti'], name)
+    create_2D_graph([theta, tu], ['theta', 'theta_tu'], name)
+    create_2D_graph([theta, culture], ['theta', 'theta_culture'], name)
+    create_2D_graph([theta, candido], ['theta', 'theta_candid'], name)
+    create_2D_graph([theta, health], ['theta', 'theta_health'], name)
+
+    create_2D_graph([theta, deps[0:][::2]], ['theta', 'abil'], name)
+    create_2D_graph([theta, deps[1:][::2]], ['theta', 'res'], name)
+
+    create_2D_graph([gamma_bool, gamma_esteem], ['gamma_bool', 'gamma_esteem'], name)
+
+
+
+
+
 
