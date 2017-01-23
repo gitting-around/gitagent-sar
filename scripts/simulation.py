@@ -182,9 +182,7 @@ class Simulation0:
         return dependency_abil, dependency_res, req_missing, task_importance, task_urgency, culture
 
     def sim_dependencies_v2(self, service):
-        # Each ability and resource adds to the probability of a dependency being raised -- considering abilities as required, and resources as optional for the sake of current implementation simplicity
-        # Abilities are considered as required, whilst resources as optional -- this of course could be changed based on the
-        # needs
+        #
         dependency_abil = 0
         dependency_res = 0
         for x in service['abilities']:
@@ -196,6 +194,26 @@ class Simulation0:
             dependency_res += random.random()
 
         dependency_res /= len(service['resources'])
+
+        task_importance = random.random()
+        task_urgency = random.random()
+        culture = random.random()
+        req_missing = False
+
+        return dependency_abil, dependency_res, req_missing, task_importance, task_urgency, culture
+
+
+    def sim_dependencies_v3(self, service):
+        abil = []
+        res = []
+        for x in service['abilities']:
+            abil.append(random.random())
+
+        for x in service['resources']:
+            res.append(random.random())
+
+        dependency_abil = min(abil)
+        dependency_res = min(res)
 
         task_importance = random.random()
         task_urgency = random.random()
