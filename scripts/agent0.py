@@ -520,7 +520,7 @@ class Agent0:
             ## Here put the new fuzzy evaluation function
             # accept = True
             # pdb.set_trace()
-            dependencies_abil, dependencies_res, req_missing, task_importance, task_urgency, culture_notUSED = self.simulation.sim_dependencies_v2(
+            dependencies_abil, dependencies_res, req_missing, task_importance, task_urgency, culture_notUSED = self.simulation.sim_dependencies_v3(
                 plan[0])
             req_goodness = random.random()
             culture = self.eval_culture()
@@ -805,7 +805,7 @@ class Agent0:
             rospy.loginfo(msg)
             # print 'in execute_step'
             # pdb.set_trace()
-            dependencies_abil, dependencies_res, req_missing, task_importance, task_urgency, culture_notUSED = self.simulation.sim_dependencies_v2(
+            dependencies_abil, dependencies_res, req_missing, task_importance, task_urgency, culture_notUSED = self.simulation.sim_dependencies_v3(
                 self.myknowledge.service)
             # print 'after dep'
             culture = self.eval_culture()
@@ -936,7 +936,7 @@ class Agent0:
                 self.myknowledge.service_id = -1
                 self.myknowledge.iteration = -1
 
-                if random.random() < 0.8:
+                if random.random() < 1.8:
                     result = 1
                     self.myknowledge.completed_jobs += 1
                     self.simulation.no_tasks_completed[self.myknowledge.difficulty] += 1
