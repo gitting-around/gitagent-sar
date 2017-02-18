@@ -993,6 +993,7 @@ class Agent0:
             self.simulation.theta_culture.append(culture)
             self.simulation.theta_candidate.append(success_chance)
             self.simulation.theta.append(theta)
+            self.simulation.theta_diff[self.myknowledge.difficulty].append(theta)
             self.simulation.theta_deps.append(dependencies_abil)
             self.simulation.theta_deps.append(dependencies_res)
             self.simulation.theta_health.append(sum([self.mycore.sensmot, self.mycore.battery])/float(4800))

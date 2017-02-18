@@ -427,6 +427,13 @@ if __name__ == '__main__':
             else:
                 agent.log.write_log_file(results_filename, str(0) + ' ')
 
+        agent.log.write_log_file(results_filename, '\n')
+
+        for x in agent.simulation.theta_diff:
+            for y in x:
+                agent.log.write_log_file(results_filename, str(y) + ' ')
+            agent.log.write_log_file(results_filename, '\n')
+
         sys.stderr = orig_stderr
         f.close()
         sys.stdout = orig_stdout

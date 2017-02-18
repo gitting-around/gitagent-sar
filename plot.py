@@ -4,6 +4,9 @@ from numpy import *
 import math
 import matplotlib.pyplot as plt; plt.rcdefaults()
 import matplotlib.pyplot as plt
+
+import matplotlib as mpl
+from mpl_toolkits.mplot3d import Axes3D
 import random
 import numpy as np
 import time
@@ -13,19 +16,20 @@ def create_2D_graph(lines, names, simName):
     fig = plt.figure()
     high = 0.7
     low = 0.3
-    x = range(0, len(lines[0]))
-    '''
-    lowLine = np.array([low for i in xrange(len(x))])
-    plt.plot(x, lowLine, 'y--', label='low')  # plotting low threshold
-    highLine = np.array([high for i in xrange(len(x))])
-    plt.plot(x, highLine, 'g--', label='high')  # plotting high threshold'''
 
-    height = 1
+    height = 2
 
     for index, l in enumerate(lines):
+        x = range(0, len(l))
+
         k = np.array(l)
         plt.plot(x, k+index*height, label=names[index])  # plotting t,a separately
         print names[index]
+
+        #lowLine = np.array([low+index*height for i in xrange(len(x))])
+        #plt.plot(x, lowLine, 'y--')  # plotting low threshold
+        #highLine = np.array([high+index*height for i in xrange(len(x))])
+        #plt.plot(x, highLine, 'g--')  # plotting high threshold
 
     fig.suptitle('Relation', fontsize=20)
     plt.xlabel('steps', fontsize=18)
@@ -35,6 +39,27 @@ def create_2D_graph(lines, names, simName):
     plt.ylabel(name, fontsize=16)
     legend = plt.legend(loc='center right', shadow=True)
     fig.savefig(simName+'_'+name + '.jpg')
+    #plt.show()
+
+
+def create_3D_graph(lines, names, simName):
+    fig = plt.figure()
+    z = np.linspace(1, 3, 3)
+    for index, l in enumerate(lines):
+        ax = fig.gca(projection='3d')
+        x = range(0, len(l))
+
+        ax.plot(x, l, z[index], label=names[index])
+        ax.legend()
+
+    fig.suptitle('Theta wrt to task difficulty', fontsize=20)
+    plt.xlabel('interactions', fontsize=18)
+    plt.ylabel('theta', fontsize=18)
+
+    name = ''
+    for x in names:
+        name += x + '_'
+    fig.savefig(simName+'_'+name + '3D.jpg')
     #plt.show()
 
 
@@ -68,11 +93,17 @@ def create_grouped_bar_plot(ave, name):
     requests_accept = ave[30:33]
     requests_acc_succ = ave[33:]
 
+    print requests
+    print requests_success
+    print requests_received
+    print requests_accept
+    print requests_acc_succ
+
     req_ta = [requests[0]/float(ta[0])*100, requests[1]/float(ta[1])*100, requests[2]/float(ta[2])*100]
 
     reqRec_ta = [requests_received[0]/float(ta[0])*100, requests_received[1]/float(ta[1])*100, requests_received[2]/float(ta[2])*100]
 
-    reqRec_tc = [requests_received[0]/float(tc[0])*100, requests_received[1]/float(tc[1])*100, requests_received[2]/float(tc[2])*100]
+    reqRec_tc = [requests_acc_succ[0]/float(tc[0])*100, requests_acc_succ[1]/float(tc[1])*100, requests_acc_succ[2]/float(tc[2])*100]
 
     # Plot tasks with respect to difficulty
     pos = list(range(len(ta)))
@@ -230,7 +261,12 @@ def read_from_file(fname):
         gamma_bool = map(float, filter(None, lines[13].strip().split(' ')))
         print gamma_bool
 
-        return factors, tasks, theta, esteem, tu, ti, culture, candido, deps, health, theta_bool, gamma, gamma_esteem, gamma_bool
+        theta_easy = map(float, filter(None, lines[14].strip().split(' ')))
+        theta_medium = map(float, filter(None, lines[15].strip().split(' ')))
+        theta_hard = map(float, filter(None, lines[16].strip().split(' ')))
+
+
+        return factors, tasks, theta, esteem, tu, ti, culture, candido, deps, health, theta_bool, gamma, gamma_esteem, gamma_bool, theta_easy, theta_medium, theta_hard
 
 
 def average(lista):
@@ -264,8 +300,8 @@ if __name__ == '__main__':
     for x in range(2, len(sys.argv)):
         fname = sys.argv[x]
         print fname
-        factor_track, tasks, theta, esteem, tu, ti, culture, candido, deps, health, theta_bool, gamma, gamma_esteem, gamma_bool = read_from_file(fname)
-        params4file.append((factor_track, tasks, theta, esteem, tu, ti, culture, candido, deps, health, theta_bool, gamma, gamma_esteem, gamma_bool))
+        factor_track, tasks, theta, esteem, tu, ti, culture, candido, deps, health, theta_bool, gamma, gamma_esteem, gamma_bool, theta_easy, theta_medium, theta_hard = read_from_file(fname)
+        params4file.append((factor_track, tasks, theta, esteem, tu, ti, culture, candido, deps, health, theta_bool, gamma, gamma_esteem, gamma_bool, theta_easy, theta_medium, theta_hard))
         someparams.append(tasks)
         print '\n\n'
 
@@ -288,20 +324,18 @@ if __name__ == '__main__':
                     ['theta', 'theta_bool', 'esteem', 'tu', 'ti', 'culture', 'candido', 'deps', 'health'])'''
 
     create_2D_graph([theta, theta_bool], ['theta', 'theta_bool'], name)
-    create_2D_graph([theta, esteem], ['theta', 'theta_esteem'], name)
-    create_2D_graph([theta, ti], ['theta', 'theta_ti'], name)
-    create_2D_graph([theta, tu], ['theta', 'theta_tu'], name)
-    create_2D_graph([theta, culture], ['theta', 'theta_culture'], name)
-    create_2D_graph([theta, candido], ['theta', 'theta_candid'], name)
-    create_2D_graph([theta, health], ['theta', 'theta_health'], name)
+    #create_2D_graph([theta, esteem], ['theta', 'theta_esteem'], name)
+    #create_2D_graph([theta, ti], ['theta', 'theta_ti'], name)
+    #create_2D_graph([theta, tu], ['theta', 'theta_tu'], name)
+    #create_2D_graph([theta, culture], ['theta', 'theta_culture'], name)
+    #create_2D_graph([theta, candido], ['theta', 'theta_candid'], name)
+    mean = (np.array(esteem) + np.array(ti) + np.array(tu) + np.array(culture) + np.array(candido))/5
+    create_2D_graph([theta, mean], ['theta', 'mean'], name)
+    #create_2D_graph([theta, health], ['theta', 'theta_health'], name)
 
-    create_2D_graph([theta, deps[0:][::2]], ['theta', 'abil'], name)
-    create_2D_graph([theta, deps[1:][::2]], ['theta', 'res'], name)
+    #create_2D_graph([theta, deps[0:][::2]], ['theta', 'abil'], name)
+    #create_2D_graph([theta, deps[1:][::2]], ['theta', 'res'], name)
 
-    create_2D_graph([gamma_bool, gamma_esteem], ['gamma_bool', 'gamma_esteem'], name)
-
-
-
-
-
-
+    #create_2D_graph([gamma_bool, gamma_esteem], ['gamma_bool', 'gamma_esteem'], name)
+    create_2D_graph([theta, gamma_esteem], ['theta', 'gamma'], name)
+    create_3D_graph([theta_easy, theta_medium, theta_hard], ['theta_easy', 'theta_medium', 'theta_hard'], name)
