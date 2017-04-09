@@ -24,12 +24,14 @@ import Queue
 
 class Agent0:
     def __init__(self, ID, conf, services, willingness, simulation, popSize, provaNr, depend_nr, battery, sensors,
-                 actuators, motors):
+                 actuators, motors, static):
 
         # logging class
         self.log = mylogging.Logging(popSize, provaNr, ID, willingness[1], depend_nr)
         self.begin = 0
         self.end = 0
+
+        self.static = static
 
         # They will contain arrays of topic's names ###
         self.inputs = conf['sensors']
@@ -519,32 +521,45 @@ class Agent0:
 
             ## Here put the new fuzzy evaluation function
             # accept = True
-            # pdb.set_trace()
-            dependencies_abil, dependencies_res, req_missing, task_importance, task_urgency, culture_notUSED = self.simulation.sim_dependencies_v3(
-                plan[0])
-            req_goodness = random.random()
-            culture = self.eval_culture()
-            accept_notUSED, gamma_notUSED = self.mycore.give_help(sum([self.mycore.sensmot, self.mycore.battery]), dependencies_abil,
-                                                  dependencies_res,
-                                                  self.mycore.self_esteem, task_urgency, task_importance, culture,
-                                                  req_goodness, success)
-            # Based on the self_esteem
-            if random.random() < self.mycore.self_esteem:
-                accept = True
-                gamma = self.mycore.self_esteem
-            else:
-                accept = False
-                gamma = self.mycore.self_esteem
+            #pdb.set_trace()
+            abil, equip, knowled, tools, env_risk, diff_task_tradeoff = self.simulation.simulate_give_params()
+            energy_diff = self.mycore.battery - float(plan[0]['energy'])
+            ag_risk = 1.0 - success
 
-            # print accept
-            msg = '[adapt %d] Accept = %f\n' % (self.simulation.interact, accept)
-            msg += '[adapt %d] Plan ' + str(plan) + '\n'
-            '''msg += '[adapt  ' + str(
-                self.simulation.execute) + '] success %f, id %d, req_good %f, dabil %f, dres %f, ti %f, tu %f, culture %f \n' % (
-                success, aID, req_goodness, dependencies_abil, dependencies_res, task_importance, task_urgency, culture
-            )'''
+            msg = '[adapt %d] energy diff = %f\n' % (self.simulation.interact, energy_diff)
             # self.log.write_log_file(self.log.stdout_log, msg)
             rospy.loginfo(msg)
+
+            if not sum(self.simulation.no_self_tasks_attempted) == 0:
+                performance = sum(self.simulation.no_self_tasks_completed) / float(sum(self.simulation.no_self_tasks_attempted))
+            else:
+                performance = 1.0
+
+            if self.static[1] == 0:
+                accept, delta = self.mycore.b_delta(energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, diff_task_tradeoff)
+            else:
+                delta = self.mycore.delta
+                if not abil or not equip or not knowled or not tools:
+                    self.simulation.finish = 0.0
+                else:
+                    self.simulation.finish = 1.0
+                if random.random() < delta:
+                    accept = True
+                else:
+                    accept = False
+
+            # print accept
+            msg = '[adapt %d] abil = %f, equip = %f, knowled = %f, tools = %f, env_risk = %f, task-trade = %f, delta = %f\n' % (self.simulation.interact, abil, equip, knowled, tools, env_risk, diff_task_tradeoff, delta)
+
+            msg += '[adapt %d] Accept = %f, simulation-finish = %f\n' % (self.simulation.interact, accept, self.simulation.finish)
+            msg += '[adapt %d] Plan ' + str(plan) + '\n'
+
+            # self.log.write_log_file(self.log.stdout_log, msg)
+            rospy.loginfo(msg)
+
+            self.myknowledge.lock.acquire()
+            self.simulation.delta_theta.append([0, delta, accept, performance])
+            self.myknowledge.lock.release()
 
             if accept:
                 self.myknowledge.attempted_jobs += 1
@@ -595,9 +610,9 @@ class Agent0:
                 self.myknowledge.lock.release()
 
             # Record
-            self.simulation.gamma_esteem.append(self.mycore.self_esteem)
-            self.simulation.gamma.append(gamma)
-            self.simulation.gamma_bool.append(accept)
+            self.simulation.delta_esteem.append(performance)
+            self.simulation.delta.append(delta)
+            self.simulation.delta_bool.append(accept)
 
         except:
             rospy.loginfo("Unexpected error: " + str(sys.exc_info()[0]))
@@ -804,19 +819,13 @@ class Agent0:
             msg = '[run_step ' + str(self.simulation.execute) + ' BEGIN] in execute_step\n'
             rospy.loginfo(msg)
             # print 'in execute_step'
-            # pdb.set_trace()
-            dependencies_abil, dependencies_res, req_missing, task_importance, task_urgency, culture_notUSED = self.simulation.sim_dependencies_v3(
-                self.myknowledge.service)
-            # print 'after dep'
-            culture = self.eval_culture()
+            #pdb.set_trace()
             # This returns the best candidate id, and success measure
             success_chance, candidate_id, candidate_idx = self.mycore.best_candidate(self.myknowledge.known_people,
                                                                                      self.myknowledge.service, self.log)
-
             msg = '[run_step ' + str(
-                self.simulation.execute) + ' BEGIN] success %f, id %d, idx %d, dabil %f, dres %f, ti %f, tu %f, culture %f \n' % (
-                success_chance, candidate_id, candidate_idx, dependencies_abil, dependencies_res, task_importance,
-                task_urgency, culture
+                self.simulation.execute) + ' BEGIN] success %f, id %d, idx %d\n' % (
+                success_chance, candidate_id, candidate_idx
             )
             rospy.loginfo(msg)
 
@@ -826,38 +835,37 @@ class Agent0:
                 rospy.loginfo(msg)
                 success_chance = -1.0
 
-            msg = '[run_step ' + str(self.simulation.execute) + '] inputs: %f, %f, health: %f\n' % (
-            dependencies_abil, dependencies_res, sum([self.mycore.sensmot, self.mycore.battery]))
-            rospy.loginfo(msg)
+            abil, equip, knowled, tools, env_risk, diff_task_progress = self.simulation.simulate_ask_params()
+            energy_diff = self.mycore.battery - float(self.myknowledge.service['energy'])
+            ag_risk = 1.0 - success_chance
 
-            start_time = time.time()
-
-            energy_after_task = self.mycore.battery - int(self.myknowledge.service['energy'])
-            if self.mycore.willingness[0] == 1.0:
-                msg = '[run_step ' + str(self.simulation.execute) + '] value of theta ' + str(self.mycore.willingness[0]) + ' energy after task: ' + str(energy_after_task) + '\n'
-                depend, theta = self.mycore.ask_5help(sum([self.mycore.sensmot, energy_after_task]), dependencies_abil,
-                                                  dependencies_res)
-            elif self.mycore.willingness[0] == 2.0:
-                msg = '[run_step ' + str(self.simulation.execute) + '] value of theta ' + str(self.mycore.willingness[0]) + ' energy after task: ' + str(energy_after_task) + '\n'
-                depend, theta = self.mycore.ask_6help(sum([self.mycore.sensmot, energy_after_task]), dependencies_abil,
-                                                  dependencies_res, self.mycore.self_esteem, task_urgency, task_importance,
-                                                  culture, success_chance)
+            if not sum(self.simulation.no_self_tasks_attempted) == 0:
+                performance = sum(self.simulation.no_self_tasks_completed) / float(sum(self.simulation.no_self_tasks_attempted))
             else:
-                msg = '[run_step ' + str(self.simulation.execute) + '] should not happen, value of theta ' + str(self.mycore.willingness[0]) + '\n'
+                performance = 1.0
 
-            rospy.loginfo(msg)
-
-            '''
-            depend, theta = self.mycore.ask_4help(sum([self.mycore.sensmot, self.mycore.battery]), dependencies_abil,
-                                                  dependencies_res, self.mycore.self_esteem, task_urgency, task_importance,
-                                                  culture, success_chance)
-                                                  '''
-            # depend_fuzzy = self.mycore.willing2ask_fuzzy(
-            #     [sum([self.mycore.sensmot, self.mycore.battery]), 0.7, dependencies, 0.5])
-            self.simulation.fuzzy_time.append(time.time() - start_time)
+            if self.static[0] == 0:
+                depend, gamma = self.mycore.b_gamma(energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, diff_task_progress)
+            else:
+                gamma = self.mycore.gamma
+                if self.simulation.finish == -1.0:
+                    if not abil or not equip or not knowled or not tools:
+                        self.simulation.finish = 0.0
+                    else:
+                        self.simulation.finish = 1.0
+                if random.random() < gamma:
+                    depend = True
+                else:
+                    depend = False
 
             msg = '[run_step ' + str(self.simulation.execute) + '] ask for help: ' + str(depend) + '\n'
+            msg += '[execute %d] abil = %f, equip = %f, knowled = %f, tools = %f, env_risk = %f, task-trade = %f, gamma = %f\n' % (self.simulation.execute, abil, equip, knowled, tools, env_risk, diff_task_progress, gamma) + '\n'
+
             rospy.loginfo(msg)
+
+            self.myknowledge.lock.acquire()
+            self.simulation.delta_theta.append([1, gamma, depend, performance])
+            self.myknowledge.lock.release()
 
             result = 0
 
@@ -936,7 +944,7 @@ class Agent0:
                 self.myknowledge.service_id = -1
                 self.myknowledge.iteration = -1
 
-                if random.random() < 1.8:
+                if random.random() < self.simulation.finish:
                     result = 1
                     self.myknowledge.completed_jobs += 1
                     self.simulation.no_tasks_completed[self.myknowledge.difficulty] += 1
@@ -980,28 +988,16 @@ class Agent0:
                 if result == 1:
                     self.simulation.no_self_tasks_completed[self.myknowledge.difficulty] += 1
 
-            if (sum(self.simulation.no_tasks_attempted) - sum(self.simulation.no_tasks_depend_attempted)) == 0:
-                self.mycore.self_esteem = 0.0
-            else:
-                self.mycore.self_esteem = (sum(self.simulation.no_tasks_completed) - sum(
-                    self.simulation.no_tasks_depend_completed)) / float(
-                    sum(self.simulation.no_tasks_attempted) - sum(self.simulation.no_tasks_depend_attempted))
             # Record
-            self.simulation.theta_esteem.append(self.mycore.self_esteem)
-            self.simulation.theta_tu.append(task_urgency)
-            self.simulation.theta_ti.append(task_importance)
-            self.simulation.theta_culture.append(culture)
+            self.simulation.theta_esteem.append(performance)
             self.simulation.theta_candidate.append(success_chance)
-            self.simulation.theta.append(theta)
-            self.simulation.theta_diff[self.myknowledge.difficulty].append(theta)
-            self.simulation.theta_deps.append(dependencies_abil)
-            self.simulation.theta_deps.append(dependencies_res)
-            self.simulation.theta_health.append(sum([self.mycore.sensmot, self.mycore.battery])/float(4800))
+            self.simulation.theta.append(gamma)
             self.simulation.theta_bool.append(depend)
             # Inc to reach stop of simulation
 
             msg = '[run_step ' + str(self.simulation.execute) + ' END] \n'
             rospy.loginfo(msg)
+            self.simulation.finish = -1.0
             self.end += 1
 
         except:

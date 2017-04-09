@@ -266,8 +266,11 @@ if __name__ == '__main__':
     agent_id = rospy.get_param('brain_node/myID')
     delta = rospy.get_param('brain_node/myDelta')
     theta = rospy.get_param('brain_node/myTheta')
-    depends = rospy.get_param('brain_node/myDepend')
+    pressure = rospy.get_param('brain_node/pressure')
+    static_string = rospy.get_param('brain_node/static')
     ##############################################################################
+    static = [int(x) for x in static_string.split('|')]
+
     stderr_file = '/home/mfi01/catkin_ws/results/error_brain' + str(agent_id)
     f = open(stderr_file, 'w+')
     orig_stderr = sys.stderr
@@ -288,7 +291,8 @@ if __name__ == '__main__':
     actuators = [200]
     motors = []
     # Give a list of function names that represent the capabilities of the agent
-    sim = simulation.Simulation0()
+
+    sim = simulation.Simulation0(pressure)
 
     agentfile = "conf_" + str(agent_id)
     # Read agent configuration file
@@ -297,6 +301,7 @@ if __name__ == '__main__':
     # From the list of services select 30% (this number can be modified) for the agent to be providing - at random
     # [id time energy reward ...] ... -> dependencies on other services for instance 4 5 2 1
     # Active_servs format: [[5, 100, 3705, 42], [6, 97, 5736, 19], [9, 96, 9156, 4]]
+    depends = 10 #Is this relevant for the rest of the code?
     active_servs = sim.select_services(agent_id, depends)
 
     # Health specification
@@ -304,8 +309,10 @@ if __name__ == '__main__':
     ################################################################################################
     popSize = 2
     provaNr = 2
+    # follows indexing of willingness
+    static = [1, 1]
     agent = GitAgent(agent_id, agent_conf, active_servs, [theta, delta], sim, popSize, provaNr, depends, battery, sensors,
-                     actuators, motors)
+                     actuators, motors, static)
     agent.log.write_log_file(agent.log.stdout_log, 'active_serve ' + str(active_servs) + '\n')
 
     try:
@@ -324,14 +331,7 @@ if __name__ == '__main__':
         # Write out number of help requests and approx finishing time
         agent.log.write_log_file(agent.log.stdout_log, 'in finally')
         # pdb.set_trace()
-        results_filename = '/home/mfi01/catkin_ws/results/test/pop_size.' + str(popSize) + '/prova.' + str(
-            provaNr) + '/results_' + str(agent_id) + '_' + str(delta) + '_' + str(theta)
-
-        # Factor track
-        for x in agent.mycore.factor_track:
-            agent.log.write_log_file(results_filename, str(x) + ' ')
-
-        agent.log.write_log_file(results_filename, '\n')
+        results_filename = '/home/mfi01/catkin_ws/' + 'results_' + str(agent_id) + '_' + str(delta) + '_' + str(theta) + '_' + str(pressure) + '_' + str(static)
 
         # TA  TDA TC  TDC
         for x in agent.simulation.no_tasks_attempted:
@@ -366,38 +366,8 @@ if __name__ == '__main__':
             agent.log.write_log_file(results_filename, str(x) + ' ')
 
         agent.log.write_log_file(results_filename, '\n')
-        # Esteem
-        for x in agent.simulation.theta_esteem:
-            agent.log.write_log_file(results_filename, str(x) + ' ')
-
-        agent.log.write_log_file(results_filename, '\n')
-        # Task urgency
-        for x in agent.simulation.theta_tu:
-            agent.log.write_log_file(results_filename, str(x) + ' ')
-
-        agent.log.write_log_file(results_filename, '\n')
-        # Task importance
-        for x in agent.simulation.theta_ti:
-            agent.log.write_log_file(results_filename, str(x) + ' ')
-
-        agent.log.write_log_file(results_filename, '\n')
-        # Culture
-        for x in agent.simulation.theta_culture:
-            agent.log.write_log_file(results_filename, str(x) + ' ')
-
-        agent.log.write_log_file(results_filename, '\n')
         # Candidate
         for x in agent.simulation.theta_candidate:
-            agent.log.write_log_file(results_filename, str(x) + ' ')
-
-        agent.log.write_log_file(results_filename, '\n')
-        # Dependencies (required)
-        for x in agent.simulation.theta_deps:
-            agent.log.write_log_file(results_filename, str(x) + ' ')
-
-        agent.log.write_log_file(results_filename, '\n')
-        # Health
-        for x in agent.simulation.theta_health:
             agent.log.write_log_file(results_filename, str(x) + ' ')
 
         agent.log.write_log_file(results_filename, '\n')
@@ -410,18 +380,12 @@ if __name__ == '__main__':
 
         agent.log.write_log_file(results_filename, '\n')
         # pdb.set_trace()
-        # Gamma
-        for x in agent.simulation.gamma:
+        for x in agent.simulation.delta:
             agent.log.write_log_file(results_filename, str(x) + ' ')
 
         agent.log.write_log_file(results_filename, '\n')
-        # Esteem
-        for x in agent.simulation.gamma_esteem:
-            agent.log.write_log_file(results_filename, str(x) + ' ')
 
-        agent.log.write_log_file(results_filename, '\n')
-        # Gamma_bool
-        for x in agent.simulation.gamma_bool:
+        for x in agent.simulation.delta_bool:
             if x:
                 agent.log.write_log_file(results_filename, str(1) + ' ')
             else:
@@ -429,10 +393,10 @@ if __name__ == '__main__':
 
         agent.log.write_log_file(results_filename, '\n')
 
-        for x in agent.simulation.theta_diff:
+        for x in agent.simulation.delta_theta:
             for y in x:
                 agent.log.write_log_file(results_filename, str(y) + ' ')
-            agent.log.write_log_file(results_filename, '\n')
+            agent.log.write_log_file(results_filename, ', ')
 
         sys.stderr = orig_stderr
         f.close()

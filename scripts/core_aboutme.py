@@ -12,7 +12,7 @@ import pdb
 
 class Core:
     def __init__(self, willingness, ID, battery, sensors, actuators, motors):
-        # willingness - [theta, delta]
+        # willingness - [gamma, delta]
         self.willingness = willingness
         # Willingness to ask for assistance
         self.ask = False
@@ -23,6 +23,7 @@ class Core:
         # Thresholds -- percentage of affordance
         self.LOW = 0.3
         self.HIGH = 0.7
+        self.MEDium = 0.5
 
         # start always in idle
         self.state = 0
@@ -54,6 +55,18 @@ class Core:
 
         # This could be an array, in which each element represents health over some dimension
         self.check_health()
+
+        self.gamma = self.willingness[0]
+        self.delta = self.willingness[1]
+
+        self.step = 0.05
+        self.considerable_change = 0.1
+
+        self.env_risk = 0.2
+        self.ag_risk = []
+        self.performance = 1.0
+
+        self.drop_rate = 0.0
 
         print self.willingness
         print self.state
@@ -463,3 +476,172 @@ class Core:
             return True
         else:
             return False
+
+    #Simple models for delta and gamma
+    def classic_delta(self, tasks_dropped, tasks_attempted):
+
+        old = self.drop_rate
+        if not tasks_attempted == 0:
+            self.drop_rate = 1.0 * tasks_dropped/tasks_attempted
+
+        if self.drop_rate < self.LOW:
+            self.delta += 0.01
+        elif self.drop_rate > self.HIGH:
+            self.delta -= 0.01
+        else:
+            if (self.drop_rate - old) > 0.01:
+                self.delta -= 0.01
+            elif (self.drop_rate - old) < - 0.01:
+                self.delta += 0.01
+
+        if self.delta > 1.0:
+            self.delta = 1.0
+        elif self.delta < 0.0:
+            self.delta = 0.0
+
+        if random.random() <= self.delta:
+            return True, self.delta, self.drop_rate
+        else:
+            return False, self.delta, self.drop_rate
+
+    def classic_gamma(self, tasks_dropped, tasks_attempted):
+
+        old = self.drop_rate
+        if not tasks_attempted == 0:
+            self.drop_rate = 1.0 * tasks_dropped/tasks_attempted
+
+        if self.drop_rate < self.LOW:
+            self.gamma -= 0.01
+        elif self.drop_rate > self.HIGH:
+            self.gamma += 0.01
+        else:
+            if (self.drop_rate - old) > 0.01:
+                self.gamma += 0.01
+            elif (self.drop_rate - old) < - 0.01:
+                self.gamma -= 0.01
+
+        if self.gamma > 1.0:
+            self.gamma = 1.0
+        elif self.gamma < 0.0:
+            self.gamma = 0.0
+
+        if random.random() <= self.gamma:
+            return True, self.gamma, self.drop_rate
+        else:
+            return False, self.gamma, self.drop_rate
+
+    # Willingness to give help
+
+    def b_delta(self, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_tradeoff):
+
+        self.delta = self.willingness[1]
+        if energy_diff < self.battery_min:
+            self.delta = 0.0
+            return False, self.delta
+        else:
+            self.delta += self.step
+            if abil == 0:
+                self.delta -= self.step
+            else:
+                self.delta += self.step
+            if equip == 0:
+                self.delta -= self.step
+            else:
+                self.delta += self.step
+            if knowled == 0:
+                self.delta -= self.step
+            else:
+                self.delta += self.step
+            if tools == 0:
+                self.delta -= self.step
+            else:
+                self.delta += self.step
+
+            if env_risk < self.LOW:
+                self.delta += self.step
+            elif env_risk > self.HIGH:
+                self.delta -= self.step
+            else:
+                if abs(env_risk - self.env_risk) > self.considerable_change:
+                    self.delta -= np.sign(env_risk - self.env_risk) * self.step
+
+            if ag_risk >= 0.5:
+                self.delta -= self.step
+            else:
+                self.delta += self.step
+
+            if performance < self.LOW:
+                self.delta -= self.step
+            elif performance > self.HIGH:
+                self.delta += self.step
+            else:
+                if abs(performance - self.performance) > self.considerable_change:
+                    self.delta += np.sign(performance - self.performance) * self.step
+
+            if abs(dif_task_tradeoff) > self.considerable_change:
+                self.delta += np.sign(dif_task_tradeoff) * self.step
+
+        self.env_risk = env_risk
+        self.performance = performance
+
+        if random.random() <= self.delta:
+            return True, self.delta
+        else:
+            return False, self.delta
+
+    def b_gamma(self, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_progress):
+        self.gamma = self.willingness[0]
+        if energy_diff < self.battery_min:
+            self.gamma = 1.0
+            return False, self.gamma
+        else:
+            self.gamma -= self.step
+            if abil == 0:
+                self.gamma = 1.0
+                return False, self.gamma
+            else:
+                self.gamma -= self.step
+            if equip == 0:
+                self.gamma = 1.0
+                return False, self.gamma
+            else:
+                self.gamma -= self.step
+            if knowled == 0:
+                self.gamma = 1.0
+                return False, self.gamma
+            else:
+                self.gamma -= self.step
+            if tools == 0:
+                self.gamma = 1.0
+                return False, self.gamma
+            else:
+                self.gamma -= self.step
+
+            if env_risk < self.LOW:
+                self.gamma -= self.step
+            elif env_risk > self.HIGH:
+                self.gamma += self.step
+            else:
+                if abs(env_risk - self.env_risk) > self.considerable_change:
+                    self.gamma += np.sign(env_risk - self.env_risk) * self.step
+
+            if ag_risk >= 0.5:
+                self.gamma -= self.step
+            else:
+                self.gamma += self.step
+
+            if performance < self.LOW:
+                self.gamma += self.step
+            elif performance > self.HIGH:
+                self.gamma -= self.step
+            else:
+                if abs(performance - self.performance) > self.considerable_change:
+                    self.gamma -= np.sign(performance - self.performance) * self.step
+
+            if abs(dif_task_progress) > self.considerable_change:
+                self.gamma -= np.sign(dif_task_progress) * self.step
+
+        if random.random() <= self.gamma:
+            return True, self.gamma
+        else:
+            return False, self.gamma

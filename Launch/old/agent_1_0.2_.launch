@@ -4,8 +4,8 @@
 		<param name="myID" value="$(arg id)" />
 		<param name="myTheta" value="1.0" />
 		<param name="myDelta" value="0.2" />
-		<param name="myDepend" value="10" />
-		<param name="provaNr" value="2_1" />
+		<param name="static" value="1|1" />
+		<param name="pressure" value="0.05" />
 	</node>	<node pkg="gitagent" type="msg_PUnit.py" name="msg_punit" output="log" >
 		<param name="myID" value="$(arg id)" />
 	</node>

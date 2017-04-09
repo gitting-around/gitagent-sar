@@ -11,7 +11,7 @@ plt.rcdefaults()
 
 
 class Simulation0:
-    def __init__(self):
+    def __init__(self, pressure):
         ## The attributes below serve as a timestamp for each function called ######
         # handle_serve, call_serve, callback_bc, wander, adapt, run_step, fsm
         self.handle = 0
@@ -91,19 +91,26 @@ class Simulation0:
         self.theta_bool = []
         self.exec_times_depend = []
 
-        self.gamma_esteem = []
-        self.gamma_tu = []
-        self.gamma_ti = []
-        self.gamma_culture = []
-        self.gamma_candidate = []
-        self.gamma_deps = []
-        self.gamma = []
-        self.gamma_health = []
-        self.gamma_bool = []
-        self.gamma_req_goodness = []
+        self.delta_esteem = []
+        self.delta_tu = []
+        self.delta_ti = []
+        self.delta_culture = []
+        self.delta_candidate = []
+        self.delta_deps = []
+        self.delta = []
+        self.delta_health = []
+        self.delta_bool = []
+        self.delta_req_goodness = []
 
         self.theta_diff = [[], [], []]
         self.gamma_diff = [[], [], []]
+
+        #Order the values of delta and theta chronologically. [delta/theta, value, boolean,tasks done/attempted]. Delta = 0, theta = 1
+        self.delta_theta = []
+
+        self.pressure = pressure
+
+        self.finish = -1.0
 
     # self.stdout_log = 'RESULT/pop_size.'+str(popSize) +'/prova.'+str(provaNr)+'/stdout_' + str(ID) + '_' + str(delta) +'_'+ str(depend_nr)
     # self.stdout_callback = 'RESULT/pop_size.'+str(popSize) +'/prova.'+str(provaNr)+'/stdout_callback' + str(ID) + '_' + str(delta) +'_'+ str(depend_nr)
@@ -270,22 +277,50 @@ class Simulation0:
         return iteration_stamp
 
     def simulate_give_params(self):
-        request_goodness = random.random()
-        self.req_goodness.append(request_goodness)
-        task_urgency = random.random()
-        self.task_give_urgency.append(task_urgency)
-        task_importance = random.random()
-        self.task_give_importance.append(task_importance)
+        if random.random() <= self.pressure:
+           abil = 0.0
+        else:
+           abil = 1.0
+        if random.random() <= self.pressure:
+           equip = 0.0
+        else:
+           equip = 1.0
+        if random.random() <= self.pressure:
+           knowled = 0.0
+        else:
+           knowled = 1.0
+        if random.random() <= self.pressure:
+           tools = 0.0
+        else:
+           tools = 1.0
+        #Keep these low and constant for now
+        env_risk = 0.2
+        diff_task_tradeoff = 0.0
 
-        return request_goodness, task_importance, task_urgency
+        return abil, equip, knowled, tools, env_risk, diff_task_tradeoff
 
     def simulate_ask_params(self):
-        task_urgency = random.random()
-        self.task_ask_urgency.append(task_urgency)
-        task_importance = random.random()
-        self.task_ask_importance.append(task_importance)
+        if random.random() <= self.pressure:
+           abil = 0.0
+        else:
+           abil = 1.0
+        if random.random() <= self.pressure:
+           equip = 0.0
+        else:
+           equip = 1.0
+        if random.random() <= self.pressure:
+           knowled = 0.0
+        else:
+           knowled = 1.0
+        if random.random() <= self.pressure:
+           tools = 0.0
+        else:
+           tools = 1.0
+        #Keep these low and constant for now
+        env_risk = 0.2
+        diff_task_progress = 1.0
 
-        return task_importance, task_urgency
+        return abil, equip, knowled, tools, env_risk, diff_task_progress
 
     def get_tasks(self, filename):
         # Task Format ###########################################
