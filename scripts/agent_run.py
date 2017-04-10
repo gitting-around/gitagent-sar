@@ -310,7 +310,6 @@ if __name__ == '__main__':
     popSize = 2
     provaNr = 2
     # follows indexing of willingness
-    static = [1, 1]
     agent = GitAgent(agent_id, agent_conf, active_servs, [theta, delta], sim, popSize, provaNr, depends, battery, sensors,
                      actuators, motors, static)
     agent.log.write_log_file(agent.log.stdout_log, 'active_serve ' + str(active_servs) + '\n')
