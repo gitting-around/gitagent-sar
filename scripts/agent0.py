@@ -499,7 +499,7 @@ class Agent0:
             aID = int(plan[0]['senderID'])
             aIDx = -1
             # print self.myknowledge.known_people
-            # Find the index of this agent in known_people or add it if it is not there
+            # Find the index of this agent in known_people. TODO add it if not there
             for x in self.myknowledge.known_people:
                 if x[0] == aID:
                     aIDx = self.myknowledge.known_people.index(x)
@@ -540,9 +540,10 @@ class Agent0:
             else:
                 delta = self.mycore.delta
                 if not abil or not equip or not knowled or not tools:
-                    self.simulation.finish = 0.0
+                    #For now a plan has only one task but TODO change simulation finish for all the tasks in a plan
+                    plan[0]['simulation_finish'] = 0.0
                 else:
-                    self.simulation.finish = 1.0
+                    plan[0]['simulation_finish'] = 1.0
                 if random.random() < delta:
                     accept = True
                 else:
@@ -551,7 +552,7 @@ class Agent0:
             # print accept
             msg = '[adapt %d] abil = %f, equip = %f, knowled = %f, tools = %f, env_risk = %f, task-trade = %f, delta = %f\n' % (self.simulation.interact, abil, equip, knowled, tools, env_risk, diff_task_tradeoff, delta)
 
-            msg += '[adapt %d] Accept = %f, simulation-finish = %f\n' % (self.simulation.interact, accept, self.simulation.finish)
+            msg += '[adapt %d] Accept = %f, simulation-finish = %f\n' % (self.simulation.interact, accept, self.myknowledge.service['simulation_finish'])
             msg += '[adapt %d] Plan ' + str(plan) + '\n'
 
             # self.log.write_log_file(self.log.stdout_log, msg)
@@ -848,11 +849,11 @@ class Agent0:
                 depend, gamma = self.mycore.b_gamma(energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, diff_task_progress)
             else:
                 gamma = self.mycore.gamma
-                if self.simulation.finish == -1.0:
+                if self.myknowledge.service['simulation_finish'] == -1.0:
                     if not abil or not equip or not knowled or not tools:
-                        self.simulation.finish = 0.0
+                        self.myknowledge.service['simulation_finish'] = 0.0
                     else:
-                        self.simulation.finish = 1.0
+                        self.myknowledge.service['simulation_finish'] = 1.0
                 if random.random() < gamma:
                     depend = True
                 else:
@@ -944,7 +945,7 @@ class Agent0:
                 self.myknowledge.service_id = -1
                 self.myknowledge.iteration = -1
 
-                if random.random() < self.simulation.finish:
+                if random.random() < self.myknowledge.service['simulation_finish']:
                     result = 1
                     self.myknowledge.completed_jobs += 1
                     self.simulation.no_tasks_completed[self.myknowledge.difficulty] += 1
@@ -997,7 +998,6 @@ class Agent0:
 
             msg = '[run_step ' + str(self.simulation.execute) + ' END] \n'
             rospy.loginfo(msg)
-            self.simulation.finish = -1.0
             self.end += 1
 
         except:
@@ -1119,11 +1119,12 @@ class Agent0:
                 abilities = ab[difficulty]
                 res = risurs[difficulty]
                 estim_time = etime[difficulty]
+                simulation_finish = -1.0
 
                 tasks = [{'abilities': abilities, 'estim_time': estim_time, 'senderID': senderId, 'energy': energy,
                           'iterations': iterations, 'id': tID, 'name': tName, 'endLoc': endLoc, 'planID': planId,
                           'equipment': equipment, 'startLoc': startLoc, 'reward': reward, 'resources': res,
-                          'reward': reward, 'noAgents': noAgents}]
+                          'simulation_finish': simulation_finish, 'noAgents': noAgents}]
 
                 # msg = '[generate goal ' + str(self.simulation.idle) + '] Chosen service: ' + str(tasks) + '\n'
                 # rospy.loginfo(msg)
