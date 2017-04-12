@@ -830,8 +830,7 @@ class Agent0:
             )
             rospy.loginfo(msg)
 
-            if candidate_id == self.myknowledge.service['senderID'] and not self.mycore.ID == self.myknowledge.service[
-                'senderID']:
+            if candidate_id == self.myknowledge.service['senderID'] and not self.mycore.ID == self.myknowledge.service['senderID']:
                 msg = '[run_step ' + str(self.simulation.execute) + '] do not ask the same agent that asked you for help'
                 rospy.loginfo(msg)
                 success_chance = -1.0
@@ -847,17 +846,19 @@ class Agent0:
 
             if self.static[0] == 0:
                 depend, gamma = self.mycore.b_gamma(energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, diff_task_progress)
+                self.myknowledge.service['simulation_finish'] = 1.0
             else:
                 gamma = self.mycore.gamma
-                if self.myknowledge.service['simulation_finish'] == -1.0:
-                    if not abil or not equip or not knowled or not tools:
-                        self.myknowledge.service['simulation_finish'] = 0.0
-                    else:
-                        self.myknowledge.service['simulation_finish'] = 1.0
                 if random.random() < gamma:
                     depend = True
                 else:
                     depend = False
+                    if self.myknowledge.service['simulation_finish'] == -1.0:
+                        if not abil or not equip or not knowled or not tools:
+                            self.myknowledge.service['simulation_finish'] = 0.0
+                            self.simulation.no_tasks_depend_attempted[self.myknowledge.difficulty] += 1
+                        else:
+                            self.myknowledge.service['simulation_finish'] = 1.0
 
             msg = '[run_step ' + str(self.simulation.execute) + '] ask for help: ' + str(depend) + '\n'
             msg += '[execute %d] abil = %f, equip = %f, knowled = %f, tools = %f, env_risk = %f, task-trade = %f, gamma = %f\n' % (self.simulation.execute, abil, equip, knowled, tools, env_risk, diff_task_progress, gamma) + '\n'
