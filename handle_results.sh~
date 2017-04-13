@@ -25,6 +25,8 @@ chmod a+x plot_2.py heatmap.py
 
 ./heatmap.py static static_total
 
+find . -name '.jpg*' | zip all.zip -@
+./send.sh
 
 cd ~/catkin_ws/results/braitenberg_1/dynamic/
 
@@ -52,5 +54,8 @@ chmod a+x plot_2.py heatmap.py
 
 
 ./heatmap.py dynamic dynamic_total
+
+find . -name '.jpg*' | zip all.zip -@
+./send.sh
 
 

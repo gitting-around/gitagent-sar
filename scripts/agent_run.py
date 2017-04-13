@@ -270,6 +270,8 @@ if __name__ == '__main__':
     static_string = rospy.get_param('brain_node/static')
     ##############################################################################
     static = [int(x) for x in static_string.split('|')]
+    # Either restart delta and gamma on each computation to the original values, in that case memory = 0; or use the past value for delta and gamma to compute the current ones, in that case memory = 1
+    memory = int(rospy.get_param('brain_node/memory'))
 
     stderr_file = '/home/mfi01/catkin_ws/results/error_brain' + str(agent_id)
     f = open(stderr_file, 'w+')
@@ -311,7 +313,7 @@ if __name__ == '__main__':
     provaNr = 2
     # follows indexing of willingness
     agent = GitAgent(agent_id, agent_conf, active_servs, [theta, delta], sim, popSize, provaNr, depends, battery, sensors,
-                     actuators, motors, static)
+                     actuators, motors, static, memory)
     agent.log.write_log_file(agent.log.stdout_log, 'active_serve ' + str(active_servs) + '\n')
 
     try:

@@ -3,9 +3,9 @@
 import sys
 
 
-def write_launch_file(nr_agents, theta, delta, pressure, static):
+def write_launch_file(nr_agents, theta, delta, pressure, static, memory):
     try:
-        launch = open('launch_agents_'+nr_agents+'_'+ str(theta) + '_' + str(delta) + '_' + str(pressure) + '_' + str(static)+'.launch', 'w')
+        launch = open('launch_agents_'+nr_agents+'_'+ str(theta) + '_' + str(delta) + '_' + str(pressure) + '_' + str(static) + '_mem' + str(memory) + '.launch', 'w')
         launch.write('<launch>\n')
 
         for ii in range(1, int(nr_agents) + 1):
@@ -19,7 +19,7 @@ def write_launch_file(nr_agents, theta, delta, pressure, static):
 
             launch.write(
                 '		<include file="$(find gitagent)/Launch/agent_' + str(theta) + '_' + str(delta) + '_' + str(
-                    pressure) + '_' + str(static) + '.launch"> <arg name="id" value="')
+                    pressure) + '_' + str(static) + '_mem' + str(memory) + '.launch"> <arg name="id" value="')
             launch.write(str(ii))
             launch.write('"/> </include>\n')
             launch.write('	</group>\n')
@@ -42,7 +42,7 @@ def write_launch_file(nr_agents, theta, delta, pressure, static):
 
 
 if __name__ == '__main__':
-    if not len(sys.argv) == 6:
-        print 'Usage: ./dynamic.py population_size theta delta pressure static'
+    if not len(sys.argv) == 7:
+        print 'Usage: ./dynamic.py population_size theta delta pressure static memory'
     else:
-        write_launch_file(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+        write_launch_file(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5],  sys.argv[6])

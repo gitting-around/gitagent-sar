@@ -11,7 +11,7 @@ import pdb
 
 
 class Core:
-    def __init__(self, willingness, ID, battery, sensors, actuators, motors):
+    def __init__(self, willingness, ID, battery, sensors, actuators, motors, memory):
         # willingness - [gamma, delta]
         self.willingness = willingness
         # Willingness to ask for assistance
@@ -67,6 +67,8 @@ class Core:
         self.performance = 1.0
 
         self.drop_rate = 0.0
+
+        self.memory = memory
 
         print self.willingness
         print self.state
@@ -206,7 +208,8 @@ class Core:
     def check_health(self):
         if self.battery <= self.battery_min or self.sensmot <= self.sensmot_min:
             # Levels not acceptable ---> change state to dead
-            self.state = 4
+            if not self.state == 3:
+                self.state = 4
 
     def best_candidate(self, known_people, task, log):
         #pdb.set_trace()
@@ -534,7 +537,8 @@ class Core:
 
     def b_delta(self, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_tradeoff):
 
-        self.delta = self.willingness[1]
+        if self.memory == 0:
+            self.delta = self.willingness[1]
         if energy_diff < self.battery_min:
             self.delta = 0.0
             return False, self.delta
@@ -584,13 +588,20 @@ class Core:
         self.env_risk = env_risk
         self.performance = performance
 
+        if self.delta > 1.0:
+            self.delta = 1.0
+        elif self.delta < 0.0:
+            self.delta = 0.0
+
         if random.random() <= self.delta:
             return True, self.delta
         else:
             return False, self.delta
 
     def b_gamma(self, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_progress):
-        self.gamma = self.willingness[0]
+
+        if self.memory == 0:
+            self.gamma = self.willingness[0]
         if energy_diff < self.battery_min:
             self.gamma = 1.0
             return False, self.gamma
@@ -640,6 +651,11 @@ class Core:
 
             if abs(dif_task_progress) > self.considerable_change:
                 self.gamma -= np.sign(dif_task_progress) * self.step
+
+        if self.gamma > 1.0:
+            self.gamma = 1.0
+        elif self.gamma < 0.0:
+            self.gamma = 0.0
 
         if random.random() <= self.gamma:
             return True, self.gamma

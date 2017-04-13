@@ -3,9 +3,9 @@
 import sys
 
 
-def write_launch_file(theta, delta, pressure, static):
+def write_launch_file(theta, delta, pressure, static, memory):
     try:
-        launch = open('agent_' + str(theta) + '_' + str(delta) + '_' + str(pressure) + '_' + str(static) + '.launch', 'w')
+        launch = open('agent_' + str(theta) + '_' + str(delta) + '_' + str(pressure) + '_' + str(static) + '_mem' + str(memory) + '.launch', 'w')
         launch.write('<launch>\n')
 
         launch.write('	<arg name="id"/>\n')
@@ -16,6 +16,7 @@ def write_launch_file(theta, delta, pressure, static):
         launch.write('		<param name="myDelta" value="' + str(delta) + '" />\n')
         launch.write('		<param name="pressure" value="' + str(pressure) + '" />\n')
         launch.write('		<param name="static" value="' + str(static) + '" />\n')
+        launch.write('		<param name="memory" value="' + str(memory) + '" />\n')
         launch.write('	</node>')
 
         launch.write(
@@ -30,8 +31,8 @@ def write_launch_file(theta, delta, pressure, static):
 
 
 if __name__ == '__main__':
-    if not len(sys.argv) == 5:
-        print 'Usage: ./dynamic-agent.py theta delta pressure static'
+    if not len(sys.argv) == 6:
+        print 'Usage: ./dynamic-agent.py theta delta pressure static memory'
         print 'write trial_number as a string as follows popsize_trialnumber'
     else:
-        write_launch_file(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+        write_launch_file(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])

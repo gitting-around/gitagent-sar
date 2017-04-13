@@ -24,7 +24,7 @@ import Queue
 
 class Agent0:
     def __init__(self, ID, conf, services, willingness, simulation, popSize, provaNr, depend_nr, battery, sensors,
-                 actuators, motors, static):
+                 actuators, motors, static, memory):
 
         # logging class
         self.log = mylogging.Logging(popSize, provaNr, ID, willingness[1], depend_nr)
@@ -58,7 +58,7 @@ class Agent0:
         ##############################################
 
         ## Contains info specific to the internal state of the agent such as: state, health attributes etc.
-        self.mycore = core_aboutme.Core(willingness, ID, conf['battery'], sensors, actuators, motors)
+        self.mycore = core_aboutme.Core(willingness, ID, conf['battery'], sensors, actuators, motors, memory)
         self.mycore.LOW = willingness[1]
 
         self.log.write_log_file(self.log.stdout_log, 'init gitagent ' + str(self.mycore.sensmot) + '\n')
@@ -318,7 +318,7 @@ class Agent0:
             return result
 
         except:
-            rospy.loginfo("Unexpected error: end]" + str(sys.exc_info()[0]))
+            rospy.loginfo("Unexpected error: " + str(sys.exc_info()[0]) + ". Line nr: " +str(sys.exc_info()[2].tb_lineno))
             pass
 
 
@@ -423,7 +423,7 @@ class Agent0:
 
 
         except:
-            rospy.loginfo("Unexpected error: " + str(sys.exc_info()[0]))
+            rospy.loginfo("Unexpected error: " + str(sys.exc_info()[0]) + ". Line nr: " +str(sys.exc_info()[2].tb_lineno))
             pass
         msg = '[execute_git %d - END]\n' % int(goal[0]['senderID'])
         rospy.loginfo(msg)
@@ -535,6 +535,9 @@ class Agent0:
             else:
                 performance = 1.0
 
+            msg = '[adapt %d] performance = %f\n' % (self.simulation.interact, performance)
+            rospy.loginfo(msg)
+            #pdb.set_trace()
             if self.static[1] == 0:
                 accept, delta = self.mycore.b_delta(energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, diff_task_tradeoff)
             else:
@@ -552,7 +555,7 @@ class Agent0:
             # print accept
             msg = '[adapt %d] abil = %f, equip = %f, knowled = %f, tools = %f, env_risk = %f, task-trade = %f, delta = %f\n' % (self.simulation.interact, abil, equip, knowled, tools, env_risk, diff_task_tradeoff, delta)
 
-            msg += '[adapt %d] Accept = %f, simulation-finish = %f\n' % (self.simulation.interact, accept, self.myknowledge.service['simulation_finish'])
+            msg += '[adapt %d] Accept = %f, simulation-finish = %f\n' % (self.simulation.interact, accept, plan[0]['simulation_finish'])
             msg += '[adapt %d] Plan ' + str(plan) + '\n'
 
             # self.log.write_log_file(self.log.stdout_log, msg)
@@ -616,7 +619,8 @@ class Agent0:
             self.simulation.delta_bool.append(accept)
 
         except:
-            rospy.loginfo("Unexpected error: " + str(sys.exc_info()[0]))
+            rospy.loginfo("Unexpected error: " + str(sys.exc_info()[0]) + ". Line nr: " +str(sys.exc_info()[2].tb_lineno))
+
             pass
 
         msg = '[adapt' + str(self.simulation.interact) + ' END] \n'
@@ -725,7 +729,7 @@ class Agent0:
             self.end += 1
 
         except:
-            rospy.loginfo("Unexpected error: " + str(sys.exc_info()[0]))
+            rospy.loginfo("Unexpected error: " + str(sys.exc_info()[0]) + ". Line nr: " +str(sys.exc_info()[2].tb_lineno))
             pass
 
     def execute_step_v2(self):
@@ -1002,7 +1006,7 @@ class Agent0:
             self.end += 1
 
         except:
-            rospy.loginfo("Unexpected error: " + str(sys.exc_info()[0]))
+            rospy.loginfo("Unexpected error: " + str(sys.exc_info()[0]) + ". Line nr: " +str(sys.exc_info()[2].tb_lineno))
             pass
 
     def regenerate(self):
