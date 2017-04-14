@@ -556,7 +556,7 @@ class Agent0:
             msg = '[adapt %d] abil = %f, equip = %f, knowled = %f, tools = %f, env_risk = %f, task-trade = %f, delta = %f\n' % (self.simulation.interact, abil, equip, knowled, tools, env_risk, diff_task_tradeoff, delta)
 
             msg += '[adapt %d] Accept = %f, simulation-finish = %f\n' % (self.simulation.interact, accept, plan[0]['simulation_finish'])
-            msg += '[adapt %d] Plan ' + str(plan) + '\n'
+            msg += 'Plan ' + str(plan) + '\n'
 
             # self.log.write_log_file(self.log.stdout_log, msg)
             rospy.loginfo(msg)

@@ -318,7 +318,7 @@ class Core:
         goal = abil + ' ' + str(goal['estim_time']) + ' ' + str(goal['senderID']) + ' ' + str(
             goal['energy']) + ' ' + str(goal['iterations']) + ' ' + str(goal['id']) + ' ' + goal[
                    'name'] + ' ' + eloc + ' ' + str(goal['planID']) + ' ' + equip + ' ' + sloc + ' ' + str(
-            goal['reward']) + ' ' + res + ' ' + str(goal['noAgents']) + '\n'
+            goal['reward']) + ' ' + res + ' ' + str(goal['noAgents']) + ' ' + str(goal['simulation_finish']) + '\n'
         return goal
 
     def string2goal(self, line, log):
@@ -396,10 +396,11 @@ class Core:
             # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % res)
             noAgents = int(line[13])
             # log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % noAgents)
+            simulation_finish = float(line[14])
 
             plan.append({'senderID': senderId, 'planID': planId, 'id': tID, 'iterations': iterations, 'energy': energy,
                          'reward': reward, 'name': tName, 'startLoc': startLoc, 'endLoc': endLoc, 'noAgents': noAgents,
-                         'equipment': equipment, 'abilities': abilities, 'resources': res, 'estim_time': estim_time})
+                         'equipment': equipment, 'abilities': abilities, 'resources': res, 'estim_time': estim_time, 'simulation_finish': simulation_finish})
 
         log.write_log_file(log.stdout_log, '[string2goal] plan content: %s\n' % plan)
 
