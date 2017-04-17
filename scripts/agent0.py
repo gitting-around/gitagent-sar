@@ -950,7 +950,7 @@ class Agent0:
                 self.myknowledge.service_id = -1
                 self.myknowledge.iteration = -1
 
-                if random.random() < self.myknowledge.service['simulation_finish']:
+                if random.random() <= self.myknowledge.service['simulation_finish']:
                     result = 1
                     self.myknowledge.completed_jobs += 1
                     self.simulation.no_tasks_completed[self.myknowledge.difficulty] += 1

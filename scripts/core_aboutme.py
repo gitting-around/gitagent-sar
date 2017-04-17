@@ -605,27 +605,27 @@ class Core:
             self.gamma = self.willingness[0]
         if energy_diff < self.battery_min:
             self.gamma = 1.0
-            return False, self.gamma
+            return True, self.gamma
         else:
             self.gamma -= self.step
             if abil == 0:
                 self.gamma = 1.0
-                return False, self.gamma
+                return True, self.gamma
             else:
                 self.gamma -= self.step
             if equip == 0:
                 self.gamma = 1.0
-                return False, self.gamma
+                return True, self.gamma
             else:
                 self.gamma -= self.step
             if knowled == 0:
                 self.gamma = 1.0
-                return False, self.gamma
+                return True, self.gamma
             else:
                 self.gamma -= self.step
             if tools == 0:
                 self.gamma = 1.0
-                return False, self.gamma
+                return True, self.gamma
             else:
                 self.gamma -= self.step
 
