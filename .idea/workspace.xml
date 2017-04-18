@@ -2,10 +2,81 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b995885d-766a-4760-8666-0a12a93d8380" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_0.0_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_0.0_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_0.0_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_0.0_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_0.5_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_0.5_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_0.5_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_0.5_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_1.0_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_1.0_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_1.0_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_1.0_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_0.0_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_0.0_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_0.0_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_0.0_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_0.5_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_0.5_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_0.5_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_0.5_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_1.0_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_1.0_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_1.0_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_1.0_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_0.0_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_0.0_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_0.0_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_0.0_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_0.5_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_0.5_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_0.5_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_0.5_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_1.0_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_1.0_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_1.0_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_1.0_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_0.0_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_0.0_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_0.0_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_0.0_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_0.5_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_0.5_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_0.5_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_0.5_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_1.0_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_1.0_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_1.0_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_1.0_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_0.0_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_0.0_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_0.0_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_0.0_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_0.5_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_0.5_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_0.5_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_0.5_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_1.0_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_1.0_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_1.0_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_1.0_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_0.0_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_0.0_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_0.0_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_0.0_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_0.5_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_0.5_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_0.5_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_0.5_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_1.0_0.05_0|0_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_1.0_0.05_0|0_mem1.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_1.0_0.05_1|1_mem0.launch" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_1.0_0.05_1|1_mem1.launch" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/agent0.py" afterPath="$PROJECT_DIR$/scripts/agent0.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/core_aboutme.py" afterPath="$PROJECT_DIR$/scripts/core_aboutme.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launch/dynamic-agent.py" afterPath="$PROJECT_DIR$/Launch/dynamic-agent.py" />
     </list>
     <ignored path="gitagent.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -25,11 +96,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="agent0.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="agent0.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/agent0.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="474">
-              <caret line="865" column="0" lean-forward="true" selection-start-line="865" selection-start-column="0" selection-end-line="865" selection-end-column="0" />
+            <state relative-caret-position="300">
+              <caret line="884" column="75" lean-forward="false" selection-start-line="884" selection-start-column="75" selection-end-line="884" selection-end-column="75" />
               <folding>
                 <element signature="n#!!doc" expanded="false" />
                 <element signature="e#643#3164#0" expanded="false" />
@@ -74,10 +145,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="core_aboutme.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="core_aboutme.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/core_aboutme.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="527">
+            <state relative-caret-position="940">
               <caret line="601" column="115" lean-forward="false" selection-start-line="601" selection-start-column="115" selection-end-line="601" selection-end-column="115" />
               <folding>
                 <element signature="e#22#32#0" expanded="true" />
@@ -151,7 +222,7 @@
       <file leaf-file-name="agent_run.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/agent_run.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-390">
+            <state relative-caret-position="525">
               <caret line="287" column="48" lean-forward="false" selection-start-line="287" selection-start-column="48" selection-end-line="287" selection-end-column="48" />
               <folding>
                 <element signature="e#272#13407#0" expanded="false" />
@@ -263,9 +334,9 @@
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="65" />
-    <option name="y" value="-4" />
-    <option name="width" value="1301" />
-    <option name="height" value="772" />
+    <option name="y" value="24" />
+    <option name="width" value="1855" />
+    <option name="height" value="1176" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -504,10 +575,10 @@
     <configuration />
   </component>
   <component name="ToolWindowManager">
-    <frame x="65" y="-4" width="1301" height="772" extended-state="6" />
+    <frame x="65" y="24" width="1855" height="1176" extended-state="7" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.114241004" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.11408297" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3281493" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.074418604" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -833,7 +904,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/agent_run.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-390">
+        <state relative-caret-position="525">
           <caret line="287" column="48" lean-forward="false" selection-start-line="287" selection-start-column="48" selection-end-line="287" selection-end-column="48" />
           <folding>
             <element signature="e#272#13407#0" expanded="false" />
@@ -849,37 +920,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/core_aboutme.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
-          <caret line="601" column="115" lean-forward="false" selection-start-line="601" selection-start-column="115" selection-end-line="601" selection-end-column="115" />
-          <folding>
-            <element signature="e#22#32#0" expanded="true" />
-            <element signature="e#2360#4028#0" expanded="false" />
-            <element signature="e#4093#4674#0" expanded="false" />
-            <element signature="e#4802#5512#0" expanded="false" />
-            <element signature="e#5734#7183#0" expanded="false" />
-            <element signature="e#7317#7518#0" expanded="false" />
-            <element signature="e#7583#9788#0" expanded="false" />
-            <element signature="e#9836#9872#0" expanded="false" />
-            <element signature="e#10022#10085#0" expanded="false" />
-            <element signature="e#10146#10600#0" expanded="false" />
-            <element signature="e#10665#10974#0" expanded="false" />
-            <element signature="e#11017#12087#0" expanded="false" />
-            <element signature="e#12135#14631#0" expanded="false" />
-            <element signature="e#14684#17733#0" expanded="false" />
-            <element signature="e#17784#21214#0" expanded="false" />
-            <element signature="e#21319#22044#0" expanded="false" />
-            <element signature="e#22116#22847#0" expanded="false" />
-            <element signature="e#25120#27171#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/agent0.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="474">
-          <caret line="865" column="0" lean-forward="true" selection-start-line="865" selection-start-column="0" selection-end-line="865" selection-end-column="0" />
+        <state relative-caret-position="300">
+          <caret line="884" column="75" lean-forward="false" selection-start-line="884" selection-start-column="75" selection-end-line="884" selection-end-column="75" />
           <folding>
             <element signature="n#!!doc" expanded="false" />
             <element signature="e#643#3164#0" expanded="false" />
@@ -919,6 +963,33 @@
             <element signature="e#63893#67978#0" expanded="false" />
             <element signature="e#68355#68512#0" expanded="false" />
             <element signature="e#68636#68640#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/core_aboutme.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="940">
+          <caret line="601" column="115" lean-forward="false" selection-start-line="601" selection-start-column="115" selection-end-line="601" selection-end-column="115" />
+          <folding>
+            <element signature="e#22#32#0" expanded="true" />
+            <element signature="e#2360#4028#0" expanded="false" />
+            <element signature="e#4093#4674#0" expanded="false" />
+            <element signature="e#4802#5512#0" expanded="false" />
+            <element signature="e#5734#7183#0" expanded="false" />
+            <element signature="e#7317#7518#0" expanded="false" />
+            <element signature="e#7583#9788#0" expanded="false" />
+            <element signature="e#9836#9872#0" expanded="false" />
+            <element signature="e#10022#10085#0" expanded="false" />
+            <element signature="e#10146#10600#0" expanded="false" />
+            <element signature="e#10665#10974#0" expanded="false" />
+            <element signature="e#11017#12087#0" expanded="false" />
+            <element signature="e#12135#14631#0" expanded="false" />
+            <element signature="e#14684#17733#0" expanded="false" />
+            <element signature="e#17784#21214#0" expanded="false" />
+            <element signature="e#21319#22044#0" expanded="false" />
+            <element signature="e#22116#22847#0" expanded="false" />
+            <element signature="e#25120#27171#0" expanded="false" />
           </folding>
         </state>
       </provider>

@@ -10,7 +10,7 @@ def write_launch_file(theta, delta, pressure, static, memory):
 
         launch.write('	<arg name="id"/>\n')
         launch.write(
-            '	<node pkg="gitagent" type="agent_run.py" name="brain_node" output="log" launch-prefix="xterm -e">\n')
+            '	<node pkg="gitagent" type="agent_run.py" name="brain_node" output="log">\n')
         launch.write('		<param name="myID" value="$(arg id)" />\n')
         launch.write('		<param name="myTheta" value="' + str(theta) + '" />\n')
         launch.write('		<param name="myDelta" value="' + str(delta) + '" />\n')
@@ -20,7 +20,7 @@ def write_launch_file(theta, delta, pressure, static, memory):
         launch.write('	</node>')
 
         launch.write(
-            '	<node pkg="gitagent" type="msg_PUnit.py" name="msg_punit" output="log" launch-prefix="xterm -e">\n')
+            '	<node pkg="gitagent" type="msg_PUnit.py" name="msg_punit" output="log">\n')
         launch.write('		<param name="myID" value="$(arg id)" />\n')
         launch.write('	</node>\n')
 
