@@ -2,81 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b995885d-766a-4760-8666-0a12a93d8380" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_0.0_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_0.0_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_0.0_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_0.0_0.05_1|1_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_0.5_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_0.5_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_0.5_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_0.5_0.05_1|1_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_1.0_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_1.0_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_1.0_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.0_1.0_0.05_1|1_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_0.0_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_0.0_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_0.0_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_0.0_0.05_1|1_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_0.5_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_0.5_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_0.5_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_0.5_0.05_1|1_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_1.0_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_1.0_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_1.0_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_0.5_1.0_0.05_1|1_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_0.0_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_0.0_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_0.0_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_0.0_0.05_1|1_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_0.5_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_0.5_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_0.5_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_0.5_0.05_1|1_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_1.0_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_1.0_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_1.0_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/agent_1.0_1.0_0.05_1|1_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_0.0_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_0.0_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_0.0_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_0.0_0.05_1|1_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_0.5_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_0.5_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_0.5_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_0.5_0.05_1|1_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_1.0_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_1.0_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_1.0_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.0_1.0_0.05_1|1_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_0.0_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_0.0_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_0.0_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_0.0_0.05_1|1_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_0.5_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_0.5_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_0.5_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_0.5_0.05_1|1_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_1.0_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_1.0_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_1.0_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_0.5_1.0_0.05_1|1_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_0.0_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_0.0_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_0.0_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_0.0_0.05_1|1_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_0.5_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_0.5_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_0.5_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_0.5_0.05_1|1_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_1.0_0.05_0|0_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_1.0_0.05_0|0_mem1.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_1.0_0.05_1|1_mem0.launch" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Launch/launch_agents_5_1.0_1.0_0.05_1|1_mem1.launch" afterPath="" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/all_in_all.sh" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mean.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Launch/dynamic-agent.py" afterPath="$PROJECT_DIR$/Launch/dynamic-agent.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/heatmap.py" afterPath="$PROJECT_DIR$/heatmap.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/agent0.py" afterPath="$PROJECT_DIR$/scripts/agent0.py" />
     </list>
     <ignored path="gitagent.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -96,16 +27,15 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="agent0.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="agent0.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/agent0.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="884" column="75" lean-forward="false" selection-start-line="884" selection-start-column="75" selection-end-line="884" selection-end-column="75" />
+            <state relative-caret-position="315">
+              <caret line="100" column="48" lean-forward="false" selection-start-line="100" selection-start-column="48" selection-end-line="100" selection-end-column="48" />
               <folding>
                 <element signature="n#!!doc" expanded="false" />
                 <element signature="e#643#3164#0" expanded="false" />
                 <element signature="e#3296#3582#0" expanded="false" />
-                <element signature="e#3611#6203#0" expanded="false" />
                 <element signature="e#6237#6959#0" expanded="false" />
                 <element signature="e#7004#7319#0" expanded="false" />
                 <element signature="e#7351#7503#0" expanded="false" />
@@ -116,7 +46,6 @@
                 <element signature="e#21141#22051#0" expanded="false" />
                 <element signature="e#22104#22330#0" expanded="false" />
                 <element signature="e#22576#23444#0" expanded="false" />
-                <element signature="e#23482#30549#0" expanded="false" />
                 <element signature="e#28776#30028#0" expanded="false" />
                 <element signature="e#30593#30688#0" expanded="false" />
                 <element signature="e#30718#31037#0" expanded="false" />
@@ -145,10 +74,20 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="core_aboutme.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="all_in_all.sh" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/all_in_all.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="15">
+              <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="core_aboutme.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/core_aboutme.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="940">
+            <state relative-caret-position="2685">
               <caret line="601" column="115" lean-forward="false" selection-start-line="601" selection-start-column="115" selection-end-line="601" selection-end-column="115" />
               <folding>
                 <element signature="e#22#32#0" expanded="true" />
@@ -212,8 +151,8 @@
       <file leaf-file-name="run_sim.sh" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/run_sim.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="7" column="72" lean-forward="false" selection-start-line="7" selection-start-column="72" selection-end-line="7" selection-end-column="72" />
+            <state relative-caret-position="945">
+              <caret line="63" column="0" lean-forward="true" selection-start-line="63" selection-start-column="0" selection-end-line="63" selection-end-column="36" />
               <folding />
             </state>
           </provider>
@@ -242,8 +181,8 @@
       <file leaf-file-name="plot_2.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/plot_2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="64" column="19" lean-forward="false" selection-start-line="64" selection-start-column="19" selection-end-line="64" selection-end-column="19" />
+            <state relative-caret-position="795">
+              <caret line="95" column="0" lean-forward="false" selection-start-line="95" selection-start-column="0" selection-end-line="95" selection-end-column="0" />
               <folding>
                 <element signature="e#22#32#0" expanded="true" />
                 <element signature="e#210#1442#0" expanded="false" />
@@ -255,8 +194,20 @@
       <file leaf-file-name="heatmap.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/heatmap.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="810">
-              <caret line="56" column="22" lean-forward="false" selection-start-line="56" selection-start-column="22" selection-end-line="56" selection-end-column="58" />
+            <state relative-caret-position="885">
+              <caret line="59" column="29" lean-forward="false" selection-start-line="59" selection-start-column="29" selection-end-line="59" selection-end-column="29" />
+              <folding>
+                <element signature="e#23#33#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="mean.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mean.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="660">
+              <caret line="46" column="16" lean-forward="false" selection-start-line="46" selection-start-column="16" selection-end-line="46" selection-end-column="16" />
               <folding>
                 <element signature="e#23#33#0" expanded="true" />
               </folding>
@@ -324,11 +275,13 @@
         <option value="$PROJECT_DIR$/plot.py" />
         <option value="$PROJECT_DIR$/Launch/agent_1_0.2_.launch" />
         <option value="$PROJECT_DIR$/plot_2.py" />
-        <option value="$PROJECT_DIR$/heatmap.py" />
         <option value="$PROJECT_DIR$/scripts/simulation.py" />
         <option value="$PROJECT_DIR$/scripts/agent_run.py" />
-        <option value="$PROJECT_DIR$/scripts/agent0.py" />
         <option value="$PROJECT_DIR$/scripts/core_aboutme.py" />
+        <option value="$PROJECT_DIR$/heatmap.py" />
+        <option value="$PROJECT_DIR$/mean.py" />
+        <option value="$PROJECT_DIR$/all_in_all.sh" />
+        <option value="$PROJECT_DIR$/scripts/agent0.py" />
       </list>
     </option>
   </component>
@@ -575,7 +528,7 @@
     <configuration />
   </component>
   <component name="ToolWindowManager">
-    <frame x="65" y="24" width="1855" height="1176" extended-state="7" />
+    <frame x="65" y="24" width="1855" height="1176" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.11408297" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -631,20 +584,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/scripts/action-server.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1802">
-          <caret line="110" column="10" lean-forward="false" selection-start-line="110" selection-start-column="10" selection-end-line="110" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/conf_2">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/action-client.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="442">
@@ -828,26 +767,10 @@
     <entry file="file://$PROJECT_DIR$/Launch/agent_2_0.5_.launch" />
     <entry file="file://$PROJECT_DIR$/Launch/agent_2_0.7_.launch" />
     <entry file="file://$PROJECT_DIR$/Launch/agent_1_0.2_.launch" />
-    <entry file="file://$PROJECT_DIR$/run_sim.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="72" lean-forward="false" selection-start-line="7" selection-start-column="72" selection-end-line="7" selection-end-column="72" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/simulation_functions.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
           <caret line="22" column="65" lean-forward="false" selection-start-line="22" selection-start-column="65" selection-end-line="22" selection-end-column="65" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/mylogging.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="91" lean-forward="false" selection-start-line="9" selection-start-column="91" selection-end-line="9" selection-end-column="91" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -858,23 +781,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/heatmap.py">
+    <entry file="file://$PROJECT_DIR$/scripts/core_aboutme.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="810">
-          <caret line="56" column="22" lean-forward="false" selection-start-line="56" selection-start-column="22" selection-end-line="56" selection-end-column="58" />
-          <folding>
-            <element signature="e#23#33#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plot_2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="64" column="19" lean-forward="false" selection-start-line="64" selection-start-column="19" selection-end-line="64" selection-end-column="19" />
+        <state relative-caret-position="2685">
+          <caret line="601" column="115" lean-forward="false" selection-start-line="601" selection-start-column="115" selection-end-line="601" selection-end-column="115" />
           <folding>
             <element signature="e#22#32#0" expanded="true" />
-            <element signature="e#210#1442#0" expanded="false" />
+            <element signature="e#2360#4028#0" expanded="false" />
+            <element signature="e#4093#4674#0" expanded="false" />
+            <element signature="e#4802#5512#0" expanded="false" />
+            <element signature="e#5734#7183#0" expanded="false" />
+            <element signature="e#7317#7518#0" expanded="false" />
+            <element signature="e#7583#9788#0" expanded="false" />
+            <element signature="e#9836#9872#0" expanded="false" />
+            <element signature="e#10022#10085#0" expanded="false" />
+            <element signature="e#10146#10600#0" expanded="false" />
+            <element signature="e#10665#10974#0" expanded="false" />
+            <element signature="e#11017#12087#0" expanded="false" />
+            <element signature="e#12135#14631#0" expanded="false" />
+            <element signature="e#14684#17733#0" expanded="false" />
+            <element signature="e#17784#21214#0" expanded="false" />
+            <element signature="e#21319#22044#0" expanded="false" />
+            <element signature="e#22116#22847#0" expanded="false" />
+            <element signature="e#25120#27171#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -902,6 +831,14 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/mylogging.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="91" lean-forward="false" selection-start-line="9" selection-start-column="91" selection-end-line="9" selection-end-column="91" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/agent_run.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="525">
@@ -920,15 +857,61 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/mean.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="660">
+          <caret line="46" column="16" lean-forward="false" selection-start-line="46" selection-start-column="16" selection-end-line="46" selection-end-column="16" />
+          <folding>
+            <element signature="e#23#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plot_2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="795">
+          <caret line="95" column="0" lean-forward="false" selection-start-line="95" selection-start-column="0" selection-end-line="95" selection-end-column="0" />
+          <folding>
+            <element signature="e#22#32#0" expanded="true" />
+            <element signature="e#210#1442#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/all_in_all.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/heatmap.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="885">
+          <caret line="59" column="29" lean-forward="false" selection-start-line="59" selection-start-column="29" selection-end-line="59" selection-end-column="29" />
+          <folding>
+            <element signature="e#23#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run_sim.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="945">
+          <caret line="63" column="0" lean-forward="true" selection-start-line="63" selection-start-column="0" selection-end-line="63" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/agent0.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="884" column="75" lean-forward="false" selection-start-line="884" selection-start-column="75" selection-end-line="884" selection-end-column="75" />
+        <state relative-caret-position="315">
+          <caret line="100" column="48" lean-forward="false" selection-start-line="100" selection-start-column="48" selection-end-line="100" selection-end-column="48" />
           <folding>
             <element signature="n#!!doc" expanded="false" />
             <element signature="e#643#3164#0" expanded="false" />
             <element signature="e#3296#3582#0" expanded="false" />
-            <element signature="e#3611#6203#0" expanded="false" />
             <element signature="e#6237#6959#0" expanded="false" />
             <element signature="e#7004#7319#0" expanded="false" />
             <element signature="e#7351#7503#0" expanded="false" />
@@ -939,7 +922,6 @@
             <element signature="e#21141#22051#0" expanded="false" />
             <element signature="e#22104#22330#0" expanded="false" />
             <element signature="e#22576#23444#0" expanded="false" />
-            <element signature="e#23482#30549#0" expanded="false" />
             <element signature="e#28776#30028#0" expanded="false" />
             <element signature="e#30593#30688#0" expanded="false" />
             <element signature="e#30718#31037#0" expanded="false" />
@@ -963,33 +945,6 @@
             <element signature="e#63893#67978#0" expanded="false" />
             <element signature="e#68355#68512#0" expanded="false" />
             <element signature="e#68636#68640#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/core_aboutme.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="940">
-          <caret line="601" column="115" lean-forward="false" selection-start-line="601" selection-start-column="115" selection-end-line="601" selection-end-column="115" />
-          <folding>
-            <element signature="e#22#32#0" expanded="true" />
-            <element signature="e#2360#4028#0" expanded="false" />
-            <element signature="e#4093#4674#0" expanded="false" />
-            <element signature="e#4802#5512#0" expanded="false" />
-            <element signature="e#5734#7183#0" expanded="false" />
-            <element signature="e#7317#7518#0" expanded="false" />
-            <element signature="e#7583#9788#0" expanded="false" />
-            <element signature="e#9836#9872#0" expanded="false" />
-            <element signature="e#10022#10085#0" expanded="false" />
-            <element signature="e#10146#10600#0" expanded="false" />
-            <element signature="e#10665#10974#0" expanded="false" />
-            <element signature="e#11017#12087#0" expanded="false" />
-            <element signature="e#12135#14631#0" expanded="false" />
-            <element signature="e#14684#17733#0" expanded="false" />
-            <element signature="e#17784#21214#0" expanded="false" />
-            <element signature="e#21319#22044#0" expanded="false" />
-            <element signature="e#22116#22847#0" expanded="false" />
-            <element signature="e#25120#27171#0" expanded="false" />
           </folding>
         </state>
       </provider>

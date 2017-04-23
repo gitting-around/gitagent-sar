@@ -9,14 +9,8 @@ import numpy as np
 
 import colormaps as cmaps
 
-def create_heatmap(dynamic, fname):
-    data = []
-    with open(fname, 'r') as f:
-        lines = f.readlines()
-        for line in lines:
-            data.append(map(float, filter(None, line.strip().split(' '))))
+def create_heatmap(data):
 
-    data = np.array(data)
     print data
     x = np.array(data[:,1])
     y = np.array(data[:,0])
@@ -44,19 +38,47 @@ def create_heatmap(dynamic, fname):
     plt.pcolormesh(x, y, grid_all)
     plt.colorbar() #need a colorbar to show the intensity scale
     plt.title('All')
-    fig.savefig(dynamic+'all_heatmap.jpg')
+    fig.savefig('all_heatmap.jpg')
 
     fig = plt.figure()
     plt.pcolormesh(x, y, grid_dep)
     plt.colorbar() #need a colorbar to show the intensity scale
     plt.title('Depend')
-    fig.savefig(dynamic+'depend_heatmap.jpg')
+    fig.savefig('depend_heatmap.jpg')
+
+
+def create_ave_matrix(fnames):
+    tots = []
+    for name in fnames:
+        tots.append([])
+        with open(name, 'r') as f:
+            lines = f.readlines()
+            for line in lines:
+                tots[len(tots) - 1].append(map(float, filter(None, line.strip().split(' '))))
+
+    tots = np.array(tots)
+    print tots
+    halfs = tots[:,:,2:4]
+    print halfs
+
+    m = np.mean(halfs, axis=0)
+    print m
+
+    final_mean = np.zeros((9,4))
+    final_mean[:,0:2] = tots[0,:,0:2]
+    final_mean[:,2:4] = m
+
+    return final_mean
+
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print 'Usage: ./plot_2.py static/dynamic tots_file'
+        print 'Usage: ./plot_2.py file1 file2 ... fileN'
         sys.exit()
 
-    create_heatmap(sys.argv[1], sys.argv[2])
+    name_of_files = []
+    for x in range(1, len(sys.argv)):
+        name_of_files.append(sys.argv[x])
 
-
+    mean_vals = create_ave_matrix(name_of_files)
+    create_heatmap(mean_vals)
