@@ -41,13 +41,13 @@ def create_heatmap(dynamic, fname):
     fig = plt.figure()
     plt.register_cmap(name='viridis', cmap=cmaps.viridis)
     plt.set_cmap(cmaps.viridis)
-    plt.pcolormesh(x, y, grid_all, vmin=0., vmax=1.)
+    plt.pcolormesh(x, y, grid_all, vmin=-1., vmax=1.)
     plt.colorbar() #need a colorbar to show the intensity scale
     plt.title('All')
     fig.savefig(dynamic+'all_heatmap.jpg')
 
     fig = plt.figure()
-    plt.pcolormesh(x, y, grid_dep, vmin=0., vmax=1.)
+    plt.pcolormesh(x, y, grid_dep)
     plt.colorbar() #need a colorbar to show the intensity scale
     plt.title('Depend')
     fig.savefig(dynamic+'depend_heatmap.jpg')
