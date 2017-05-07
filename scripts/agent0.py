@@ -530,8 +530,10 @@ class Agent0:
             # self.log.write_log_file(self.log.stdout_log, msg)
             rospy.loginfo(msg)
 
-            if not sum(self.simulation.no_self_tasks_attempted) == 0:
-                performance = sum(self.simulation.no_self_tasks_completed) / float(sum(self.simulation.no_self_tasks_attempted))
+            #if not sum(self.simulation.no_self_tasks_attempted) == 0:
+            if not sum(self.simulation.no_tasks_attempted) == 0:
+                #performance = sum(self.simulation.no_self_tasks_completed) / float(sum(self.simulation.no_self_tasks_attempted))
+                performance = sum(self.simulation.no_tasks_completed) / float(sum(self.simulation.no_tasks_attempted))
             else:
                 performance = 1.0
 
@@ -843,8 +845,10 @@ class Agent0:
             energy_diff = self.mycore.battery - float(self.myknowledge.service['energy'])
             ag_risk = 1.0 - success_chance
 
-            if not sum(self.simulation.no_self_tasks_attempted) == 0:
-                performance = sum(self.simulation.no_self_tasks_completed) / float(sum(self.simulation.no_self_tasks_attempted))
+            #if not sum(self.simulation.no_self_tasks_attempted) == 0:
+            if not sum(self.simulation.no_tasks_attempted) == 0:
+                #performance = sum(self.simulation.no_self_tasks_completed) / float(sum(self.simulation.no_self_tasks_attempted))
+                performance = sum(self.simulation.no_tasks_completed) / float(sum(self.simulation.no_tasks_attempted))
             else:
                 performance = 1.0
 
