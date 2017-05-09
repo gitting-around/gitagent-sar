@@ -564,7 +564,12 @@ class Agent0:
             rospy.loginfo(msg)
 
             self.myknowledge.lock.acquire()
-            self.simulation.delta_theta.append([0, delta, accept, performance])
+            #CAREFUL - appended performance with respect to dependent jobs
+            if not sum(self.simulation.no_tasks_depend_attempted) == 0:
+                temp_performance = sum(self.simulation.no_tasks_depend_completed) / float(sum(self.simulation.no_tasks_depend_attempted))
+            else:
+                temp_performance = 1.0
+            self.simulation.delta_theta.append([0, delta, accept, temp_performance])
             self.myknowledge.lock.release()
 
             if accept:
@@ -874,7 +879,12 @@ class Agent0:
             rospy.loginfo(msg)
 
             self.myknowledge.lock.acquire()
-            self.simulation.delta_theta.append([1, gamma, depend, performance])
+            #CAREFUL - appended performance with respect to dependent jobs
+            if not sum(self.simulation.no_tasks_depend_attempted) == 0:
+                temp_performance = sum(self.simulation.no_tasks_depend_completed) / float(sum(self.simulation.no_tasks_depend_attempted))
+            else:
+                temp_performance = 1.0
+            self.simulation.delta_theta.append([1, gamma, depend, temp_performance])
             self.myknowledge.lock.release()
 
             result = 0
