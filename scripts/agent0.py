@@ -566,10 +566,15 @@ class Agent0:
             self.myknowledge.lock.acquire()
             #CAREFUL - appended performance with respect to dependent jobs
             if not sum(self.simulation.no_tasks_depend_attempted) == 0:
-                temp_performance = sum(self.simulation.no_tasks_depend_completed) / float(sum(self.simulation.no_tasks_depend_attempted))
+                depend_performance = sum(self.simulation.no_tasks_depend_completed) / float(sum(self.simulation.no_tasks_depend_attempted))
             else:
-                temp_performance = 1.0
-            self.simulation.delta_theta.append([0, delta, accept, temp_performance])
+                depend_performance = 1.0
+
+            if not sum(self.simulation.no_tasks_depend_attempted) == 0:
+                own_performance = sum(self.simulation.no_self_tasks_completed) / float(sum(self.simulation.no_self_tasks_attempted))
+            else:
+                own_performance = 1.0
+            self.simulation.delta_theta.append([0, delta, accept, performance, depend_performance, own_performance])
             self.myknowledge.lock.release()
 
             if accept:
@@ -881,10 +886,15 @@ class Agent0:
             self.myknowledge.lock.acquire()
             #CAREFUL - appended performance with respect to dependent jobs
             if not sum(self.simulation.no_tasks_depend_attempted) == 0:
-                temp_performance = sum(self.simulation.no_tasks_depend_completed) / float(sum(self.simulation.no_tasks_depend_attempted))
+                depend_performance = sum(self.simulation.no_tasks_depend_completed) / float(sum(self.simulation.no_tasks_depend_attempted))
             else:
-                temp_performance = 1.0
-            self.simulation.delta_theta.append([1, gamma, depend, temp_performance])
+                depend_performance = 1.0
+
+            if not sum(self.simulation.no_tasks_depend_attempted) == 0:
+                own_performance = sum(self.simulation.no_self_tasks_completed) / float(sum(self.simulation.no_self_tasks_attempted))
+            else:
+                own_performance = 1.0
+            self.simulation.delta_theta.append([1, gamma, depend, performance, depend_performance, own_performance])
             self.myknowledge.lock.release()
 
             result = 0
