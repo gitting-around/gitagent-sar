@@ -214,7 +214,7 @@ class Agent0:
         self.begin += 1
         try:
             client = actionlib.SimpleActionClient(agent_id, doMeFavorAction)
-            if not client.wait_for_server(timeout=rospy.Duration(60)):
+            if not client.wait_for_server(timeout=rospy.Duration(120)):
                 msg = '[fsm ' + str(self.simulation.fsm) + '- blocking call - BEGIN]  ' + str(
                     rospy.get_name()) + ' -> Couldn\'t connect to server \n'
                 # self.log.write_log_file(self.log.stdout_log, msg)
@@ -378,7 +378,7 @@ class Agent0:
             # self.log.write_log_file(self.log.stdout_log, '[execute_git %d] %s\n' % (int(goal[0]['senderID']), str(self.myknowledge.plan_pending_eval)))
             self.myknowledge.lock.release()
 
-            timeout = time.time() + 10  # set timeout to be 10 seconds
+            timeout = time.time() + 30  # set timeout to be 10 seconds
             # self.log.write_log_file(self.log.stdout_log, '[execute_git %d] timeout: %s\n' % (int(goal[0]['senderID']), str(timeout)))
 
             msg = '[execute_git %d] Current goal status: %s\n' % (int(goal[0]['senderID']), goalhandle.get_goal_status())
