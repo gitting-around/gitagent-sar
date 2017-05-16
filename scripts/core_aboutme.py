@@ -546,19 +546,19 @@ class Core:
         else:
             self.delta += self.step
             if abil == 0:
-                self.delta -= self.step
+                self.delta -= self.step * 10
             else:
                 self.delta += self.step
             if equip == 0:
-                self.delta -= self.step
+                self.delta -= self.step * 10
             else:
                 self.delta += self.step
             if knowled == 0:
-                self.delta -= self.step
+                self.delta -= self.step * 10
             else:
                 self.delta += self.step
             if tools == 0:
-                self.delta -= self.step
+                self.delta -= self.step * 10
             else:
                 self.delta += self.step
 
