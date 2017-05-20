@@ -570,7 +570,7 @@ class Agent0:
             else:
                 depend_performance = 1.0
 
-            if not sum(self.simulation.no_tasks_depend_attempted) == 0:
+            if not sum(self.simulation.no_self_tasks_attempted) == 0:
                 own_performance = sum(self.simulation.no_self_tasks_completed) / float(sum(self.simulation.no_self_tasks_attempted))
             else:
                 own_performance = 1.0
