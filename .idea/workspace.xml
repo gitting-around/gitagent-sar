@@ -4,7 +4,6 @@
     <list default="true" id="b995885d-766a-4760-8666-0a12a93d8380" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/agent0.py" afterPath="$PROJECT_DIR$/scripts/agent0.py" />
     </list>
     <ignored path="gitagent.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -24,11 +23,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="agent0.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="agent0.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/agent0.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="757">
-              <caret line="572" column="62" lean-forward="false" selection-start-line="572" selection-start-column="62" selection-end-line="572" selection-end-column="62" />
+            <state relative-caret-position="3810">
+              <caret line="526" column="35" lean-forward="false" selection-start-line="526" selection-start-column="28" selection-end-line="526" selection-end-column="35" />
               <folding>
                 <element signature="e#3296#3582#0" expanded="false" />
                 <element signature="e#3611#6203#0" expanded="false" />
@@ -54,6 +53,7 @@
                 <element signature="e#54366#54370#0" expanded="false" />
                 <element signature="e#54417#54561#0" expanded="false" />
                 <element signature="e#54600#56435#0" expanded="false" />
+                <element signature="e#56477#59153#0" expanded="false" />
                 <element signature="e#59188#59192#0" expanded="false" />
                 <element signature="e#59229#59233#0" expanded="false" />
                 <element signature="e#59276#59280#0" expanded="false" />
@@ -69,24 +69,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="all_in_all.sh" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/all_in_all.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
-              <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="core_aboutme.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/core_aboutme.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="945">
+            <state relative-caret-position="1860">
               <caret line="546" column="35" lean-forward="false" selection-start-line="546" selection-start-column="35" selection-end-line="546" selection-end-column="35" />
               <folding>
                 <element signature="e#22#32#0" expanded="true" />
-                <element signature="e#300#2129#0" expanded="false" />
                 <element signature="e#2360#4028#0" expanded="false" />
                 <element signature="e#4093#4674#0" expanded="false" />
                 <element signature="e#4802#5512#0" expanded="false" />
@@ -154,13 +143,12 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="agent_run.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="agent_run.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/agent_run.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-185">
-              <caret line="287" column="48" lean-forward="false" selection-start-line="287" selection-start-column="48" selection-end-line="287" selection-end-column="48" />
+            <state relative-caret-position="792">
+              <caret line="334" column="117" lean-forward="false" selection-start-line="334" selection-start-column="117" selection-end-line="334" selection-end-column="117" />
               <folding>
-                <element signature="e#272#13407#0" expanded="false" />
                 <element signature="e#319#693#0" expanded="false" />
                 <element signature="e#744#2258#0" expanded="false" />
                 <element signature="e#2305#4433#0" expanded="false" />
@@ -170,6 +158,16 @@
                 <element signature="e#7792#12473#0" expanded="false" />
                 <element signature="e#12536#13407#0" expanded="false" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="plot_2.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/plot_2.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="30">
+              <caret line="2" column="19" lean-forward="false" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -213,6 +211,7 @@
       <find>no_tasks_co</find>
       <find>OLD_sTATE</find>
       <find>simulation.finish</find>
+      <find>successfull</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -259,13 +258,13 @@
         <option value="$PROJECT_DIR$/Launch/agent_1_0.2_.launch" />
         <option value="$PROJECT_DIR$/plot_2.py" />
         <option value="$PROJECT_DIR$/scripts/simulation.py" />
-        <option value="$PROJECT_DIR$/scripts/agent_run.py" />
         <option value="$PROJECT_DIR$/heatmap.py" />
         <option value="$PROJECT_DIR$/mean.py" />
         <option value="$PROJECT_DIR$/all_in_all.sh" />
         <option value="$PROJECT_DIR$/../../results/braitenberg_1/tests/plot_2.py" />
         <option value="$PROJECT_DIR$/scripts/core_aboutme.py" />
         <option value="$PROJECT_DIR$/scripts/agent0.py" />
+        <option value="$PROJECT_DIR$/scripts/agent_run.py" />
       </list>
     </option>
   </component>
@@ -512,10 +511,10 @@
     <configuration />
   </component>
   <component name="ToolWindowManager">
-    <frame x="65" y="-4" width="1855" height="1204" extended-state="6" />
+    <frame x="65" y="-4" width="1855" height="1204" extended-state="7" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.104803495" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15010917" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3281493" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.074418604" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -758,6 +757,68 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/heatmap.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="855">
+          <caret line="59" column="29" lean-forward="false" selection-start-line="59" selection-start-column="29" selection-end-line="59" selection-end-column="29" />
+          <folding>
+            <element signature="e#23#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mean.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1185">
+          <caret line="81" column="0" lean-forward="false" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
+          <folding>
+            <element signature="e#23#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run_sim.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../results/braitenberg_1/tests/plot_2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="645">
+          <caret line="112" column="8" lean-forward="false" selection-start-line="112" selection-start-column="8" selection-end-line="112" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/core_aboutme.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1860">
+          <caret line="546" column="35" lean-forward="false" selection-start-line="546" selection-start-column="35" selection-end-line="546" selection-end-column="35" />
+          <folding>
+            <element signature="e#22#32#0" expanded="true" />
+            <element signature="e#2360#4028#0" expanded="false" />
+            <element signature="e#4093#4674#0" expanded="false" />
+            <element signature="e#4802#5512#0" expanded="false" />
+            <element signature="e#5734#7183#0" expanded="false" />
+            <element signature="e#7317#7518#0" expanded="false" />
+            <element signature="e#7583#9788#0" expanded="false" />
+            <element signature="e#9836#9872#0" expanded="false" />
+            <element signature="e#10022#10085#0" expanded="false" />
+            <element signature="e#10146#10600#0" expanded="false" />
+            <element signature="e#10665#10974#0" expanded="false" />
+            <element signature="e#11017#12087#0" expanded="false" />
+            <element signature="e#12135#14631#0" expanded="false" />
+            <element signature="e#14684#17733#0" expanded="false" />
+            <element signature="e#17784#21214#0" expanded="false" />
+            <element signature="e#21319#22044#0" expanded="false" />
+            <element signature="e#22116#22847#0" expanded="false" />
+            <element signature="e#25140#27191#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/simulation.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1575">
@@ -793,102 +854,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="15">
           <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/heatmap.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="855">
-          <caret line="59" column="29" lean-forward="false" selection-start-line="59" selection-start-column="29" selection-end-line="59" selection-end-column="29" />
-          <folding>
-            <element signature="e#23#33#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mean.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1185">
-          <caret line="81" column="0" lean-forward="false" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
-          <folding>
-            <element signature="e#23#33#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/run_sim.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/plot_2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="19" lean-forward="true" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../results/braitenberg_1/tests/plot_2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="645">
-          <caret line="112" column="8" lean-forward="false" selection-start-line="112" selection-start-column="8" selection-end-line="112" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/core_aboutme.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="945">
-          <caret line="546" column="35" lean-forward="false" selection-start-line="546" selection-start-column="35" selection-end-line="546" selection-end-column="35" />
-          <folding>
-            <element signature="e#22#32#0" expanded="true" />
-            <element signature="e#300#2129#0" expanded="false" />
-            <element signature="e#2360#4028#0" expanded="false" />
-            <element signature="e#4093#4674#0" expanded="false" />
-            <element signature="e#4802#5512#0" expanded="false" />
-            <element signature="e#5734#7183#0" expanded="false" />
-            <element signature="e#7317#7518#0" expanded="false" />
-            <element signature="e#7583#9788#0" expanded="false" />
-            <element signature="e#9836#9872#0" expanded="false" />
-            <element signature="e#10022#10085#0" expanded="false" />
-            <element signature="e#10146#10600#0" expanded="false" />
-            <element signature="e#10665#10974#0" expanded="false" />
-            <element signature="e#11017#12087#0" expanded="false" />
-            <element signature="e#12135#14631#0" expanded="false" />
-            <element signature="e#14684#17733#0" expanded="false" />
-            <element signature="e#17784#21214#0" expanded="false" />
-            <element signature="e#21319#22044#0" expanded="false" />
-            <element signature="e#22116#22847#0" expanded="false" />
-            <element signature="e#25140#27191#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/agent_run.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-185">
-          <caret line="287" column="48" lean-forward="false" selection-start-line="287" selection-start-column="48" selection-end-line="287" selection-end-column="48" />
-          <folding>
-            <element signature="e#272#13407#0" expanded="false" />
-            <element signature="e#319#693#0" expanded="false" />
-            <element signature="e#744#2258#0" expanded="false" />
-            <element signature="e#2305#4433#0" expanded="false" />
-            <element signature="e#2386#3186#0" expanded="false" />
-            <element signature="e#4478#4564#0" expanded="false" />
-            <element signature="e#4611#7718#0" expanded="false" />
-            <element signature="e#7792#12473#0" expanded="false" />
-            <element signature="e#12536#13407#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/agent0.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="757">
-          <caret line="572" column="62" lean-forward="false" selection-start-line="572" selection-start-column="62" selection-end-line="572" selection-end-column="62" />
+        <state relative-caret-position="3810">
+          <caret line="526" column="35" lean-forward="false" selection-start-line="526" selection-start-column="28" selection-end-line="526" selection-end-column="35" />
           <folding>
             <element signature="e#3296#3582#0" expanded="false" />
             <element signature="e#3611#6203#0" expanded="false" />
@@ -914,6 +886,7 @@
             <element signature="e#54366#54370#0" expanded="false" />
             <element signature="e#54417#54561#0" expanded="false" />
             <element signature="e#54600#56435#0" expanded="false" />
+            <element signature="e#56477#59153#0" expanded="false" />
             <element signature="e#59188#59192#0" expanded="false" />
             <element signature="e#59229#59233#0" expanded="false" />
             <element signature="e#59276#59280#0" expanded="false" />
@@ -924,6 +897,31 @@
             <element signature="e#65554#69639#0" expanded="false" />
             <element signature="e#70016#70173#0" expanded="false" />
             <element signature="e#70297#70301#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plot_2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="19" lean-forward="false" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/agent_run.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="792">
+          <caret line="334" column="117" lean-forward="false" selection-start-line="334" selection-start-column="117" selection-end-line="334" selection-end-column="117" />
+          <folding>
+            <element signature="e#319#693#0" expanded="false" />
+            <element signature="e#744#2258#0" expanded="false" />
+            <element signature="e#2305#4433#0" expanded="false" />
+            <element signature="e#2386#3186#0" expanded="false" />
+            <element signature="e#4478#4564#0" expanded="false" />
+            <element signature="e#4611#7718#0" expanded="false" />
+            <element signature="e#7792#12473#0" expanded="false" />
+            <element signature="e#12536#13407#0" expanded="false" />
           </folding>
         </state>
       </provider>
