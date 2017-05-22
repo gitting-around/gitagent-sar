@@ -1,0 +1,13 @@
+<launch>
+	<arg name="id"/>
+	<node pkg="gitagent" type="agent_run.py" name="brain_node" output="log">
+		<param name="myID" value="$(arg id)" />
+		<param name="myTheta" value="0.5" />
+		<param name="myDelta" value="0.0" />
+		<param name="pressure" value="0.05" />
+		<param name="static" value="0|0" />
+		<param name="memory" value="1" />
+	</node>	<node pkg="gitagent" type="msg_PUnit.py" name="msg_punit" output="log">
+		<param name="myID" value="$(arg id)" />
+	</node>
+</launch>
