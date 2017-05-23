@@ -541,7 +541,7 @@ class Agent0:
             rospy.loginfo(msg)
             #pdb.set_trace()
             if self.static[1] == 0:
-                accept, delta = self.mycore.b_delta_2(energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, diff_task_tradeoff)
+                accept, delta = self.mycore.b_delta(energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, diff_task_tradeoff)
             else:
                 delta = self.mycore.delta
                 if not abil or not equip or not knowled or not tools:
