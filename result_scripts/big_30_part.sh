@@ -1,21 +1,6 @@
 #!/usr/bin/env bash
 chmod a+x /home/mfi01/catkin_ws/src/gitagent/result_scripts/plot_3.py /home/mfi01/catkin_ws/src/gitagent/result_scripts/heatmap.py chmod a+x /home/mfi01/catkin_ws/src/gitagent/result_scripts/plot_3.py /home/mfi01/catkin_ws/src/gitagent/result_scripts/send.sh
 
-timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.0_0.0_0.05_0\|0_mem0.launch
-find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.05/agents_30 \;
-
-timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.0_0.5_0.05_0\|0_mem0.launch
-find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.05/agents_30 \;
-
-timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.0_1.0_0.05_0\|0_mem0.launch
-find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.05/agents_30 \;
-
-timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.5_0.0_0.05_0\|0_mem0.launch
-find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.05/agents_30 \;
-
-timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.5_0.5_0.05_0\|0_mem0.launch
-find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.05/agents_30 \;
-
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.5_1.0_0.05_0\|0_mem0.launch
 find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.05/agents_30 \;
 
@@ -23,9 +8,6 @@ timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_1.0_0.0_0
 find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.05/agents_30 \;
 
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_1.0_0.5_0.05_0\|0_mem0.launch
-find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.05/agents_30 \;
-
-timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_1.0_1.0_0.05_0\|0_mem0.launch
 find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.05/agents_30 \;
 
 zip -r nomem_0.05.zip ~/.ros/log/
@@ -64,28 +46,13 @@ zip dynamic_nomem_0.05.zip all_nomem_0_05.jpg depend_nomem_0_05.jpg
 
 cd ~/catkin_ws/
 
-timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.0_0.0_0.125_0\|0_mem0.launch
-find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.125/agents_30 \;
-
-timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.0_0.5_0.125_0\|0_mem0.launch
-find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.125/agents_30 \;
-
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.0_1.0_0.125_0\|0_mem0.launch
-find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.125/agents_30 \;
-
-timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.5_0.0_0.125_0\|0_mem0.launch
-find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.125/agents_30 \;
-
-timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.5_0.5_0.125_0\|0_mem0.launch
 find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.125/agents_30 \;
 
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.5_1.0_0.125_0\|0_mem0.launch
 find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.125/agents_30 \;
 
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_1.0_0.0_0.125_0\|0_mem0.launch
-find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.125/agents_30 \;
-
-timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_1.0_0.5_0.125_0\|0_mem0.launch
 find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.125/agents_30 \;
 
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_1.0_1.0_0.125_0\|0_mem0.launch
@@ -128,28 +95,13 @@ zip dynamic_nomem_0.125.zip all_nomem_0_125.jpg depend_nomem_0_125.jpg
 
 cd ~/catkin_ws/
 
-timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.0_0.0_0.2_0\|0_mem0.launch
-find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.2/agents_30 \;
-
-timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.0_0.5_0.2_0\|0_mem0.launch
-find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.2/agents_30 \;
-
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.0_1.0_0.2_0\|0_mem0.launch
-find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.2/agents_30 \;
-
-timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.5_0.0_0.2_0\|0_mem0.launch
 find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.2/agents_30 \;
 
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.5_0.5_0.2_0\|0_mem0.launch
 find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.2/agents_30 \;
 
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_0.5_1.0_0.2_0\|0_mem0.launch
-find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.2/agents_30 \;
-
-timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_1.0_0.0_0.2_0\|0_mem0.launch
-find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.2/agents_30 \;
-
-timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_1.0_0.5_0.2_0\|0_mem0.launch
 find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.2/agents_30 \;
 
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_1.0_1.0_0.2_0\|0_mem0.launch

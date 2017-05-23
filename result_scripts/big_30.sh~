@@ -91,7 +91,7 @@ find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/brait
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_1.0_1.0_0.125_0\|0_mem0.launch
 find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.125/agents_30 \;
 
-zip -r nomem_0.125.zip ~/.ros/log/
+zip -r nomem_0.05.zip ~/.ros/log/
 rosclean purge -y
 
 cd ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.125/agents_30
@@ -155,7 +155,7 @@ find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/brait
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_1.0_1.0_0.2_0\|0_mem0.launch
 find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.2/agents_30 \;
 
-zip -r nomem_0.2.zip ~/.ros/log/
+zip -r nomem_0.05.zip ~/.ros/log/
 rosclean purge -y
 
 cd ~/catkin_ws/results/braitenberg_1/dynamic/nomem/pressure_0.2/agents_30
@@ -218,7 +218,7 @@ find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/brait
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_1.0_1.0_0.05_1\|1_mem0.launch
 find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/static/pressure_0.05/agents_30 \;                                                                                                                  
 
-zip -r static_0.05.zip ~/.ros/log/
+zip -r nomem_0.05.zip ~/.ros/log/
 rosclean purge -y
 
 cd ~/catkin_ws/results/braitenberg_1/static/pressure_0.05/agents_30
@@ -280,7 +280,7 @@ find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/brait
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_1.0_1.0_0.125_1\|1_mem0.launch
 find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/static/pressure_0.125/agents_30 \;
 
-zip -r static_0.125.zip ~/.ros/log/
+zip -r nomem_0.05.zip ~/.ros/log/
 rosclean purge -y
 
 cd ~/catkin_ws/results/braitenberg_1/static/pressure_0.125/agents_30
@@ -343,7 +343,7 @@ find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/brait
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_1.0_1.0_0.2_1\|1_mem0.launch
 find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/static/pressure_0.2/agents_30 \;
 
-zip -r static_0.2.zip ~/.ros/log/
+zip -r nomem_0.05.zip ~/.ros/log/
 rosclean purge -y
 
 cd ~/catkin_ws/results/braitenberg_1/static/pressure_0.2/agents_30
@@ -407,7 +407,7 @@ find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/brait
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_1.0_1.0_0.05_0\|0_mem1.launch
 find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/mem/pressure_0.05/agents_30 \;
 
-zip -r mem_0.05.zip ~/.ros/log/
+zip -r nomem_0.05.zip ~/.ros/log/
 rosclean purge -y
 
 cd ~/catkin_ws/results/braitenberg_1/dynamic/mem/pressure_0.05/agents_30
@@ -470,7 +470,7 @@ find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/brait
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_1.0_1.0_0.125_0\|0_mem1.launch
 find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/mem/pressure_0.125/agents_30 \;
 
-zip -r mem_0.125.zip ~/.ros/log/
+zip -r nomem_0.05.zip ~/.ros/log/
 rosclean purge -y
 
 cd ~/catkin_ws/results/braitenberg_1/dynamic/mem/pressure_0.125/agents_30
@@ -532,7 +532,7 @@ find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/brait
 timeout 26m roslaunch ~/catkin_ws/src/gitagent/Launch/launch_agents_30_1.0_1.0_0.2_0\|0_mem1.launch
 find . -name 'result*' -maxdepth 1 -type f -exec mv {} ~/catkin_ws/results/braitenberg_1/dynamic/mem/pressure_0.2/agents_30 \;
 
-zip -r mem_0.2.zip ~/.ros/log/
+zip -r nomem_0.05.zip ~/.ros/log/
 rosclean purge -y
 
 cd ~/catkin_ws/results/braitenberg_1/dynamic/mem/pressure_0.2/agents_30

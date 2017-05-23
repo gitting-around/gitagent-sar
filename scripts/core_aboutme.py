@@ -599,6 +599,69 @@ class Core:
         else:
             return False, self.delta
 
+    def b_delta_2(self, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_tradeoff):
+
+        if self.memory == 0:
+            self.delta = self.willingness[1]
+        if energy_diff < self.battery_min:
+            self.delta = 0.0
+            return False, self.delta
+        else:
+            self.delta += self.step
+            if abil == 0:
+                return False, self.delta
+            else:
+                self.delta += self.step
+            if equip == 0:
+                return False, self.delta
+            else:
+                self.delta += self.step
+            if knowled == 0:
+                return False, self.delta
+            else:
+                self.delta += self.step
+            if tools == 0:
+                return False, self.delta
+            else:
+                self.delta += self.step
+
+            if env_risk < self.LOW:
+                self.delta += self.step
+            elif env_risk > self.HIGH:
+                self.delta -= self.step
+            else:
+                if abs(env_risk - self.env_risk) > self.considerable_change:
+                    self.delta -= np.sign(env_risk - self.env_risk) * self.step
+
+            if ag_risk >= 0.5:
+                self.delta -= self.step
+            else:
+                self.delta += self.step
+
+            if performance < self.LOW:
+                self.delta -= self.step
+            elif performance > self.HIGH:
+                self.delta += self.step
+            else:
+                if abs(performance - self.performance) > self.considerable_change:
+                    self.delta += np.sign(performance - self.performance) * self.step
+
+            if abs(dif_task_tradeoff) > self.considerable_change:
+                self.delta += np.sign(dif_task_tradeoff) * self.step
+
+        self.env_risk = env_risk
+        self.performance = performance
+
+        if self.delta > 1.0:
+            self.delta = 1.0
+        elif self.delta < 0.0:
+            self.delta = 0.0
+
+        if random.random() <= self.delta:
+            return True, self.delta
+        else:
+            return False, self.delta
+
     def b_gamma(self, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_progress):
 
         if self.memory == 0:
