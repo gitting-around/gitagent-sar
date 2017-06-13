@@ -69,7 +69,7 @@ class Core:
         self.drop_rate = 0.0
 
         self.memory = memory
-
+        self.ten_shots = []
         print self.willingness
         print self.state
         print self.battery
@@ -211,7 +211,7 @@ class Core:
             if not self.state == 3:
                 self.state = 4
 
-    def best_candidate(self, known_people, task, log):
+    def best_candidate(self, known_people, task, log, senderID):
         #pdb.set_trace()
         # Assume that agent's can do the tasks
         #print known_people
@@ -221,23 +221,36 @@ class Core:
 
         # Find in known people the subset of agents that can do the task
         subset = []
+        subset_unknown = []
         if known_people:
             #print 'known people not empty'
             #print 'task id type ' + str(type(task['id']))
             for x in known_people:
                 print  x[2]
-                if task['id'] in x[2]:
+                #if task['id'] in x[2]:
+                if not senderID == x[0]:
                     subset.append(x)
+                if int(x[1]) == -1:
+                    subset_unknown.append(x)
+
             print subset
             if subset:
                 if random.random() < 0.4:
                     # Choose an agent randomly
                     #print 'random'
-                    agent_idx = random.randint(0, len(subset) - 1)
-                    print subset[agent_idx][0]
-                    success_chance = subset[agent_idx][1]
-                    print success_chance
-                    log.write_log_file(log.stdout_log, 'Randomly chosen: %d\n' % subset[agent_idx][0])
+                    if subset_unknown:
+                        agent_idx = random.randint(0, len(subset_unknown) - 1)
+                        print subset_unknown[agent_idx][0]
+                        success_chance = subset_unknown[agent_idx][1]
+                        print success_chance
+                        agent_id = subset_unknown[agent_idx][0]
+                    else:
+                        agent_idx = random.randint(0, len(subset) - 1)
+                        print subset[agent_idx][0]
+                        success_chance = subset[agent_idx][1]
+                        print success_chance
+                        log.write_log_file(log.stdout_log, 'Randomly chosen: %d\n' % subset[agent_idx][0])
+                        agent_id = subset[agent_idx][0]
                 else:
                     # Select the one which has been most helpful in the past
                     #print 'lambda'
@@ -248,7 +261,7 @@ class Core:
                     print success_chance
                     log.write_log_file(log.stdout_log, 'lambda chosen: %d\n' % subset[agent_idx][0])
 
-                agent_id = subset[agent_idx][0]
+                    agent_id = subset[agent_idx][0]
                 # Find the corresponding id in known_people
                 for x in known_people:
                     if x[0] == agent_id:
@@ -536,7 +549,7 @@ class Core:
 
     # Willingness to give help
 
-    def b_delta(self, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_tradeoff):
+    def b_delta(self, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_tradeoff, culture, ag_id):
 
         if self.memory == 0:
             self.delta = self.willingness[1]
@@ -588,6 +601,22 @@ class Core:
 
         self.env_risk = env_risk
         self.performance = performance
+
+        #if not self.ID == 1:
+
+        if ag_risk >= 0.5 and culture <= 0.5:
+            self.delta = 0.1
+        elif (ag_risk < 0.5 and culture > 0.5) or (ag_risk < 0.5 and culture <= 0.5):
+            self.delta += 5 * self.step
+        elif ag_risk >= 0.5 and culture > 0.5:
+            for x in self.ten_shots:
+                if ag_id == x[0]:
+                    if len(x[1]) < 3:
+                        x[1].append(ag_risk)
+                        self.delta -= self.step
+                    else:
+                        self.delta = 0.1
+
 
         if self.delta > 1.0:
             self.delta = 1.0

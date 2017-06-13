@@ -1,5 +1,0 @@
-<launch>
-	<arg name="id"/>
-	<node pkg="gitagent" type="pseudo_planner.py" name="auxilliary_node1" output="log">
-	</node>	
-</launch>

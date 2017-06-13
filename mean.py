@@ -9,7 +9,7 @@ import numpy as np
 
 import colormaps as cmaps
 
-def create_heatmap(data):
+def create_heatmap(data, case):
 
     print data
     x = np.array(data[:,1])
@@ -35,16 +35,16 @@ def create_heatmap(data):
     fig = plt.figure()
     plt.register_cmap(name='viridis', cmap=cmaps.viridis)
     plt.set_cmap(cmaps.viridis)
-    plt.pcolormesh(x, y, grid_all)
+    plt.pcolormesh(x, y, grid_all, vmin=0., vmax=1.)
     plt.colorbar() #need a colorbar to show the intensity scale
     plt.title('All')
-    fig.savefig('all_heatmap.jpg')
+    fig.savefig('all_'+case+'.jpg')
 
     fig = plt.figure()
-    plt.pcolormesh(x, y, grid_dep)
+    plt.pcolormesh(x, y, grid_dep, vmin=0., vmax=1.)
     plt.colorbar() #need a colorbar to show the intensity scale
     plt.title('Depend')
-    fig.savefig('depend_heatmap.jpg')
+    fig.savefig('depend_'+case+'.jpg')
 
 
 def create_ave_matrix(fnames):
@@ -73,12 +73,13 @@ def create_ave_matrix(fnames):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print 'Usage: ./plot_2.py file1 file2 ... fileN'
+        print 'Usage: ./mean.py case file1 file2 ... fileN'
         sys.exit()
 
+    case = sys.argv[1]
     name_of_files = []
-    for x in range(1, len(sys.argv)):
+    for x in range(2, len(sys.argv)):
         name_of_files.append(sys.argv[x])
 
     mean_vals = create_ave_matrix(name_of_files)
-    create_heatmap(mean_vals)
+    create_heatmap(mean_vals, case)

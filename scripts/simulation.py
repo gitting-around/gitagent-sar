@@ -11,7 +11,7 @@ plt.rcdefaults()
 
 
 class Simulation0:
-    def __init__(self, pressure):
+    def __init__(self, pressure, abrupt):
         ## The attributes below serve as a timestamp for each function called ######
         # handle_serve, call_serve, callback_bc, wander, adapt, run_step, fsm
         self.handle = 0
@@ -29,7 +29,8 @@ class Simulation0:
         self.additional_delay = [5, 10, 20]
 
         # Time taken by tasks of different difficulties, easy, medium, hard
-        self.delay = [0.5, 2.5, 5]
+        #self.delay = [0.5, 2.5, 5]
+        self.delay = [1.0, 3.5, 6]
 
         self.dep_prob = 0.2
 
@@ -52,6 +53,9 @@ class Simulation0:
 
         self.no_tasks_depend_attempted = [0, 0, 0]
         self.no_tasks_depend_completed = [0, 0, 0]
+
+        self.no_tasks_depend_own_attempted = [0, 0, 0]
+        self.no_tasks_depend_own_completed = [0, 0, 0]
 
         self.no_self_tasks_attempted = [0, 0, 0]
         self.no_self_tasks_completed = [0, 0, 0]
@@ -109,6 +113,11 @@ class Simulation0:
         self.delta_theta = []
 
         self.pressure = pressure
+
+        self.abrupt = abrupt
+        self.already_changed = False
+
+        self.culture = []
 
         self.finish = -1.0
 

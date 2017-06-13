@@ -25,10 +25,9 @@ class GitAgent(agent0.Agent0):
         self.process_bc_request(data)
 
     def process_bc_request(self, data):
-
-        self.log.write_log_file(self.log.stdout_callback,
-                                '[callback ' + str(self.simulation.callback_bc) + '][ROSPY] I am: %d, I heard %d\n' % (
-                                self.mycore.ID, int(data.sender)))
+        msg = '[callback ' + str(self.simulation.callback_bc) + '][ROSPY] I am: %d, I heard %d\n' % (
+                                self.mycore.ID, int(data.sender))
+        rospy.loginfo(msg)
         # Register new individual - Note that what comes from msg_PUnit is always new
         # However, in the case additional planners are added this code must be changed appropriately
         self.register_sender(data)
@@ -256,6 +255,19 @@ class GitAgent(agent0.Agent0):
         self.log.write_log_file(self.log.stdout_log,
                                 '[call_serve ' + str(self.simulation.call) + '] ' + 'Culture: ' + str(help) + '\n')
 
+    def calc_culture(self, known_people):
+            sum = 0.0
+            no = 0
+            for x in known_people:
+                if not x[1] == -1.0:
+                    sum += x[1]
+                    no += 1
+
+            if not no == 0:
+                culture_help = sum / float(no)
+            else:
+                culture_help = 1.0
+            return culture_help
 
 if __name__ == '__main__':
 
@@ -272,6 +284,7 @@ if __name__ == '__main__':
     static = [int(x) for x in static_string.split('|')]
     # Either restart delta and gamma on each computation to the original values, in that case memory = 0; or use the past value for delta and gamma to compute the current ones, in that case memory = 1
     memory = int(rospy.get_param('brain_node/memory'))
+    abrupt = rospy.get_param('brain_node/abrupt')
 
     stderr_file = '/home/mfi01/catkin_ws/results/error_brain' + str(agent_id)
     f = open(stderr_file, 'w+')
@@ -294,7 +307,7 @@ if __name__ == '__main__':
     motors = []
     # Give a list of function names that represent the capabilities of the agent
 
-    sim = simulation.Simulation0(pressure)
+    sim = simulation.Simulation0(pressure, abrupt)
 
     agentfile = "conf_" + str(agent_id)
     # Read agent configuration file
@@ -359,6 +372,10 @@ if __name__ == '__main__':
             agent.log.write_log_file(results_filename, str(x) + ' ')
         for x in agent.simulation.requests_rec_success:
             agent.log.write_log_file(results_filename, str(x) + ' ')
+        for x in agent.simulation.no_tasks_depend_own_attempted:
+            agent.log.write_log_file(results_filename, str(x) + ' ')
+        for x in agent.simulation.no_tasks_depend_own_completed:
+            agent.log.write_log_file(results_filename, str(x) + ' ')
 
         agent.log.write_log_file(results_filename, '\n')
 
@@ -398,6 +415,13 @@ if __name__ == '__main__':
             for y in x:
                 agent.log.write_log_file(results_filename, str(y) + ' ')
             agent.log.write_log_file(results_filename, ', ')
+
+        agent.log.write_log_file(results_filename, '\n')
+
+        for x in agent.simulation.culture:
+            agent.log.write_log_file(results_filename, str(x) + ' ')
+
+
 
         sys.stderr = orig_stderr
         f.close()

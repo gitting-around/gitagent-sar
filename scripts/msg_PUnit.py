@@ -54,12 +54,13 @@ class PUnit:
         rospy.loginfo(rospy.get_caller_id() + " Callback-from-env_msg %s, %s", data.sender, data.content)
         if not int(data.sender) == self.me:
             new = self.new_people(int(data.sender), data.content)
+            rospy.loginfo('new = %d, sender = %d' % (new, int(data.sender)))
             if not rospy.is_shutdown() and new:
                 self.publish_brain.publish(data)
-                print 'PUBLISHED new individual'
+                rospy.loginfo('PUBLISHED new individual')
 
         else:
-            print 'Ignore messages send by self'
+            rospy.loginfo('Ignore messages send by self')
 
     def callback_plan(self, data):
         rospy.loginfo(rospy.get_caller_id() + " Callback-from-plan %s, %s", data.sender, data.content)
@@ -103,6 +104,7 @@ if __name__ == '__main__':
     s = open(stdout_file, 'w+')
     orig_stdout = sys.stdout
     # sys.stdout = s
+    time.sleep(10)
 
     try:
         punit = PUnit()

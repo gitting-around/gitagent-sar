@@ -2,9 +2,10 @@
 
 import sys
 from numpy import *
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt;
 plt.rcdefaults()
-import matplotlib.pyplot as plt
 import numpy as np
 
 sys.path.append('/home/mfi01/catkin_ws/src/gitagent/result_scripts')

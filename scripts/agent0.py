@@ -26,24 +26,14 @@ class Agent0:
     def __init__(self, ID, conf, services, willingness, simulation, popSize, provaNr, depend_nr, battery, sensors,
                  actuators, motors, static, memory):
 
+        # use simulation functions
+        self.simulation = simulation
         # logging class
         self.log = mylogging.Logging(popSize, provaNr, ID, willingness[1], depend_nr)
         self.begin = 0
         self.end = 0
 
         self.static = static
-
-        # They will contain arrays of topic's names ###
-        self.inputs = conf['sensors']
-        # print self.inputs
-        self.publish_bcast = []
-        self.outputs = conf['actuators']
-        self.motors = conf['motors']
-        # print self.outputs
-        self.init_inputs(self.inputs)
-        self.init_outputs(self.outputs)
-        self.init_serve(ID)
-        ##############################################
 
         # Enumerated lists for each #########
         self.services = services
@@ -64,8 +54,18 @@ class Agent0:
         self.log.write_log_file(self.log.stdout_log, 'init gitagent ' + str(self.mycore.sensmot) + '\n')
         ## Contains mixed info ############################################################################
         self.myknowledge = knowledge.Knowledge0()
-        # use simulation functions
-        self.simulation = simulation
+
+        # They will contain arrays of topic's names ###
+        self.inputs = conf['sensors']
+        # print self.inputs
+        self.publish_bcast = []
+        self.outputs = conf['actuators']
+        self.motors = conf['motors']
+        # print self.outputs
+        self.init_inputs(self.inputs)
+        self.init_outputs(self.outputs)
+        self.init_serve(ID)
+        ##############################################
         # print self.inputs, self.outputs, self.motors, self.languages, self.protocols, conf['battery']
         ############ ACTION SERVER ###################################################################
         self.log.write_log_file(self.log.stdout_log, 'rospy name ' + str(rospy.get_name()) + '\n')
@@ -98,7 +98,7 @@ class Agent0:
         while not rospy.is_shutdown():
             # Simulation stopping criterion
             # if sum(self.simulation.generated_tasks) + 1 > self.simulation.STOP:
-            if (time.time() - self.start) > 1440:
+            if (time.time() - self.start) > 7200:
                 #pdb.set_trace()
                 msg = '[fsm %d] Simulation finished. Number of generated tasks: %d\n' % (
                 self.simulation.fsm, sum(self.simulation.no_self_tasks_attempted))
@@ -239,7 +239,7 @@ class Agent0:
             # self.log.write_log_file(self.log.stdout_log, msg)
             rospy.loginfo(msg)
 
-            if client.wait_for_result(timeout=rospy.Duration(15)):
+            if client.wait_for_result(timeout=rospy.Duration(50)):
                 msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call] server returned\n'
                 # self.log.write_log_file(self.log.stdout_log, msg)
                 rospy.loginfo(msg)
@@ -304,16 +304,16 @@ class Agent0:
             self.myknowledge.lock.release()
 
             rospy.loginfo(msg)
-
+            self.simulation.requests[self.myknowledge.difficulty] = self.simulation.requests[self.myknowledge.difficulty] + 1
             msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call - END] perceived helpfulness %f\n' % \
                                                        self.myknowledge.known_people[agent_idx][1]
             msg += '[fsm ' + str(self.simulation.fsm) + '- blocking_call] capability expertise %f\n' % \
                                                         self.myknowledge.known_people[agent_idx][3][task_idx]
             msg += '[fsm ' + str(self.simulation.fsm) + '- blocking_call] Result ' + str(result) + '\n'
             # self.log.write_log_file(self.log.stdout_log, msg)
+            msg += '[fsm ' + str(self.simulation.fsm) + '- blocking_call] Requests ' + str(sum(self.simulation.requests)) + '\n'
             rospy.loginfo(msg)
 
-            self.simulation.requests[self.myknowledge.difficulty] = self.simulation.requests[self.myknowledge.difficulty] + 1
             self.end += 1
             return result
 
@@ -463,23 +463,24 @@ class Agent0:
     ##################################################################################################
 
     def change_selfstate_v2(self):
-        if not self.myknowledge.plan_pending_eval.empty():
-            msg = '[fsm ' + str(self.simulation.fsm) + '] adaptive state: True\n'
-            # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
+        if not self.mycore.state == 3:
+            if not self.myknowledge.plan_pending_eval.empty():
+                msg = '[fsm ' + str(self.simulation.fsm) + '] adaptive state: True\n'
+                # self.log.write_log_file(self.log.stdout_log, msg)
+                rospy.loginfo(msg)
 
-            self.myknowledge.lock.acquire()
-            self.myknowledge.old_state = self.mycore.state
-            self.mycore.state = 1
-            msg = '[fsm ' + str(self.simulation.fsm) + '] Old state, and current state:' + str(
-                self.myknowledge.old_state) + str(self.mycore.state) + '\n'
-            # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
-            self.myknowledge.lock.release()
-        else:
-            msg = '[fsm ' + str(self.simulation.fsm) + '] adaptive state: False\n'
-            # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
+                self.myknowledge.lock.acquire()
+                self.myknowledge.old_state = self.mycore.state
+                self.mycore.state = 1
+                msg = '[fsm ' + str(self.simulation.fsm) + '] Old state, and current state:' + str(
+                    self.myknowledge.old_state) + str(self.mycore.state) + '\n'
+                # self.log.write_log_file(self.log.stdout_log, msg)
+                rospy.loginfo(msg)
+                self.myknowledge.lock.release()
+            else:
+                msg = '[fsm ' + str(self.simulation.fsm) + '] adaptive state: False\n'
+                # self.log.write_log_file(self.log.stdout_log, msg)
+                rospy.loginfo(msg)
 
     def eval_temp_2(self):
 
@@ -511,6 +512,7 @@ class Agent0:
                 # It is not success but PERCEIVED WILLINGNESS
                 success = self.myknowledge.known_people[aIDx][1]
                 msg = '[adapt %d] In known people, success = %f\n' % (self.simulation.interact, success)
+                msg += '[adapt %d] In known people, %s\n' % (self.simulation.interact, str(self.myknowledge.known_people))
                 # self.log.write_log_file(self.log.stdout_log, msg)
                 rospy.loginfo(msg)
             else:
@@ -524,7 +526,13 @@ class Agent0:
             #pdb.set_trace()
             abil, equip, knowled, tools, env_risk, diff_task_tradeoff = self.simulation.simulate_give_params()
             energy_diff = self.mycore.battery - float(plan[0]['energy'])
-            ag_risk = 1.0 - success
+
+            #ag_risk = 1.0 - success
+
+            if success == -1.0:
+                ag_risk = success
+            else:
+                ag_risk = 1.0 - success
 
             msg = '[adapt %d] energy diff = %f\n' % (self.simulation.interact, energy_diff)
             # self.log.write_log_file(self.log.stdout_log, msg)
@@ -537,11 +545,16 @@ class Agent0:
             else:
                 performance = 1.0
 
+            culture = self.calc_culture(self.myknowledge.known_people)
+            self.simulation.culture.append(culture)
             msg = '[adapt %d] performance = %f\n' % (self.simulation.interact, performance)
+            msg += '[adapt %d] ag_risk = %f, culture = %f\n' % (self.simulation.interact, ag_risk, culture)
             rospy.loginfo(msg)
             #pdb.set_trace()
             if self.static[1] == 0:
-                accept, delta = self.mycore.b_delta(energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, diff_task_tradeoff)
+                self.myknowledge.lock.acquire()
+                accept, delta = self.mycore.b_delta(energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, diff_task_tradeoff, culture, aID)
+                self.myknowledge.lock.release()
             else:
                 delta = self.mycore.delta
                 if not abil or not equip or not knowled or not tools:
@@ -574,7 +587,7 @@ class Agent0:
                 own_performance = sum(self.simulation.no_self_tasks_completed) / float(sum(self.simulation.no_self_tasks_attempted))
             else:
                 own_performance = 1.0
-            self.simulation.delta_theta.append([0, delta, accept, performance, depend_performance, own_performance])
+            self.simulation.delta_theta.append([0, delta, accept, performance, depend_performance, own_performance, self.mycore.gamma])
             self.myknowledge.lock.release()
 
             if accept:
@@ -839,14 +852,14 @@ class Agent0:
             #pdb.set_trace()
             # This returns the best candidate id, and success measure
             success_chance, candidate_id, candidate_idx = self.mycore.best_candidate(self.myknowledge.known_people,
-                                                                                     self.myknowledge.service, self.log)
+                                                                                     self.myknowledge.service, self.log, int(self.myknowledge.service['senderID']))
             msg = '[run_step ' + str(
                 self.simulation.execute) + ' BEGIN] success %f, id %d, idx %d\n' % (
                 success_chance, candidate_id, candidate_idx
             )
             rospy.loginfo(msg)
 
-            if candidate_id == self.myknowledge.service['senderID'] and not self.mycore.ID == self.myknowledge.service['senderID']:
+            if candidate_id == int(self.myknowledge.service['senderID']) and not self.mycore.ID == self.myknowledge.service['senderID']:
                 msg = '[run_step ' + str(self.simulation.execute) + '] do not ask the same agent that asked you for help'
                 rospy.loginfo(msg)
                 success_chance = -1.0
@@ -863,7 +876,9 @@ class Agent0:
                 performance = 1.0
 
             if self.static[0] == 0:
+                self.myknowledge.lock.acquire()
                 depend, gamma = self.mycore.b_gamma(energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, diff_task_progress)
+                self.myknowledge.lock.release()
                 self.myknowledge.service['simulation_finish'] = 1.0
             else:
                 gamma = self.mycore.gamma
@@ -894,13 +909,18 @@ class Agent0:
                 own_performance = sum(self.simulation.no_self_tasks_completed) / float(sum(self.simulation.no_self_tasks_attempted))
             else:
                 own_performance = 1.0
-            self.simulation.delta_theta.append([1, gamma, depend, performance, depend_performance, own_performance])
+            self.simulation.delta_theta.append([1, gamma, depend, performance, depend_performance, own_performance, self.mycore.delta])
             self.myknowledge.lock.release()
 
             result = 0
 
             if depend:
                 self.simulation.no_tasks_depend_attempted[self.myknowledge.difficulty] += 1
+                msg = '[run_step ' + str(self.simulation.execute) + 'tasks depend: ' + str(sum(self.simulation.no_tasks_depend_attempted)) + '\n'
+                rospy.loginfo(msg)
+
+                if self.mycore.ID == self.myknowledge.service['senderID']:
+                    self.simulation.no_tasks_depend_own_attempted[self.myknowledge.difficulty] += 1
                 if not candidate_id == -1:
 
                     msg = '[run_step ' + str(
@@ -941,6 +961,8 @@ class Agent0:
                         self.simulation.exec_times_depend.append(exec_time)
                         self.simulation.no_tasks_depend_completed[self.myknowledge.difficulty] += 1
                         self.simulation.no_tasks_completed[self.myknowledge.difficulty] += 1
+                        if self.mycore.ID == self.myknowledge.service['senderID']:
+                            self.simulation.no_tasks_depend_own_completed[self.myknowledge.difficulty] += 1
 
                     self.mycore.battery_change(0.2 * int(self.myknowledge.service['energy']))
 
@@ -970,7 +992,9 @@ class Agent0:
                     self.simulation.additional_delay[self.myknowledge.difficulty])
                 rospy.loginfo(msg)
                 #pdb.set_trace()
+                #DONOT COMMENT THE NEXT LINE - HELL WILL BREAK LOOSE!
                 time.sleep(exec_time)
+                #####################################################
                 self.myknowledge.service_id = -1
                 self.myknowledge.iteration = -1
 
@@ -1420,4 +1444,7 @@ class Agent0:
         pass
 
     def call_serve(self, server, myid, request, anyone_index):
+        pass
+
+    def calc_culture(self, known_people):
         pass
