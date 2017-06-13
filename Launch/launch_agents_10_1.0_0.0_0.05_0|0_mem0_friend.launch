@@ -1,0 +1,47 @@
+<launch>
+	<!-- BEGIN ROBOT1-->
+	<group ns="robot1">
+		<include file="$(find gitagent)/Launch/agent_1.0_0.0_0.05_0|0_mem0_abrupt1.launch"> <arg name="id" value="1"/> </include>
+	</group>
+	<!-- BEGIN ROBOT2-->
+	<group ns="robot2">
+		<include file="$(find gitagent)/Launch/agent_0.0_1.0_0.05_0|0_mem0_abrupt1.launch"> <arg name="id" value="2"/> </include>
+	</group>
+	<!-- BEGIN ROBOT3-->
+	<group ns="robot3">
+		<include file="$(find gitagent)/Launch/agent_0.0_1.0_0.05_0|0_mem0_abrupt1.launch"> <arg name="id" value="3"/> </include>
+	</group>
+	<!-- BEGIN ROBOT4-->
+	<group ns="robot4">
+		<include file="$(find gitagent)/Launch/agent_0.0_1.0_0.05_0|0_mem0_abrupt1.launch"> <arg name="id" value="4"/> </include>
+	</group>
+	<!-- BEGIN ROBOT5-->
+	<group ns="robot5">
+		<include file="$(find gitagent)/Launch/agent_0.0_1.0_0.05_0|0_mem0_abrupt1.launch"> <arg name="id" value="5"/> </include>
+	</group>
+	<!-- BEGIN ROBOT6-->
+	<group ns="robot6">
+		<include file="$(find gitagent)/Launch/agent_0.0_1.0_0.05_0|0_mem0_abrupt1.launch"> <arg name="id" value="6"/> </include>
+	</group>
+	<!-- BEGIN ROBOT7-->
+	<group ns="robot7">
+		<include file="$(find gitagent)/Launch/agent_0.0_1.0_0.05_0|0_mem0_abrupt1.launch"> <arg name="id" value="7"/> </include>
+	</group>
+	<!-- BEGIN ROBOT8-->
+	<group ns="robot8">
+		<include file="$(find gitagent)/Launch/agent_0.0_1.0_0.05_0|0_mem0_abrupt1.launch"> <arg name="id" value="8"/> </include>
+	</group>
+	<!-- BEGIN ROBOT9-->
+	<group ns="robot9">
+		<include file="$(find gitagent)/Launch/agent_0.0_1.0_0.05_0|0_mem0_abrupt1.launch"> <arg name="id" value="9"/> </include>
+	</group>
+	<!-- BEGIN ROBOT10-->
+	<group ns="robot10">
+		<include file="$(find gitagent)/Launch/agent_0.0_1.0_0.05_0|0_mem0_abrupt1.launch"> <arg name="id" value="10"/> </include>
+	</group>
+	<!-- BEGIN ENV-->
+	<group ns="environment">
+	</group>
+	<group ns="pseudo-planner">
+	</group>
+</launch>
