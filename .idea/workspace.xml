@@ -2,22 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b995885d-766a-4760-8666-0a12a93d8380" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/all_heatmap.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/depend_heatmap.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dynamicall_heatmap.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dynamicdepend_heatmap.jpg" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mean.py" afterPath="$PROJECT_DIR$/mean.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/result_scripts/big_30.sh" afterPath="$PROJECT_DIR$/result_scripts/big_30.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/result_scripts/heatmap.py" afterPath="$PROJECT_DIR$/result_scripts/heatmap.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/result_scripts/plot_3.py" afterPath="$PROJECT_DIR$/result_scripts/plot_3.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/result_scripts/send.sh" afterPath="$PROJECT_DIR$/result_scripts/send.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/agent0.py" afterPath="$PROJECT_DIR$/scripts/agent0.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/agent_run.py" afterPath="$PROJECT_DIR$/scripts/agent_run.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/core_aboutme.py" afterPath="$PROJECT_DIR$/scripts/core_aboutme.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/msg_PUnit.py" afterPath="$PROJECT_DIR$/scripts/msg_PUnit.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/simulation.py" afterPath="$PROJECT_DIR$/scripts/simulation.py" />
     </list>
     <ignored path="gitagent.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -37,11 +25,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="agent0.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="agent0.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/agent0.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="203">
-              <caret line="100" column="48" lean-forward="false" selection-start-line="100" selection-start-column="48" selection-end-line="100" selection-end-column="48" />
+            <state relative-caret-position="5835">
+              <caret line="812" column="53" lean-forward="false" selection-start-line="812" selection-start-column="52" selection-end-line="812" selection-end-column="53" />
               <folding>
                 <element signature="e#3296#3582#0" expanded="false" />
                 <element signature="e#7811#9021#0" expanded="false" />
@@ -54,7 +42,6 @@
                 <element signature="e#33067#33323#0" expanded="false" />
                 <element signature="e#33359#37025#0" expanded="false" />
                 <element signature="e#37066#38756#0" expanded="false" />
-                <element signature="e#38852#42452#0" expanded="false" />
                 <element signature="e#55143#55923#0" expanded="false" />
                 <element signature="e#56290#58125#0" expanded="false" />
                 <element signature="e#58167#60843#0" expanded="false" />
@@ -65,11 +52,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="core_aboutme.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="core_aboutme.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/core_aboutme.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2348">
-              <caret line="606" column="8" lean-forward="false" selection-start-line="606" selection-start-column="8" selection-end-line="617" selection-end-column="24" />
+            <state relative-caret-position="634">
+              <caret line="614" column="36" lean-forward="true" selection-start-line="614" selection-start-column="36" selection-end-line="614" selection-end-column="36" />
               <folding>
                 <element signature="e#22#32#0" expanded="true" />
                 <element signature="e#2387#4055#0" expanded="false" />
@@ -87,8 +74,8 @@
                 <element signature="e#18435#21865#0" expanded="false" />
                 <element signature="e#21970#22695#0" expanded="false" />
                 <element signature="e#22767#23498#0" expanded="false" />
-                <element signature="e#26339#28336#0" expanded="false" />
-                <element signature="e#28463#30514#0" expanded="false" />
+                <element signature="e#26451#28448#0" expanded="false" />
+                <element signature="e#28575#30626#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -97,7 +84,7 @@
       <file leaf-file-name="simulation.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/simulation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1695">
+            <state relative-caret-position="1536">
               <caret line="117" column="36" lean-forward="false" selection-start-line="117" selection-start-column="36" selection-end-line="117" selection-end-column="36" />
               <folding />
             </state>
@@ -117,15 +104,15 @@
       <file leaf-file-name="agent_run.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/agent_run.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1950">
-              <caret line="309" column="49" lean-forward="false" selection-start-line="309" selection-start-column="49" selection-end-line="309" selection-end-column="49" />
+            <state relative-caret-position="30">
+              <caret line="79" column="52" lean-forward="false" selection-start-line="79" selection-start-column="52" selection-end-line="79" selection-end-column="52" />
               <folding>
                 <element signature="e#2335#3135#0" expanded="false" />
-                <element signature="e#4427#4513#0" expanded="false" />
-                <element signature="e#4560#7667#0" expanded="false" />
-                <element signature="e#7741#12422#0" expanded="false" />
-                <element signature="e#12485#13356#0" expanded="false" />
-                <marker date="1497375961519" expanded="true" signature="19077:20787" ph="..." />
+                <element signature="e#4482#4568#0" expanded="false" />
+                <element signature="e#4615#7722#0" expanded="false" />
+                <element signature="e#7796#12477#0" expanded="false" />
+                <element signature="e#12540#13411#0" expanded="false" />
+                <marker date="1497427225499" expanded="true" signature="19132:20842" ph="..." />
               </folding>
             </state>
           </provider>
@@ -215,9 +202,9 @@
         <option value="$PROJECT_DIR$/scripts/mylogging.py" />
         <option value="$PROJECT_DIR$/scripts/msg_PUnit.py" />
         <option value="$PROJECT_DIR$/scripts/simulation.py" />
+        <option value="$PROJECT_DIR$/scripts/agent0.py" />
         <option value="$PROJECT_DIR$/scripts/agent_run.py" />
         <option value="$PROJECT_DIR$/scripts/core_aboutme.py" />
-        <option value="$PROJECT_DIR$/scripts/agent0.py" />
       </list>
     </option>
   </component>
@@ -464,7 +451,7 @@
     <configuration />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1404" y="102" width="1564" height="1050" extended-state="1" />
+    <frame x="1404" y="102" width="1564" height="1050" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.11421155" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -763,31 +750,56 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/simulation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1695">
+        <state relative-caret-position="1536">
           <caret line="117" column="36" lean-forward="false" selection-start-line="117" selection-start-column="36" selection-end-line="117" selection-end-column="36" />
           <folding />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/agent0.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5835">
+          <caret line="812" column="53" lean-forward="false" selection-start-line="812" selection-start-column="52" selection-end-line="812" selection-end-column="53" />
+          <folding>
+            <element signature="e#3296#3582#0" expanded="false" />
+            <element signature="e#7811#9021#0" expanded="false" />
+            <element signature="e#9147#15481#0" expanded="false" />
+            <element signature="e#15531#21231#0" expanded="false" />
+            <element signature="e#21270#22180#0" expanded="false" />
+            <element signature="e#22705#23676#0" expanded="false" />
+            <element signature="e#32389#32708#0" expanded="false" />
+            <element signature="e#32742#33015#0" expanded="false" />
+            <element signature="e#33067#33323#0" expanded="false" />
+            <element signature="e#33359#37025#0" expanded="false" />
+            <element signature="e#37066#38756#0" expanded="false" />
+            <element signature="e#55143#55923#0" expanded="false" />
+            <element signature="e#56290#58125#0" expanded="false" />
+            <element signature="e#58167#60843#0" expanded="false" />
+            <element signature="e#62068#67138#0" expanded="false" />
+            <marker date="1497379616376" expanded="true" signature="49419:49463" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/agent_run.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1950">
-          <caret line="309" column="49" lean-forward="false" selection-start-line="309" selection-start-column="49" selection-end-line="309" selection-end-column="49" />
+        <state relative-caret-position="30">
+          <caret line="79" column="52" lean-forward="false" selection-start-line="79" selection-start-column="52" selection-end-line="79" selection-end-column="52" />
           <folding>
             <element signature="e#2335#3135#0" expanded="false" />
-            <element signature="e#4427#4513#0" expanded="false" />
-            <element signature="e#4560#7667#0" expanded="false" />
-            <element signature="e#7741#12422#0" expanded="false" />
-            <element signature="e#12485#13356#0" expanded="false" />
-            <marker date="1497375961519" expanded="true" signature="19077:20787" ph="..." />
+            <element signature="e#4482#4568#0" expanded="false" />
+            <element signature="e#4615#7722#0" expanded="false" />
+            <element signature="e#7796#12477#0" expanded="false" />
+            <element signature="e#12540#13411#0" expanded="false" />
+            <marker date="1497427225499" expanded="true" signature="19132:20842" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/core_aboutme.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2348">
-          <caret line="606" column="8" lean-forward="false" selection-start-line="606" selection-start-column="8" selection-end-line="617" selection-end-column="24" />
+        <state relative-caret-position="634">
+          <caret line="614" column="36" lean-forward="true" selection-start-line="614" selection-start-column="36" selection-end-line="614" selection-end-column="36" />
           <folding>
             <element signature="e#22#32#0" expanded="true" />
             <element signature="e#2387#4055#0" expanded="false" />
@@ -805,34 +817,8 @@
             <element signature="e#18435#21865#0" expanded="false" />
             <element signature="e#21970#22695#0" expanded="false" />
             <element signature="e#22767#23498#0" expanded="false" />
-            <element signature="e#26339#28336#0" expanded="false" />
-            <element signature="e#28463#30514#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/agent0.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="203">
-          <caret line="100" column="48" lean-forward="false" selection-start-line="100" selection-start-column="48" selection-end-line="100" selection-end-column="48" />
-          <folding>
-            <element signature="e#3296#3582#0" expanded="false" />
-            <element signature="e#7811#9021#0" expanded="false" />
-            <element signature="e#9147#15481#0" expanded="false" />
-            <element signature="e#15531#21231#0" expanded="false" />
-            <element signature="e#21270#22180#0" expanded="false" />
-            <element signature="e#22705#23676#0" expanded="false" />
-            <element signature="e#32389#32708#0" expanded="false" />
-            <element signature="e#32742#33015#0" expanded="false" />
-            <element signature="e#33067#33323#0" expanded="false" />
-            <element signature="e#33359#37025#0" expanded="false" />
-            <element signature="e#37066#38756#0" expanded="false" />
-            <element signature="e#38852#42452#0" expanded="false" />
-            <element signature="e#55143#55923#0" expanded="false" />
-            <element signature="e#56290#58125#0" expanded="false" />
-            <element signature="e#58167#60843#0" expanded="false" />
-            <element signature="e#62068#67138#0" expanded="false" />
-            <marker date="1497379616376" expanded="true" signature="49419:49463" ph="..." />
+            <element signature="e#26451#28448#0" expanded="false" />
+            <element signature="e#28575#30626#0" expanded="false" />
           </folding>
         </state>
       </provider>

@@ -606,6 +606,9 @@ class Core:
 
         if ag_risk >= 0.5 and culture <= 0.5:
             self.delta = 0.1
+            for x in self.ten_shots:
+                if ag_id == x[0]:
+                    x[1].append(ag_risk)
         elif (ag_risk < 0.5 and culture > 0.5) or (ag_risk < 0.5 and culture <= 0.5):
             self.delta += 5 * self.step
         elif ag_risk >= 0.5 and culture > 0.5:

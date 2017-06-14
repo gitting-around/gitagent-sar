@@ -77,6 +77,7 @@ class GitAgent(agent0.Agent0):
         self.myknowledge.known_people.append(guy_id_srv)
         self.myknowledge.helping_interactions.append(0)
         self.myknowledge.total_interactions.append(0)
+        self.mycore.ten_shots.append([guy_id_srv, []])
         temp_values = []
         for x in range(0, len(guy_id_srv[2])):
             temp_values.append([0, 0])
