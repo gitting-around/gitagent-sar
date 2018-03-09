@@ -1,0 +1,7 @@
+<launch>
+	<node pkg="gitagent" type="environment.py" name="env_node" output="log" required="true" launch-prefix="xterm -e">
+		<param name="maxFires" value="40" />
+		<param name="myIntensity" value="75" />
+		<param name="maxVictim" value="15" />
+	</node>
+</launch>

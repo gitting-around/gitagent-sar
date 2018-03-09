@@ -29,9 +29,9 @@ class PUnit:
         # ROS related directives #######################################################################
         self.publish_brain = rospy.Publisher('bcasts_brain', Protocol_Msg, queue_size=200)
         self.publish_env_msg = rospy.Publisher('/environment/msg_topic', Protocol_Msg, queue_size=200)
-        rospy.Subscriber('bcasts', Protocol_Msg, self.callback_brain)
-        rospy.Subscriber('/environment/msg_topic', Protocol_Msg, self.callback_env_msg)
-        rospy.Subscriber('/environment/plan', Protocol_Msg, self.callback_plan)
+        self.subs = [rospy.Subscriber('bcasts', Protocol_Msg, self.callback_brain) ,
+                     rospy.Subscriber('/environment/msg_topic', Protocol_Msg, self.callback_env_msg),
+                     rospy.Subscriber('/environment/plan', Protocol_Msg, self.callback_plan)]
 
     ################################################################################################
 
@@ -82,7 +82,7 @@ class PUnit:
 
     def new_people(self, idi, content):
         guy_id_srv = [idi]
-        guy_id_srv.append([int(x) for x in filter(None, content.split('|'))])
+        guy_id_srv.append([x for x in filter(None, content.split('|'))])
         new = True
         for x in self.known_people:
             if x[0] == idi:
@@ -111,6 +111,10 @@ if __name__ == '__main__':
         while not punit.close:
             pass
     finally:
+        for x in punit.subs:
+            x.unregister()
+        punit.publish_brain.unregister()
+        punit.publish_env_msg.unregister()
         sys.stderr = orig_stderr
         f.close()
         sys.stdout = orig_stdout

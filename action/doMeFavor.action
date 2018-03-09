@@ -8,6 +8,7 @@ string ontology
 string urgency
 string content
 string timestamp
+#int32[] active_senders
 ---
 # Define the result
 uint32 act_outcome

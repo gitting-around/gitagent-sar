@@ -1,0 +1,4 @@
+int32 fire_id
+float32 put_out_step
+---
+float32 current_intensity

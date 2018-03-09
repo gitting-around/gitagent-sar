@@ -51,6 +51,11 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
    FILES
    Protocol_Msg.msg
+   Init_Loc.msg
+   Track_Loc.msg
+   Fires_Info.msg
+   Fire_Base.msg
+   Ambulance_Base.msg
 #   Message1.msg
 #   Message2.msg
 )
@@ -59,6 +64,8 @@ add_message_files(
 add_service_files(
    FILES
    Protocol_Srv.srv
+   Put_Out_Fire.srv
+   Save_Victim.srv
 #   Service2.srv
 )
 

@@ -5,8 +5,10 @@ import mylogging
 from gitagent.msg import *
 import time
 import numpy as np
-import skfuzzy as fuzz
-from skfuzzy import control as ctrl
+
+#import skfuzzy as fuzz
+#from skfuzzy import control as ctrl
+import rospy
 import pdb
 
 
@@ -21,7 +23,9 @@ class Core:
         self.give = False
 
         # Thresholds -- percentage of affordance
-        self.LOW = 0.3
+        self.LOW = 0.0
+        msg = "CORE: low: %f" % (self.LOW)
+        rospy.loginfo(msg)
         self.HIGH = 0.7
         self.MEDium = 0.5
 
@@ -39,7 +43,8 @@ class Core:
         self.ID = ID
 
         # Battery levels
-        self.battery = battery
+        #self.battery = battery
+        self.battery = 1.0
 
         # 3 arrays which keep the states for sensors, actuators, motors
         self.sensors = sum(sensors)
@@ -49,7 +54,8 @@ class Core:
 
         # This is the minimum value for the battery levels in which it could be
         # considered that the agent works properly
-        self.battery_min = 300
+        #self.battery_min = 300
+        self.battery_min = 0.3
         self.sensmot_min = 300
         self.self_esteem = 0.5
 
@@ -59,20 +65,26 @@ class Core:
         self.gamma = self.willingness[0]
         self.delta = self.willingness[1]
 
-        self.step = 0.05
-        self.considerable_change = 0.1
+        self.gamma_in_time = []
+        self.delta_in_time = []
 
-        self.env_risk = 0.2
+        self.step = 0.05
+        self.considerable_change = 0.0
+
+        self.env_risk = 0.0
         self.ag_risk = []
-        self.performance = 1.0
+        self.performance = 0.0
+
+        self.arisk = {}
 
         self.drop_rate = 0.0
 
         self.memory = memory
         self.ten_shots = []
-        print self.willingness
-        print self.state
-        print self.battery
+
+        self.amIblocking = False
+
+        self.active_people_ids = []
 
     # Function will return True if decided to ask for help, or False otherwise
     def ask_4help(self, health, abilities, resources, self_esteem, task_urgency, task_importance, culture,
@@ -215,68 +227,106 @@ class Core:
         #pdb.set_trace()
         # Assume that agent's can do the tasks
         #print known_people
-        success_chance = -1
-        agent_id = -1
-        agent_idx = -1
+        try:
+            success_chance = -1
+            agent_id = -1
+            agent_idx = -1
 
-        # Find in known people the subset of agents that can do the task
-        subset = []
-        subset_unknown = []
-        if known_people:
-            #print 'known people not empty'
-            #print 'task id type ' + str(type(task['id']))
-            for x in known_people:
-                print  x[2]
-                #if task['id'] in x[2]:
-                if not senderID == x[0]:
-                    subset.append(x)
-                if int(x[1]) == -1:
-                    subset_unknown.append(x)
+            # Find in known people the subset of agents that can do the task
+            subset = []
+            subset_unknown = []
+            subset_proxies = []
+            if known_people:
+                # print 'known people not empty'
+                # print 'task id type ' + str(type(task['id']))
+                for x in known_people:
+                    print x[2]
+                    #if task['id'] in x[2]:
+                    #CAREFUL - does not consider case when x[2] is a list itself, i.e. when there are multiple abilities required
+                    if x[2][0] in task['abilities']:
+                        if not senderID == x[0] and not x[0] in task['ac_senders']:
+                            subset.append(x)
+                            if int(x[1]) == -1:
+                                subset_unknown.append(x)
+                    if x[2][0] == 'proxy':
+                        if not senderID == x[0] and not x[0] in task['ac_senders']:
+                            subset_proxies.append(x)
 
-            print subset
-            if subset:
-                if random.random() < 0.4:
-                    # Choose an agent randomly
-                    #print 'random'
-                    if subset_unknown:
-                        agent_idx = random.randint(0, len(subset_unknown) - 1)
-                        print subset_unknown[agent_idx][0]
-                        success_chance = subset_unknown[agent_idx][1]
-                        print success_chance
-                        agent_id = subset_unknown[agent_idx][0]
+                print subset
+                msg = "subset of known people that can do the job: %s" % str(subset)
+                rospy.loginfo(msg)
+                if subset:
+                    if random.random() < 0.4:
+                        # Choose an agent randomly
+                        #print 'random'
+                        if subset_unknown:
+                            agent_idx = random.randint(0, len(subset_unknown) - 1)
+                            print subset_unknown[agent_idx][0]
+                            success_chance = subset_unknown[agent_idx][1]
+                            print success_chance
+                            agent_id = subset_unknown[agent_idx][0]
+                        else:
+                            agent_idx = random.randint(0, len(subset) - 1)
+                            print subset[agent_idx][0]
+                            success_chance = subset[agent_idx][1]
+                            print success_chance
+                            log.write_log_file(log.stdout_log, 'Randomly chosen: %d\n' % subset[agent_idx][0])
+                            agent_id = subset[agent_idx][0]
                     else:
-                        agent_idx = random.randint(0, len(subset) - 1)
+                        # Select the one which has been most helpful in the past
+                        #print 'lambda'
+                        agent_idx = subset.index(max(subset, key=lambda x: x[1]))
+
                         print subset[agent_idx][0]
                         success_chance = subset[agent_idx][1]
                         print success_chance
-                        log.write_log_file(log.stdout_log, 'Randomly chosen: %d\n' % subset[agent_idx][0])
+                        log.write_log_file(log.stdout_log, 'lambda chosen: %d\n' % subset[agent_idx][0])
+
                         agent_id = subset[agent_idx][0]
+                    # Find the corresponding id in known_people
+                    for x in known_people:
+                        if x[0] == agent_id:
+                            #print 'element found'
+                            agent_idx = known_people.index(x)
+                            #print agent_idx
+                            log.write_log_file(log.stdout_log, 'index: %d\n' % agent_idx)
                 else:
-                    # Select the one which has been most helpful in the past
-                    #print 'lambda'
-                    agent_idx = subset.index(max(subset, key=lambda x: x[1]))
-
-                    print subset[agent_idx][0]
-                    success_chance = subset[agent_idx][1]
-                    print success_chance
-                    log.write_log_file(log.stdout_log, 'lambda chosen: %d\n' % subset[agent_idx][0])
-
-                    agent_id = subset[agent_idx][0]
-                # Find the corresponding id in known_people
-                for x in known_people:
-                    if x[0] == agent_id:
-                        #print 'element found'
-                        agent_idx = known_people.index(x)
-                        #print agent_idx
-                        log.write_log_file(log.stdout_log, 'index: %d\n' % agent_idx)
+                    # In case ambulance agents cannot find other ambulances, then can ask police officers for help
+                    msg = 'looking for proxies\n'
+                    rospy.loginfo(msg)
+                    if 'transport_victim' in task['abilities']:
+                        #pdb.set_trace()
+                        if subset_proxies:
+                            msg = 'No ambulance to ask, try fire police\n'
+                            rospy.loginfo(msg)
+                            agent_idx = random.randint(0, len(subset_proxies) - 1)
+                            print subset_proxies[agent_idx][0]
+                            success_chance = subset_proxies[agent_idx][1]
+                            print success_chance
+                            msg = 'Randomly chosen proxy: %d\n' % subset_proxies[agent_idx][0]
+                            rospy.loginfo(msg)
+                            agent_id = subset_proxies[agent_idx][0]
+                            for x in known_people:
+                                if x[0] == agent_id:
+                                    # print 'element found'
+                                    agent_idx = known_people.index(x)
+                                    # print agent_idx
+                                    msg = 'index: %d\n' % agent_idx
+                        else:
+                            msg = 'No proxies for this task\n'
+                            rospy.loginfo(msg)
+                    else:
+                        msg = 'No one to ask for this task\n'
+                        rospy.loginfo(msg)
+                    #print 'no one for this task'
             else:
-                log.write_log_file(log.stdout_log, 'No one to ask for this task\n')
-                #print 'no one for this task'
-        else:
-            #print 'no one'
-            log.write_log_file(log.stdout_log, 'No one to ask \n')
+                #print 'no one'
+                log.write_log_file(log.stdout_log, 'No one to ask \n')
 
-        return success_chance, agent_id, agent_idx
+            return success_chance, agent_id, agent_idx
+        except:
+            rospy.loginfo(
+            "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
 
     def battery_change(self, change):
         self.battery = self.battery - change
@@ -307,118 +357,153 @@ class Core:
         elif tipmsg == 'DIE':
             content = 'DIE'
         else:
+            #rospy.loginfo("raw_content: %s", str(raw_content))
             for x in raw_content:
-                content = content + str(x[0]) + '|'
+                #rospy.loginfo("raw_content: %s", x)
+                content = content + str(x) + '|'
         return content
 
     def goal2string(self, goal):
-        # pdb.set_trace()
-        abil = ''
-        for x in goal['abilities']:
-            abil = abil + str(x) + ','
-        eloc = str(goal['endLoc'][0]) + ',' + str(goal['endLoc'][1])
-        sloc = str(goal['startLoc'][0]) + ',' + str(goal['startLoc'][1])
-        res = ''
-        for x in goal['resources']:
-            res = res + str(x) + ','
-        equip = ''
-        print goal['equipment']
-        for x in goal['equipment']:
-            for y in x:
-                equip = equip + str(y) + ','
-            equip = equip + '|'
-        # Basically it is being assumed that only one goal passes through -- change this to send plans
-        goal = abil + ' ' + str(goal['estim_time']) + ' ' + str(goal['senderID']) + ' ' + str(
-            goal['energy']) + ' ' + str(goal['iterations']) + ' ' + str(goal['id']) + ' ' + goal[
-                   'name'] + ' ' + eloc + ' ' + str(goal['planID']) + ' ' + equip + ' ' + sloc + ' ' + str(
-            goal['reward']) + ' ' + res + ' ' + str(goal['noAgents']) + ' ' + str(goal['simulation_finish']) + '\n'
-        return goal
+        #pdb.set_trace()
+        try:
+            abil = ''
+            # ADD the quantity!!!
+            for x in goal['abilities']:
+                abil = abil + str(x) + ':' + str(goal['abilities'][x])  + ','
+            eloc = str(goal['endLoc'][0]) + ',' + str(goal['endLoc'][1])
+            sloc = str(goal['startLoc'][0]) + ',' + str(goal['startLoc'][1])
+            # ADD the quantity!!!
+            res = ''
+            for x in goal['resources']:
+                res = res + str(x) + ':' + str(goal['resources'][x]) + ','
+            equip = ''
+            print goal['equipment']
+            for x in goal['equipment']:
+                for y in x:
+                    equip = equip + str(y) + ','
+                equip = equip + '|'
+            # Basically it is being assumed that only one goal passes through -- change this to send plans
+            ac_snd = ''
+            for x in goal['ac_senders']:
+                ac_snd += str(x) + ','
+
+            goal = abil + ' ' + str(goal['estim_time']) + ' ' + str(goal['senderID']) + ' ' + str(
+                goal['energy']) + ' ' + str(goal['iterations']) + ' ' + str(goal['id']) + ' ' + goal[
+                       'name'] + ' ' + eloc + ' ' + str(goal['planID']) + ' ' + equip + ' ' + sloc + ' ' + str(
+                goal['reward']) + ' ' + res + ' ' + str(goal['noAgents']) + ' ' + str(goal['simulation_finish']) + ' ' + ac_snd + '\n'
+
+            rospy.loginfo("CORE: goal2string: " + str(goal))
+            return goal
+        except:
+            rospy.loginfo("CORE: Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
 
     def string2goal(self, line, log):
-        # halloumi, 15.8918374114 1 46 8 56 randomCrap 5,6 -8 pip,|pop,|pup,| 2,3 41 mozarella, 3
-        log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % line)
-        line = filter(None, line.split(' '))
-        log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % line)
-        abilities = [x for x in filter(None, line[0].split(','))]
-        log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % abilities)
-        estim_time = float(line[1])
-        log.write_log_file(log.stdout_log, '[string2goal] goal content: %f\n' % estim_time)
-        senderId = line[2]
-        log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % senderId)
-        energy = int(line[3])
-        log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % energy)
-        iterations = int(line[4])
-        log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % iterations)
-        tID = int(line[5])
-        log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % tID)
-        tName = line[6]
-        log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % tName)
-        endLoc = [x for x in filter(None, line[7].split(','))]
-        log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % endLoc)
-        planId = line[8]
-        log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % planId)
-        equipment = [filter(None, x.split(',')) for x in filter(None, line[9].split('|'))]
-        log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % equipment)
-        startLoc = [x for x in filter(None, line[10].split(','))]
-        log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % startLoc)
-        reward = int(line[11])
-        log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % reward)
-        res = [x for x in filter(None, line[12].split(','))]
-        log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % res)
-        noAgents = int(line[13])
-        log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % noAgents)
+        try:
+            # halloumi, 15.8918374114 1 46 8 56 randomCrap 5,6 -8 pip,|pop,|pup,| 2,3 41 mozarella, 3
+            log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % line)
+            line = filter(None, line.split(' '))
+            log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % line)
+            abilities = [x for x in filter(None, line[0].split(','))]
+            log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % abilities)
+            estim_time = float(line[1])
+            log.write_log_file(log.stdout_log, '[string2goal] goal content: %f\n' % estim_time)
+            senderId = line[2]
+            log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % senderId)
+            energy = int(line[3])
+            log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % energy)
+            iterations = int(line[4])
+            log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % iterations)
+            tID = int(line[5])
+            log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % tID)
+            tName = line[6]
+            log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % tName)
+            endLoc = [x for x in filter(None, line[7].split(','))]
+            log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % endLoc)
+            planId = line[8]
+            log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % planId)
+            equipment = [filter(None, x.split(',')) for x in filter(None, line[9].split('|'))]
+            log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % equipment)
+            startLoc = [x for x in filter(None, line[10].split(','))]
+            log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % startLoc)
+            reward = int(line[11])
+            log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % reward)
+            res = [x for x in filter(None, line[12].split(','))]
+            log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % res)
+            noAgents = int(line[13])
+            log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % noAgents)
+            ac_snd = [int(x) for x in filter(None, line[14].split(','))]
 
-        return {'senderID': senderId, 'planID': planId, 'id': tID, 'iterations': iterations, 'energy': energy,
-                'reward': reward, 'name': tName, 'startLoc': startLoc, 'endLoc': endLoc, 'noAgents': noAgents,
-                'equipment': equipment, 'abilities': abilities, 'resources': res, 'estim_time': estim_time}
+            return {'senderID': senderId, 'planID': planId, 'id': tID, 'iterations': iterations, 'energy': energy,
+                    'reward': reward, 'name': tName, 'startLoc': startLoc, 'endLoc': endLoc, 'noAgents': noAgents,
+                    'equipment': equipment, 'abilities': abilities, 'resources': res, 'estim_time': estim_time, 'ac_senders': ac_snd}
+        except:
+            rospy.loginfo(
+                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            log.write_log_file(log.stdout_log, "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
 
     def string2goalPlan(self, lines, log):
         # halloumi, 15.8918374114 1 46 8 56 randomCrap 5,6 -8 pip,|pop,|pup,| 2,3 41 mozarella, 3
-        plan = []
-        lines = filter(None, lines.split('\n'))
-        log.write_log_file(log.stdout_log, '[string2goal] lines: %s\n' % lines)
-        for line in lines:
-            # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % line)
-            line = filter(None, line.split(' '))
-            # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % line)
-            abilities = [x for x in filter(None, line[0].split(','))]
-            # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % abilities)
-            estim_time = float(line[1])
-            # log.write_log_file(log.stdout_log, '[string2goal] goal content: %f\n' % estim_time)
-            senderId = line[2]
-            # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % senderId)
-            energy = int(line[3])
-            # log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % energy)
-            iterations = int(line[4])
-            # log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % iterations)
-            tID = int(line[5])
-            # log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % tID)
-            tName = line[6]
-            # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % tName)
-            endLoc = [x for x in filter(None, line[7].split(','))]
-            # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % endLoc)
-            planId = line[8]
-            # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % planId)
-            equipment = [filter(None, x.split(',')) for x in filter(None, line[9].split('|'))]
-            # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % equipment)
-            startLoc = [x for x in filter(None, line[10].split(','))]
-            # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % startLoc)
-            reward = int(line[11])
-            # log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % reward)
-            res = [x for x in filter(None, line[12].split(','))]
-            # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % res)
-            noAgents = int(line[13])
-            # log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % noAgents)
-            simulation_finish = float(line[14])
+        try:
+            plan = []
+            lines = filter(None, lines.split('\n'))
+            log.write_log_file(log.stdout_log, '[string2goal] lines: %s\n' % lines)
+            for line in lines:
+                # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % line)
+                line = filter(None, line.split(' '))
+                # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % line)
+                abilities = [x for x in filter(None, line[0].split(','))]
+                t = {}
+                for x in abilities:
+                    a = [y for y in x.split(':')]
+                    t.update({a[0]:float(a[1])})
+                abilities = t
+                # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % abilities)
+                estim_time = float(line[1])
+                # log.write_log_file(log.stdout_log, '[string2goal] goal content: %f\n' % estim_time)
+                senderId = line[2]
+                # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % senderId)
+                energy = float(line[3])
+                # log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % energy)
+                iterations = int(float(line[4]))
+                # log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % iterations)
+                tID = int(float(line[5]))
+                # log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % tID)
+                tName = line[6]
+                # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % tName)
+                endLoc = [float(x) for x in filter(None, line[7].split(','))]
+                # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % endLoc)
+                planId = line[8]
+                # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % planId)
+                equipment = [filter(None, x.split(',')) for x in filter(None, line[9].split('|'))]
+                # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % equipment)
+                startLoc = [float(x) for x in filter(None, line[10].split(','))]
+                # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % startLoc)
+                reward = int(float(line[11]))
+                # log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % reward)
+                res = [x for x in filter(None, line[12].split(','))]
+                t = {}
+                for x in res:
+                    a = [y for y in x.split(':')]
+                    t.update({a[0]:float(a[1])})
+                res = t
+                # log.write_log_file(log.stdout_log, '[string2goal] goal content: %s\n' % res)
+                noAgents = int(line[13])
+                # log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % noAgents)
+                simulation_finish = float(line[14])
+                log.write_log_file(log.stdout_log, '[string2goal] goal content: %d\n' % noAgents)
+                ac_snd = [int(x) for x in filter(None, line[15].split(','))]
 
-            plan.append({'senderID': senderId, 'planID': planId, 'id': tID, 'iterations': iterations, 'energy': energy,
-                         'reward': reward, 'name': tName, 'startLoc': startLoc, 'endLoc': endLoc, 'noAgents': noAgents,
-                         'equipment': equipment, 'abilities': abilities, 'resources': res, 'estim_time': estim_time, 'simulation_finish': simulation_finish})
+                plan.append({'senderID': senderId, 'planID': planId, 'id': tID, 'iterations': iterations, 'energy': energy,
+                             'reward': reward, 'name': tName, 'startLoc': startLoc, 'endLoc': endLoc, 'noAgents': noAgents,
+                             'equipment': equipment, 'abilities': abilities, 'resources': res, 'estim_time': estim_time, 'simulation_finish': simulation_finish, 'ac_senders': ac_snd})
 
-        log.write_log_file(log.stdout_log, '[string2goal] plan content: %s\n' % plan)
+            log.write_log_file(log.stdout_log, '[string2goal] plan content: %s\n' % plan)
 
-        return plan
-
+            return plan
+        except:
+            rospy.loginfo("CORE: Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            log.write_log_file(log.stdout_log, "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+    '''
     def willing2ask_fuzzy(self, inputs):
         # Define some parameters
         hmin = 400
@@ -493,8 +578,8 @@ class Core:
             return True
         else:
             return False
-
-    #Simple models for delta and gamma
+    '''
+    # Simple models for delta and gamma
     def classic_delta(self, tasks_dropped, tasks_attempted):
 
         old = self.drop_rate
@@ -549,6 +634,542 @@ class Core:
 
     # Willingness to give help
 
+    def delta5(self, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_tradeoff,  culture, aID):
+        try:
+            self.delta = 0
+            if energy_diff < 0:
+                f1 = -1
+            else:
+                f1 = energy_diff
+            msg = "energy: %f, f1: %f\n" % (energy_diff,f1)
+            rospy.loginfo(msg)
+            if abil == 0:
+                f2 = -1
+            else:
+                f2 = abil
+            msg = "abil: %f, f2: %f\n" % (abil, f2)
+            rospy.loginfo(msg)
+            if equip == 0:
+                f3 = -1
+            else:
+                f3 = equip
+            msg = "equip: %f, f3: %f\n" % (equip, f3)
+            rospy.loginfo(msg)
+            if knowled == 0:
+                f4 = -1
+            else:
+                f4 = knowled
+            msg = "knowled: %f, f4: %f\n" % (knowled, f4)
+            rospy.loginfo(msg)
+            if tools == 0:
+                f5 = -1
+            else:
+                f5 = tools
+            msg = "tools: %f, f4: %f\n" % (tools, f5)
+            rospy.loginfo(msg)
+            f6 = performance-self.LOW
+            f7 = dif_task_tradeoff-self.LOW
+            f8 = self.LOW-env_risk
+            f9 = self.LOW-ag_risk[0]
+            self.delta = self.willingness[1] + (f1+f2+f3+f4+f5+f6+f7+f8+f9)/float(9)
+            msg = "mu: %f, f6: %f\n" % (performance, f6)
+            msg += "trade: %f, f7: %f\n" % (dif_task_tradeoff, f7)
+            msg += "env: %f, f8: %f\n" % (env_risk, f8)
+            msg += "arisk: %f, f9: %f\n" % (ag_risk[0], f9)
+            msg += "delta: %f, delta0: %f\n" % (self.delta, self.willingness[1])
+            rospy.loginfo(msg)
+            self.delta_in_time.append(self.delta)
+            if self.delta > 1.0:
+                self.delta = 1.0
+            elif self.delta < 0.0:
+                self.delta = 0.0
+
+            if random.random() <= self.delta:
+                return True, self.delta
+            else:
+                return False, self.delta
+        except:
+            rospy.loginfo(
+                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+
+    def gamma3(self, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_progress, culture, aID):
+        try:
+            self.gamma = 0
+            if energy_diff > 0:
+                self.gamma = 1.0
+                msg = "energy: %f" % (energy_diff)
+                self.gamma_in_time.append(self.gamma)
+                rospy.loginfo(msg)
+                return True, self.gamma
+            else:
+                f1 = energy_diff
+                msg = "energy: %f, f1: %f" % (energy_diff, f1)
+                rospy.loginfo(msg)
+                if abil == 0:
+                    self.gamma = 1.0
+                    msg = "abil: %f" % (abil)
+                    self.gamma_in_time.append(self.gamma)
+                    rospy.loginfo(msg)
+                    return True, self.gamma
+                else:
+                    f2 = -abil
+                    msg = "abil: %f, f2: %f" % (abil, f2)
+                    rospy.loginfo(msg)
+                    if equip == 0:
+                        self.gamma = 1.0
+                        msg = "equip: %f" % (equip)
+                        self.gamma_in_time.append(self.gamma)
+                        rospy.loginfo(msg)
+                        return True, self.gamma
+                    else:
+                        f3 = -equip
+                        msg = "equip: %f, f3: %f" % (equip, f3)
+                        rospy.loginfo(msg)
+                        if knowled == 0:
+                            self.gamma = 1.0
+                            msg = "knowled: %f" % (knowled)
+                            self.gamma_in_time.append(self.gamma)
+                            rospy.loginfo(msg)
+                            return True, self.gamma
+                        else:
+                            f4 = -knowled
+                            msg = "knowled: %f, f4: %f" % (knowled, f4)
+                            rospy.loginfo(msg)
+                            if tools == 0:
+                                self.gamma = 1.0
+                                msg = "tools: %f" % (tools)
+                                self.gamma_in_time.append(self.gamma)
+                                rospy.loginfo(msg)
+                                return True, self.gamma
+                            else:
+                                f5 = -tools
+                                msg = "tools: %f, f5: %f" % (tools, f5)
+                                rospy.loginfo(msg)
+                                #pdb.set_trace()
+                                f6 = self.LOW-performance
+                                f7 = self.LOW-dif_task_progress
+                                f8 = env_risk-self.LOW
+                                f9 = self.LOW-ag_risk
+                                self.gamma = self.willingness[0] + (f1+f2+f3+f4+f5+f6+f7+f8+f9)/float(9)
+
+                                msg = "low: %f, mu: %f, f6: %f\n" % (self.LOW, performance, f6)
+                                msg += "progress: %f, f7: %f\n" % (dif_task_progress, f7)
+                                msg += "env: %f, f8: %f\n" % (env_risk, f8)
+                                msg += "arisk: %f, f9: %f\n" % (ag_risk, f9)
+                                msg += "gamma: %f, gammma0: %f\n" % (self.gamma, self.willingness[0])
+                                rospy.loginfo(msg)
+                                self.gamma_in_time.append(self.gamma)
+                                if self.gamma > 1.0:
+                                    self.gamma = 1.0
+                                elif self.gamma < 0.0:
+                                    self.gamma = 0.0
+
+                                if random.random() <= self.gamma:
+                                    return True, self.gamma
+                                else:
+                                    return False, self.gamma
+        except:
+            rospy.loginfo(
+                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+
+    def deltaD(self, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_tradeoff, _tradeoff, culture, aID):
+        try:
+            self.delta = 0
+            msg = '\ndeltaD: delta %f\n' % self.delta
+            msg += 'energydiff: %f\n' % energy_diff
+            rospy.loginfo(msg)
+
+            self.delta += 1 - self.battery_min/float(energy_diff)
+            msg += 'delta: %f, percentage: %f\n' % (self.delta, self.battery_min/float(energy_diff))
+            rospy.loginfo(msg)
+            msg = '\n ariks: %s\n' % (str(self.arisk))
+            rospy.loginfo(msg)
+            if abil == 0:
+                self.delta += -1
+            else:
+                self.delta += abil # we assume accuracy is one
+            if equip == 0:
+                self.delta += -1
+            else:
+                self.delta += equip
+            if knowled == 0:
+                self.delta += -1
+            else:
+                self.delta += knowled
+            if tools == 0:
+                self.delta += -1
+            else:
+                self.delta += tools
+
+            msg += 'delta: %f\n' % self.delta
+            rospy.loginfo(msg)
+
+            if env_risk < self.LOW:
+                self.delta += 1 - env_risk
+            elif env_risk > self.HIGH:
+                self.delta -= env_risk
+            elif abs(env_risk - self.env_risk) > self.considerable_change:
+                if not self.env_risk == 0:
+                    self.delta -= (env_risk - self.env_risk)/float(env_risk + self.env_risk)
+                else:
+                    self.delta -= env_risk - self.env_risk
+
+            if not self.env_risk == 0:
+                msg += 'env risk: %f, delta: %f, percent: %f\n' % (env_risk, self.delta, (env_risk - self.env_risk)/float(env_risk + self.env_risk))
+            else:
+                msg += 'env risk: %f, delta: %f, percent: %f\n' % (env_risk, self.delta, env_risk - self.env_risk)
+
+            rospy.loginfo(msg)
+
+            if aID in self.arisk:
+                if ag_risk[0] < self.LOW:
+                    self.delta += 1 - ag_risk[0]
+                elif ag_risk[0] > self.HIGH:
+                    self.delta -= ag_risk[0]
+                elif ag_risk[0] - self.arisk[aID] > self.considerable_change:
+                    if not self.arisk[aID] == 0:
+                        self.delta -= (ag_risk[0] - self.arisk[aID])/float(ag_risk[0] + self.arisk[aID])
+                    else:
+                        self.delta -= ag_risk[0] - self.arisk[aID]
+            else:
+                self.arisk.update({aID:0})
+                if ag_risk[0] < self.LOW:
+                    self.delta += 1 - ag_risk[0]
+                elif ag_risk[0] > self.HIGH:
+                    self.delta -= ag_risk[0]
+                elif ag_risk[0] - self.arisk[aID] > self.considerable_change:
+                    if not self.arisk[aID] == 0:
+                        self.delta -= (ag_risk[0] - self.arisk[aID])/float(ag_risk[0] + self.arisk[aID])
+                    else:
+                        self.delta -= ag_risk[0] - self.arisk[aID]
+            msg = "\n arisk: %f, dict: %s" % (ag_risk[0], str(self.arisk[aID]))
+            rospy.loginfo(msg)
+            if not self.arisk[aID] == 0:
+                msg += 'ag risk: %f, delta: %f, percent: %f\n' % (ag_risk[0], self.delta, (ag_risk[0] - self.arisk[aID])/float(ag_risk[0] + self.arisk[aID]))
+            else:
+                msg += 'ag risk: %f, delta: %f, percent: %f\n' % (ag_risk[0], self.delta, ag_risk[0] - self.arisk[aID])
+
+            rospy.loginfo(msg)
+
+            if performance < self.LOW:
+                self.delta -= 1 - performance
+            elif performance > self.HIGH:
+                self.delta += performance
+            elif abs(performance - self.performance) > self.considerable_change:
+                if not self.performance == 0:
+                    self.delta += (performance - self.performance)/float(performance + self.performance)
+                else:
+                    self.delta += performance - self.performance
+
+            if not self.performance == 0:
+                msg += 'performance: %f, delta: %f, percent: %f\n' % (performance, self.delta, (performance - self.performance)/float(performance + self.performance))
+            else:
+                msg += 'performance: %f, delta: %f, percent: %f\n' % (performance, self.delta, performance - self.performance)
+
+            rospy.loginfo(msg)
+
+            if dif_task_tradeoff < self.LOW:
+                self.delta -= 1 - dif_task_tradeoff
+            elif dif_task_tradeoff > self.HIGH:
+                self.delta += dif_task_tradeoff
+            if abs(dif_task_tradeoff) > self.considerable_change:
+                self.delta += dif_task_tradeoff
+
+            if not _tradeoff == 0:
+                msg += 'tradeoff: %f, delta: %f, percent: %f\n' % (dif_task_tradeoff, self.delta, (dif_task_tradeoff)/float(_tradeoff))
+            else:
+                msg += 'tradeoff: %f, delta: %f, percent: %f\n' % (dif_task_tradeoff, self.delta, dif_task_tradeoff)
+
+            self.env_risk = env_risk
+            self.performance = performance
+            self.arisk[aID] = ag_risk[0]
+
+            self.delta = self.willingness[1] + self.delta/float(9)
+
+            msg += "\n delta: %f" % self.delta
+            rospy.loginfo(msg)
+
+            if self.delta > 1.0:
+                self.delta = 1.0
+            elif self.delta < 0.0:
+                self.delta = 0.0
+
+            if random.random() <= self.delta:
+                return True, self.delta
+            else:
+                return False, self.delta
+
+        except:
+            rospy.loginfo(
+                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+
+    def deltaD_no_chain(self, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_tradeoff, _tradeoff, culture, aID):
+        try:
+            self.delta = 0
+            msg = '\ndeltaD: delta %f\n' % self.delta
+            msg += 'energydiff: %f\n' % energy_diff
+            rospy.loginfo(msg)
+
+            if energy_diff < self.battery_min:
+                self.delta = 0.0
+                return False, self.delta
+            else:
+                self.delta += 1 - self.battery_min/float(energy_diff)
+            msg += 'delta: %f, percentage: %f\n' % (self.delta, self.battery_min/float(energy_diff))
+            rospy.loginfo(msg)
+            msg = '\n ariks: %s\n' % (str(self.arisk))
+            rospy.loginfo(msg)
+            if abil == 0:
+                self.delta = 0.0
+                return False, self.delta
+            else:
+                self.delta += abil # we assume accuracy is one
+            if equip == 0:
+                self.delta = 0.0
+                return False, self.delta
+            else:
+                self.delta += equip
+            if knowled == 0:
+                self.delta = 0.0
+                return False, self.delta
+            else:
+                self.delta += knowled
+            if tools == 0:
+                self.delta = 0.0
+                return False, self.delta
+            else:
+                self.delta += tools
+
+            msg += 'delta: %f\n' % self.delta
+            rospy.loginfo(msg)
+
+            if env_risk < self.LOW:
+                self.delta += 1 - env_risk
+            elif env_risk > self.HIGH:
+                self.delta -= env_risk
+            elif abs(env_risk - self.env_risk) > self.considerable_change:
+                if not self.env_risk == 0:
+                    self.delta -= (env_risk - self.env_risk)/float(env_risk + self.env_risk)
+                else:
+                    self.delta -= env_risk - self.env_risk
+
+            if not self.env_risk == 0:
+                msg += 'env risk: %f, delta: %f, percent: %f\n' % (env_risk, self.delta, (env_risk - self.env_risk)/float(env_risk + self.env_risk))
+            else:
+                msg += 'env risk: %f, delta: %f, percent: %f\n' % (env_risk, self.delta, env_risk - self.env_risk)
+
+            rospy.loginfo(msg)
+
+            if aID in self.arisk:
+                if ag_risk[0] < self.LOW:
+                    self.delta += 1 - ag_risk[0]
+                elif ag_risk[0] > self.HIGH:
+                    self.delta -= ag_risk[0]
+                elif ag_risk[0] - self.arisk[aID] > self.considerable_change:
+                    if not self.arisk[aID] == 0:
+                        self.delta -= (ag_risk[0] - self.arisk[aID])/float(ag_risk[0] + self.arisk[aID])
+                    else:
+                        self.delta -= ag_risk[0] - self.arisk[aID]
+            else:
+                self.arisk.update({aID:0})
+                if ag_risk[0] < self.LOW:
+                    self.delta += 1 - ag_risk[0]
+                elif ag_risk[0] > self.HIGH:
+                    self.delta -= ag_risk[0]
+                elif ag_risk[0] - self.arisk[aID] > self.considerable_change:
+                    if not self.arisk[aID] == 0:
+                        self.delta -= (ag_risk[0] - self.arisk[aID])/float(ag_risk[0] + self.arisk[aID])
+                    else:
+                        self.delta -= ag_risk[0] - self.arisk[aID]
+            msg = "\n arisk: %f, dict: %s" % (ag_risk[0], str(self.arisk[aID]))
+            rospy.loginfo(msg)
+            if not self.arisk[aID] == 0:
+                msg += 'ag risk: %f, delta: %f, percent: %f\n' % (ag_risk[0], self.delta, (ag_risk[0] - self.arisk[aID])/float(ag_risk[0] + self.arisk[aID]))
+            else:
+                msg += 'ag risk: %f, delta: %f, percent: %f\n' % (ag_risk[0], self.delta, ag_risk[0] - self.arisk[aID])
+
+            rospy.loginfo(msg)
+
+            if performance < self.LOW:
+                self.delta -= 1 - performance
+            elif performance > self.HIGH:
+                self.delta += performance
+            elif abs(performance - self.performance) > self.considerable_change:
+                if not self.performance == 0:
+                    self.delta += (performance - self.performance)/float(performance + self.performance)
+                else:
+                    self.delta += performance - self.performance
+
+            if not self.performance == 0:
+                msg += 'performance: %f, delta: %f, percent: %f\n' % (performance, self.delta, (performance - self.performance)/float(performance + self.performance))
+            else:
+                msg += 'performance: %f, delta: %f, percent: %f\n' % (performance, self.delta, performance - self.performance)
+
+            rospy.loginfo(msg)
+
+            if dif_task_tradeoff < self.LOW:
+                self.delta -= 1 - dif_task_tradeoff
+            elif dif_task_tradeoff > self.HIGH:
+                self.delta += dif_task_tradeoff
+            if abs(dif_task_tradeoff) > self.considerable_change:
+                self.delta += dif_task_tradeoff
+
+            if not _tradeoff == 0:
+                msg += 'tradeoff: %f, delta: %f, percent: %f\n' % (dif_task_tradeoff, self.delta, (dif_task_tradeoff)/float(_tradeoff))
+            else:
+                msg += 'tradeoff: %f, delta: %f, percent: %f\n' % (dif_task_tradeoff, self.delta, dif_task_tradeoff)
+
+            self.env_risk = env_risk
+            self.performance = performance
+            self.arisk[aID] = ag_risk[0]
+
+            self.delta = self.willingness[1] + self.delta/float(9)
+
+            msg += "\n delta: %f" % self.delta
+            rospy.loginfo(msg)
+
+            if self.delta > 1.0:
+                self.delta = 1.0
+            elif self.delta < 0.0:
+                self.delta = 0.0
+
+            if random.random() <= self.delta:
+                return True, self.delta
+            else:
+                return False, self.delta
+
+        except:
+            rospy.loginfo(
+                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+
+    def gammaG(self, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_progress, _progress, culture, aID):
+
+        try:
+            self.gamma = 0
+
+            msg = '\ngammaG: gamma %f\n' % self.gamma
+            msg += 'energydiff: %f\n' % energy_diff
+            if energy_diff < self.battery_min:
+                self.gamma = 1.0
+                return True, self.gamma
+            else:
+                self.gamma -= 1 - self.battery_min/float(energy_diff)
+                msg += 'gamma: %f, percentage: %f\n' % (self.gamma, self.battery_min/float(energy_diff))
+
+                if abil == 0:
+                    self.gamma = 1.0
+                    return True, self.gamma
+                else:
+                    self.gamma -= abil
+
+                if equip == 0:
+                    self.gamma = 1.0
+                    return True, self.gamma
+                else:
+                    self.gamma -= equip
+                if knowled == 0:
+                    self.gamma = 1.0
+                    return True, self.gamma
+                else:
+                    self.gamma -= knowled
+                if tools == 0:
+                    self.gamma = 1.0
+                    return True, self.gamma
+                else:
+                    self.gamma -= tools
+
+                msg += 'gamma: %f\n' % self.gamma
+
+                if env_risk < self.LOW:
+                    self.gamma -= 1 - env_risk
+                elif env_risk > self.HIGH:
+                    self.gamma += env_risk
+                elif abs(env_risk - self.env_risk) > self.considerable_change:
+                    if not self.env_risk == 0:
+                        self.gamma += (env_risk - self.env_risk)/float(env_risk + self.env_risk)
+                    else:
+                        self.gamma += env_risk - self.env_risk
+
+                if not self.env_risk == 0:
+                    msg += 'env risk: %f, gamma: %f, percent: %f\n' % (env_risk, self.gamma, (env_risk - self.env_risk)/float(env_risk + self.env_risk))
+                else:
+                    msg += 'env risk: %f, gamma: %f, percent: %f\n' % (env_risk, self.gamma, abs(env_risk - self.env_risk))
+
+                if aID in self.arisk:
+                    if ag_risk < self.LOW:
+                        self.gamma += 1 - ag_risk
+                    elif ag_risk > self.HIGH:
+                        self.gamma -= ag_risk
+                    elif ag_risk - self.arisk[aID] > self.considerable_change:
+                        if not self.arisk[aID] == 0:
+                            self.gamma -= (ag_risk - self.arisk[aID])/float(ag_risk + self.arisk[aID])
+                        else:
+                            self.gamma -= ag_risk - self.arisk[aID]
+                else:
+                    self.arisk.update({aID:0})
+                    if ag_risk < self.LOW:
+                        self.gamma += 1 - ag_risk
+                    elif ag_risk > self.HIGH:
+                        self.gamma -= ag_risk
+                    elif ag_risk - self.arisk[aID] > self.considerable_change:
+                        if not self.arisk[aID] == 0:
+                            self.gamma -= (ag_risk - self.arisk[aID])/float(ag_risk + self.arisk[aID])
+                        else:
+                            self.gamma -= ag_risk - self.arisk[aID]
+
+                if not self.arisk[aID] == 0:
+                    msg += 'ag risk: %f, gamma: %f, percent: %f\n' % (ag_risk, self.gamma, (ag_risk - self.arisk[aID])/float(self.arisk[aID]))
+                else:
+                    msg += 'ag risk: %f, gamma: %f, percent: %f\n' % (ag_risk, self.gamma, ag_risk - self.arisk[aID])
+
+                if performance < self.LOW:
+                    self.gamma += 1 - performance
+                elif performance > self.HIGH:
+                    self.gamma -= performance
+                elif abs(performance - self.performance) > self.considerable_change:
+                    if not self.performance == 0:
+                        self.gamma -= (performance - self.performance)/float(performance + self.performance)
+                    else:
+                        self.gamma -= performance - self.performance
+
+                if not self.performance == 0:
+                    msg += 'performance: %f, gamma: %f, percent: %f\n' % (performance, self.gamma, (performance - self.performance)/float(self.performance))
+                else:
+                    msg += 'performance: %f, gamma: %f, percent: %f\n' % (performance, self.gamma, performance - self.performance)
+
+                #pdb.set_trace()
+
+                if dif_task_progress < self.LOW:
+                    self.gamma += 1 - dif_task_progress
+                elif dif_task_progress > self.HIGH:
+                    self.gamma -= dif_task_progress
+                elif abs(dif_task_progress) > self.considerable_change:
+                    self.gamma -= dif_task_progress
+
+                msg += 'progress: %f, gamma: %f, percent: %f\n' % (dif_task_progress, self.gamma, dif_task_progress)
+
+            rospy.loginfo(msg)
+
+            self.gamma = self.willingness[0] + self.gamma/float(9)
+            msg += "\n gamma: %f" % self.gamma
+            rospy.loginfo(msg)
+            if self.gamma > 1.0:
+                self.gamma = 1.0
+            elif self.gamma < 0.0:
+                self.gamma = 0.0
+
+            self.env_risk = env_risk
+            self.performance = performance
+            self.arisk[aID] = ag_risk
+
+            if random.random() <= self.gamma:
+                return True, self.gamma
+            else:
+                return False, self.gamma
+        except:
+            rospy.loginfo(
+                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+
     def b_delta(self, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_tradeoff, culture, ag_id):
 
         if self.memory == 0:
@@ -602,24 +1223,24 @@ class Core:
         self.env_risk = env_risk
         self.performance = performance
 
-        #if not self.ID == 1:
-
-        if ag_risk >= 0.5 and culture <= 0.5:
-            self.delta = 0.1
-            for x in self.ten_shots:
-                if ag_id == x[0]:
-                    x[1].append(ag_risk)
-        elif (ag_risk < 0.5 and culture > 0.5) or (ag_risk < 0.5 and culture <= 0.5):
-            self.delta += 5 * self.step
-        elif ag_risk >= 0.5 and culture > 0.5:
-            for x in self.ten_shots:
-                if ag_id == x[0]:
-                    if len(x[1]) < 3:
+        '''
+        if not self.ID == 1:
+            if ag_risk >= 0.5 and culture <= 0.5:
+                self.delta = 0.1
+                for x in self.ten_shots:
+                    if ag_id == x[0]:
                         x[1].append(ag_risk)
-                        self.delta -= self.step
-                    else:
-                        self.delta = 0.1
-
+            elif (ag_risk < 0.5 and culture > 0.5) or (ag_risk < 0.5 and culture <= 0.5):
+                self.delta += 5 * self.step
+            elif ag_risk >= 0.5 and culture > 0.5:
+                for x in self.ten_shots:
+                    if ag_id == x[0]:
+                        if len(x[1]) < 3:
+                            x[1].append(ag_risk)
+                            self.delta -= self.step
+                        else:
+                            self.delta = 0.1
+        '''
 
         if self.delta > 1.0:
             self.delta = 1.0

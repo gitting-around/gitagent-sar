@@ -1,11 +1,11 @@
-4000
+400000
 50
 bcasts_brain,bcasts_brain_callback
 bcasts,/environment/agent_position
 
 20,20
-moving,2Dvision,grasping
-potatoes
+proxy:1,
+potatoes:1,
 hitting_wall
 njohuri_rreth_pilafit
 shqip

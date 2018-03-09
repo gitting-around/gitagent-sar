@@ -3,7 +3,7 @@
 # Framework v1.0
 import random
 import time
-from numpy import *
+import numpy as np
 
 import matplotlib.pyplot as plt;
 
@@ -30,11 +30,12 @@ class Simulation0:
 
         # Time taken by tasks of different difficulties, easy, medium, hard
         #self.delay = [0.5, 2.5, 5]
-        self.delay = [1.0, 3.5, 6]
+        self.delay = [3.0, 4.0, 9.0]
+        self.time = 0
 
         self.dep_prob = 0.2
 
-        ##Values to be measured
+        ## Values to be measured
         # First element contains requests produced by easy tasks, second by medium, third by difficult tasks
         self.requests = [0, 0, 0]
         self.requests_success = [0, 0, 0]
@@ -47,6 +48,8 @@ class Simulation0:
 
         # Tasks executed: easy, medium, difficult
         self.no_tasks = [0, 0, 0]
+
+        self.neto_tasks_completed = 0
 
         self.no_tasks_attempted = [0, 0, 0]
         self.no_tasks_completed = [0, 0, 0]
@@ -75,6 +78,8 @@ class Simulation0:
 
         self.task_give_importance = []
         self.task_ask_importance = []
+
+        self.count_recharge = 0
 
         # Stopping criterion - count how many jobs the agent is doing that came from the planner, when 150 is reached, simulation can end
         self.STOP = 150
@@ -109,7 +114,7 @@ class Simulation0:
         self.theta_diff = [[], [], []]
         self.gamma_diff = [[], [], []]
 
-        #Order the values of delta and theta chronologically. [delta/theta, value, boolean,tasks done/attempted]. Delta = 0, theta = 1
+        # Order the values of delta and theta chronologically. [delta/theta, value, boolean,tasks done/attempted]. Delta = 0, theta = 1
         self.delta_theta = []
 
         self.pressure = pressure
@@ -120,6 +125,48 @@ class Simulation0:
         self.culture = []
 
         self.finish = -1.0
+
+        self.fires = np.array([])
+        #self.visible_distance = 10
+        self.visible_distance = 3
+        self.extinguish_step = 1
+        self.current_fire = -1
+        self.current_victim = -1
+
+        self.water_refurnish_time = 1/4 # in seconds
+        self.drop_victims_base = 1/4 # in seconds? or is it better in time units, unspecified
+
+        #self.water_refurnish_time = 30  # in seconds
+        #self.drop_victims_base = 30  # in seconds? or is it better in time units, unspecified
+
+        self.fbase = []
+        self.abase = []
+
+        self.levywalk = []
+        self.walk = []
+        # Real world vs simulation world CONVENTIONS
+        # 1 km in the real world (RW) -> p km in (SM)
+        # 1 h in the RW -> q sec in SM
+        self.kmR2kmS = 1
+        self.hR2sS = 1
+
+        self.callback_env = 0
+        self.callback_msg = 0
+
+        self.last_updated = 0
+        self.time_per_task = []
+        self.time_started = 0
+        self.time_running = 0
+
+        self.time_all_visible = 0
+
+        self.all_out = False
+        self.counted_d = 0
+
+        self.count_gotobase = 0
+
+        self.energy_iteration = 0.0001
+
 
     # self.stdout_log = 'RESULT/pop_size.'+str(popSize) +'/prova.'+str(provaNr)+'/stdout_' + str(ID) + '_' + str(delta) +'_'+ str(depend_nr)
     # self.stdout_callback = 'RESULT/pop_size.'+str(popSize) +'/prova.'+str(provaNr)+'/stdout_callback' + str(ID) + '_' + str(delta) +'_'+ str(depend_nr)
@@ -248,16 +295,26 @@ class Simulation0:
 
         battery = int(lines[0])
         vel = float(lines[1])
-        sens = [x.split(',') for x in lines[2].split('|')]
-        act = [x for x in lines[3].split(',')]
-        mot = [x for x in lines[4].split(',')]
-        sloc = [x for x in lines[5].split(',')]
-        abil = [x for x in lines[6].split(',')]
-        res = [x for x in lines[7].split(',')]
-        serve = [x for x in lines[8].split(',')]
-        knowl = [x for x in lines[9].split(',')]
-        lang = [x for x in lines[10].split(',')]
-        prots = [x for x in lines[11].split(',')]
+        sens = [x.split(',') for x in filter(None, lines[2].split('|'))]
+        act = [x for x in filter(None, lines[3].split(','))]
+        mot = [x for x in filter(None, lines[4].split(','))]
+        sloc = [x for x in filter(None, lines[5].split(','))]
+        abil = [x for x in filter(None, lines[6].split(','))]
+        t = {}
+        for x in abil:
+            a = [y for y in x.split(':')]
+            t.update({a[0]:int(a[1])})
+        abil = t
+        t = {}
+        res = [x for x in filter(None, lines[7].split(','))]
+        for x in res:
+            a = [y for y in x.split(':')]
+            t.update({a[0]:int(a[1])})
+        res = t
+        serve = [x for x in filter(None, lines[8].split(','))]
+        knowl = [x for x in filter(None, lines[9].split(','))]
+        lang = [x for x in filter(None, lines[10].split(','))]
+        prots = [x for x in filter(None, lines[11].split(','))]
 
         return {'battery': battery, 'velocity': vel, 'sensors': sens, 'actuators': act, 'motors': mot,
                 'startLocation': sloc, 'abilities': abil, 'resources': res, 'services': serve, 'knowledge': knowl,

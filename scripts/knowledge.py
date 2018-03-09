@@ -20,6 +20,7 @@ class Knowledge0:
         self.steps_b4_equilibrium = 100
 
         self.lock = Lock()
+        self.lock_cb = Lock()
 
         self.attempted_jobs = 0
         self.completed_jobs = 0
@@ -83,4 +84,6 @@ class Knowledge0:
         self.step = 0.05
 
         # Knowledge regarding position in a 2D space
-        self.position2D = [random.randint(0, 30), random.randint(0, 30)]
+        self.position2D = [-1, -1]
+        # kmS/secS
+        self.speed = [80,120]

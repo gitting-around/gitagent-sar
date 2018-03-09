@@ -1,0 +1,4 @@
+int32 fire_id
+int32 get_victim
+---
+int32 current_victims

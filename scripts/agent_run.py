@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import rospy
+from rospy.exceptions import ROSInternalException, TransportException, TransportTerminated, TransportInitError
 import agent0
 import simulation
 import mylogging
@@ -54,12 +55,14 @@ class GitAgent(agent0.Agent0):
         guy_id_srv = []
         if not data.performative == 'highlevelplan':
             guy_id_srv = [int(data.sender), -1]
-            guy_id_srv.append([int(x) for x in filter(None, data.content.split('|'))])
+            guy_id_srv.append([x for x in filter(None, data.content.split('|'))])
             exp = []
+            self.log.write_log_file(self.log.stdout_callback,
+                                    '[callback ' + str(self.simulation.callback_bc) + '] data.content: ' + str(data.content) + '\n')
             self.log.write_log_file(self.log.stdout_callback,
                                     '[callback ' + str(self.simulation.callback_bc) + '] ' + str(guy_id_srv) + '\n')
             self.log.write_log_file(self.log.stdout_callback,
-                                    '[callback ' + str(self.simulation.callback_bc) + '] ' + str(guy_id_srv[2]) + '\n')
+                                    '[callback ' + str(self.simulation.callback_bc) + ' abilities] ' + str(guy_id_srv[2]) + '\n')
             for x in range(0, len(guy_id_srv[2])):
                 exp.append(-1)
             guy_id_srv.append(exp)
@@ -285,15 +288,16 @@ if __name__ == '__main__':
     static = [int(x) for x in static_string.split('|')]
     # Either restart delta and gamma on each computation to the original values, in that case memory = 0; or use the past value for delta and gamma to compute the current ones, in that case memory = 1
     memory = int(rospy.get_param('brain_node/memory'))
-    abrupt = rospy.get_param('brain_node/abrupt')
+    #abrupt = rospy.get_param('brain_node/abrupt')
+    abrupt = -1.0
 
     stderr_file = '/home/mfi01/catkin_ws/results/error_brain' + str(agent_id)
-    f = open(stderr_file, 'w+')
+    f = open(stderr_file, 'a+')
     orig_stderr = sys.stderr
     sys.stderr = f
 
     stdout_file = '/home/mfi01/catkin_ws/results/stdout_brain'
-    s = open(stdout_file, 'w+')
+    s = open(stdout_file, 'a+')
     orig_stdout = sys.stdout
     rospy.loginfo('Agent with id: %d, delta: %f, theta: %f, has started successfully', agent_id, delta, theta)
     # Define the inputs/outputs to the agent (sensors, such as vision, tactile, message input etc)###
@@ -338,16 +342,21 @@ if __name__ == '__main__':
         raise
     except (AttributeError, TypeError, ValueError, NameError):
         traceback.print_exc()
+    except TransportInitError:
+        print("Transport init error - rospy:", sys.exc_info())
+        traceback.print_exc()
     except:
-        print("Unexpected error:", sys.exc_info()[0])
+        print("Unexpected error:", sys.exc_info())
         traceback.print_exc()
         raise
     finally:
         # Write out number of help requests and approx finishing time
         agent.log.write_log_file(agent.log.stdout_log, 'in finally')
-        # pdb.set_trace()
+        #pdb.set_trace()
         results_filename = '/home/mfi01/catkin_ws/' + 'results_' + str(agent_id) + '_' + str(delta) + '_' + str(theta) + '_' + str(pressure) + '_' + str(static)
 
+        msg = results_filename
+        rospy.loginfo(msg)
         # TA  TDA TC  TDC
         for x in agent.simulation.no_tasks_attempted:
             agent.log.write_log_file(results_filename, str(x) + ' ')
@@ -378,10 +387,18 @@ if __name__ == '__main__':
         for x in agent.simulation.no_tasks_depend_own_completed:
             agent.log.write_log_file(results_filename, str(x) + ' ')
 
+        agent.log.write_log_file(results_filename, str(agent.myknowledge.timeouts) + ' ')
+
+        agent.log.write_log_file(results_filename, str(agent.simulation.count_gotobase) + ' ')
+
+        agent.log.write_log_file(results_filename, str(agent.simulation.neto_tasks_completed) + ' ')
+
+        agent.log.write_log_file(results_filename, str(agent.simulation.count_recharge) + ' ')
+
         agent.log.write_log_file(results_filename, '\n')
 
         # Theta
-        for x in agent.simulation.theta:
+        for x in agent.mycore.gamma_in_time:
             agent.log.write_log_file(results_filename, str(x) + ' ')
 
         agent.log.write_log_file(results_filename, '\n')
@@ -399,7 +416,7 @@ if __name__ == '__main__':
 
         agent.log.write_log_file(results_filename, '\n')
         # pdb.set_trace()
-        for x in agent.simulation.delta:
+        for x in agent.mycore.delta_in_time:
             agent.log.write_log_file(results_filename, str(x) + ' ')
 
         agent.log.write_log_file(results_filename, '\n')
@@ -422,7 +439,23 @@ if __name__ == '__main__':
         for x in agent.simulation.culture:
             agent.log.write_log_file(results_filename, str(x) + ' ')
 
+        # pdb.set_trace()
+        msg = '\n--------> %d' % int(len(agent.simulation.time_per_task))
+        rospy.loginfo(msg)
+        if int(len(agent.simulation.time_per_task)) > 0:
+            ave = sum(agent.simulation.time_per_task)/float(len(agent.simulation.time_per_task))
+        else:
+            ave = -1
+        rospy.loginfo(ave)
+        agent.log.write_log_file(results_filename, '\nrunning time: %s ' % time.strftime("%H:%M:%S", agent.simulation_end))
+        rospy.loginfo('\n before last')
+        agent.log.write_log_file(results_filename, '\nall visible time: %s ' % time.strftime("%H:%M:%S", time.gmtime(agent.simulation.time_all_visible)))
+        rospy.loginfo('\n last')
 
+        # Unsubscribe to /environment/fires
+        #agent.publish_loc.unregister()
+        #agent.publish_fires.unregister()
+        agent.fires_sub.unregister()
 
         sys.stderr = orig_stderr
         f.close()
