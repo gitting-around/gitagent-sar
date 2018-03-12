@@ -29,12 +29,14 @@ class Agent0:
     def __init__(self, ID, conf, services, willingness, simulation, popSize, provaNr, depend_nr, battery, sensors,
                  actuators, motors, static, memory):
         # print conf
-        rospy.loginfo('Agent conf: %s\n', str(conf))
+        # logging class
+        self.log = mylogging.Logging(popSize, provaNr, ID, willingness[1], depend_nr)
+
+        msg = 'Agent conf: %s\n' % str(conf)
+        self.log.write_log_file(self.log.stdout_log, msg)
 
         # use simulation functions
         self.simulation = simulation
-        # logging class
-        self.log = mylogging.Logging(popSize, provaNr, ID, willingness[1], depend_nr)
         self.begin = 0
         self.end = 0
 
@@ -49,8 +51,9 @@ class Agent0:
         self.services = []
         for x in self.abilities:
             self.services.append(x)
-        rospy.loginfo('Agent services: %s', self.services)
-        rospy.loginfo('Agent resources: %s', self.resources)
+        msg = 'Agent services: %s\n' % self.services
+        msg += 'Agent resources: %s\n' % self.resources
+        self.log.write_log_file(self.log.stdout_log, msg)
         ####################################
 
         # Variables manipulated by multiple threads ###
@@ -60,7 +63,7 @@ class Agent0:
         ## Contains info specific to the internal state of the agent such as: state, health attributes etc.
         self.mycore = core_aboutme.Core(willingness, ID, conf['battery'], sensors, actuators, motors, memory)
 
-        self.log.write_log_file(self.log.stdout_log, 'init gitagent ' + str(self.mycore.sensmot) + '\n')
+        msg = 'init gitagent ' + str(self.mycore.sensmot) + '\n'
         ## Contains mixed info ############################################################################
         self.myknowledge = knowledge.Knowledge0()
 
@@ -101,13 +104,12 @@ class Agent0:
         for x in range(1, 10):
             self.publish2sensormotor(self.services)
 
-        rospy.loginfo('Agent with id: %d, delta: %f, theta: %f, thetaLOW: %f', ID, willingness[1], willingness[0],
-                      self.mycore.LOW)
+        msg = 'Agent with id: %d, delta: %f, theta: %f, thetaLOW: %f\n' % (ID, willingness[1], willingness[0], self.mycore.LOW)
+        self.log.write_log_file(self.log.stdout_log, msg)
 
         self.reason = 'Default: None'
         time.sleep(10)
         self.simulation_end = 0.0
-        self.start = time.time()
 
     ##############################################################################################
     def callback_fb_msg(self, data):
@@ -150,8 +152,8 @@ class Agent0:
             # rospy.loginfo(msg)
             self.myknowledge.lock_cb.release()
         except:
-            rospy.loginfo(
-                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            self.log.write_log_file(self.log.stdout_log, msg)
             pass
 
     def callback_fires_msg(self, data):
@@ -165,7 +167,7 @@ class Agent0:
             # rospy.loginfo(msg)
             # msg = '\n[#msg ' + str(self.simulation.callback_msg) + ']  callback_fires_msg: \n' + str(np.array(self.simulation.fires))
             msg = '\n[#msg ' + str(self.simulation.callback_msg) + '] callback_fires_msg, data: ' + str(np.array(data))
-            # rospy.loginfo(msg)
+            #self.log.write_log_file(self.log.stdout_callback, msg)
             for i, x in enumerate(data.id):
                 # msg = '[fsm ' + str(self.simulation.fsm) + '] callback_fires_msg: \n' + ' tip: ' + str(type(self.simulation.fires[3])) + ', ' + str(type(data.intensity[i])) + ', ' + str(self.simulation.fires[3])
                 # self.log.write_log_file(self.log.stdout_log, msg)
@@ -189,7 +191,7 @@ class Agent0:
                             self.simulation.fires[4][j] = data.victims[i]
 
                         self.simulation.fires[6][j] = 1
-                        msg += '\n Relevant update'
+                        #msg += '\n Relevant update'
                         # msg = '[msg ' + str(self.simulation.callback_msg) + '] self.simulation.fires[6]: \n' + str(self.simulation.fires[6][j])
                         # rospy.loginfo(msg)
                         break
@@ -199,26 +201,25 @@ class Agent0:
                         # self.simulation.fires[6][i] = 1
             msg += '\n[&msg ' + str(self.simulation.callback_msg) + ']  callback_fires_msg: \n' + str(
                 np.array(self.simulation.fires[6]))
-            # self.log.write_log_file(self.log.stdout_log, msg)
+            #self.log.write_log_file(self.log.stdout_log, msg)
             # rospy.loginfo(msg)
             # rospy.loginfo(msg)
             self.myknowledge.lock_cb.release()
         except:
-            rospy.loginfo(msg)
-            rospy.loginfo(
-                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
     def callback_init_loc_msg(self, data):
         if self.myknowledge.position2D == [-1, -1]:
             msg = '[fsm ' + str(self.simulation.fsm) + ']  callback_init_loc_msg: \n' + str(np.array(data))
-            # self.log.write_log_file(self.log.stdout_log, msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
             for i, x in enumerate(data.ids):
                 if x == self.mycore.ID:
                     self.myknowledge.position2D = [data.xpos[i], data.ypos[i]]
                     print x
-            msg += '[fsm ' + str(self.simulation.fsm) + ']  callback_init_loc_msg: \n' + str(
+            msg = '[fsm ' + str(self.simulation.fsm) + ']  callback_init_loc_msg: \n' + str(
                 self.myknowledge.position2D)
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
             self.init_sub.unregister()
 
     def my_hook(self):
@@ -226,10 +227,10 @@ class Agent0:
         msg = '[fsm ' + str(self.simulation.fsm) + '] ' + self.reason + '\n'
         msg += '[fsm ' + str(self.simulation.fsm) + '] ' + str(self.begin) + ' ' + str(self.end) + '\n'
 
-        # self.log.write_log_file(self.log.stdout_log, msg)
-        rospy.loginfo(msg)
+        self.log.write_log_file(self.log.stdout_log, msg)
 
     def fsm(self):
+        self.start = time.time()
         while not rospy.is_shutdown():
             # Simulation stopping criterion
             # if sum(self.simulation.generated_tasks) + 1 > self.simulation.STOP:
@@ -240,7 +241,7 @@ class Agent0:
                 # pdb.set_trace()
                 msg = '[fsm %d] Simulation finished. Number of self generated tasks: %d\n' % (
                     self.simulation.fsm, sum(self.simulation.no_self_tasks_attempted))
-                # self.log.write_log_file(self.log.stdout_log, msg)
+                self.log.write_log_file(self.log.stdout_log, msg)
 
                 # this is to check why nB and task attempted is a different number
 
@@ -249,8 +250,8 @@ class Agent0:
                     if int(self.myknowledge.service['senderID'] == self.mycore.ID):
                         self.simulation.no_self_tasks_attempted[0] -= 1
 
-                msg += "\nsimulation has reached END, all fires out, all victims saved."
-                rospy.loginfo(msg)
+                msg = "\nsimulation has reached END, all fires out, all victims saved."
+                self.log.write_log_file(self.log.stdout_log, msg)
                 # Send kill signal to msgPUnit
                 self.publish_bcast[0].publish(self.mycore.create_message('DIE', 'DIE'))
                 self.reason = 'Normal simulation end'
@@ -268,7 +269,7 @@ class Agent0:
             self.publish2sensormotor(self.services)
             msg = '[fsm ' + str(self.simulation.fsm) + '] current state: ' + str(self.mycore.state) + '\n'
             # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
             ## MOVE ###############################################################################
             '''
@@ -288,7 +289,7 @@ class Agent0:
             msg = '[fsm ' + str(self.simulation.fsm) + '] fsm_step exec time: ' + str(
                 elapsed) + '\n'
             # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
         '''
         temp = np.array(self.simulation.levywalk)
         plt.figure()
@@ -305,7 +306,7 @@ class Agent0:
         msg = '[fsm %d] Rospy shutdown. Number of generated tasks: %d\n' % (
             self.simulation.fsm, sum(self.simulation.no_self_tasks_attempted))
         # self.log.write_log_file(self.log.stdout_log, msg)
-        rospy.loginfo(msg)
+        self.log.write_log_file(self.log.stdout_log, msg)
         # Send kill signal to msgPUnit
         self.publish_bcast[0].publish(self.mycore.create_message('DIE', 'DIE'))
         #self.reason = 'Rospy shutdown'
@@ -316,7 +317,7 @@ class Agent0:
         self.simulation.fsm = self.simulation.inc_iterationstamps(self.simulation.fsm)
 
         msg = '[fsm_INFO] begin: %d, end: %d\n' % (self.begin, self.end)
-        rospy.loginfo(msg)
+        self.log.write_log_file(self.log.stdout_log, msg)
 
         if self.mycore.state == 0:
             self.idle()
@@ -341,7 +342,7 @@ class Agent0:
     def active(self):
         msg = '[fsm ' + str(self.simulation.fsm) + ']  Goal just sent!\n'
         # self.log.write_log_file(self.log.stdout_log, msg)
-        rospy.loginfo(msg)
+        self.log.write_log_file(self.log.stdout_log, msg)
 
     def feedback(self, feedback):
         self.log.write_log_file(self.log.stdout_log,
@@ -379,7 +380,7 @@ class Agent0:
         msg = '[fsm ' + str(self.simulation.fsm) + '- blocking call - BEGIN]  ' + str(
             rospy.get_name()) + ' -> I am requesting a favor\n'
         # self.log.write_log_file(self.log.stdout_log, msg)
-        rospy.loginfo(msg)
+        self.log.write_log_file(self.log.stdout_log, msg)
         self.begin += 1
         try:
             client = actionlib.SimpleActionClient(agent_id, doMeFavorAction)
@@ -387,15 +388,15 @@ class Agent0:
                 msg = '[fsm ' + str(self.simulation.fsm) + '- blocking call - BEGIN]  ' + str(
                     rospy.get_name()) + ' -> Couldn\'t connect to server \n'
                 # self.log.write_log_file(self.log.stdout_log, msg)
-                rospy.loginfo(msg)
+                self.log.write_log_file(self.log.stdout_log, msg)
                 return -1
 
             # Add sender - in case there is a chain of them
             msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call]  ' + str(goal) + '\n'
             # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
-            goal2str = self.mycore.goal2string(goal)
-            # self.log.write_log_file(self.log.stdout_log, '[fsm ' + str(self.simulation.fsm) + ']  ' + goal2str + '\n')
+            self.log.write_log_file(self.log.stdout_log, msg)
+            goal2str = self.mycore.goal2string(self.log, goal)
+            self.log.write_log_file(self.log.stdout_log, '[fsm ' + str(self.simulation.fsm) + ']  ' + goal2str + '\n')
 
             formatted_goal = doMeFavorGoal(performative='plead4goal', sender=str(self.mycore.ID), rank=10,
                                            receiver=agent_id, language='shqip', ontology='laraska', urgency='none',
@@ -403,7 +404,7 @@ class Agent0:
 
             msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call]  ' + str(formatted_goal) + '\n'
             # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
             # client.send_goal(formatted_goal, self.done, self.active, self.feedback)
             client.send_goal(formatted_goal)
@@ -411,18 +412,21 @@ class Agent0:
             msg = '[fsm ' + str(
                 self.simulation.fsm) + '- blocking_call] Goal sent. Goal state %s\n' % client.get_state()
             # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
-            if client.wait_for_result(timeout=rospy.Duration(1)):
-                msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call] server returned\n'
-                # self.log.write_log_file(self.log.stdout_log, msg)
-                rospy.loginfo(msg)
+            wait = 10
+            client_response = client.wait_for_result(timeout=rospy.Duration(wait))
+
+            if client_response:
                 res = client.get_result()
                 result = res.act_outcome
-            else:
-                msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call] server did not return\n'
+                msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call] server returned, wait %d, result: %d, client response: %d\n' % (wait, result, client_response)
                 # self.log.write_log_file(self.log.stdout_log, msg)
-                rospy.loginfo(msg)
+                self.log.write_log_file(self.log.stdout_log, msg)
+            else:
+                msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call] server did not return, wait %d, client response: %d---\n' % (wait, client_response)
+                # self.log.write_log_file(self.log.stdout_log, msg)
+                self.log.write_log_file(self.log.stdout_log, msg)
                 result = 12
 
             # Update profile of the agent asked for help
@@ -431,22 +435,24 @@ class Agent0:
             task_idx = -1
             for t in self.myknowledge.known_people[agent_idx][2]:
                 if t == task_id:
-                    rospy.loginfo('t %d\n' % t)
+                    msg = 't %d\n' % t
+                    self.log.write_log_file(self.log.stdout_log, msg)
                     task_idx = self.myknowledge.known_people[agent_idx][2].index(t)
-                    rospy.loginfo('tx %d\n' % task_idx)
+                    msg = 'tx %d\n' % task_idx
+                    self.log.write_log_file(self.log.stdout_log, msg)
                     break
 
             msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call] task_id %d, task_idx %d, agent_tasks %s\n' % (
                 task_id, task_idx, self.myknowledge.known_people[agent_idx][2])
             # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
             self.myknowledge.lock.acquire()
 
             self.myknowledge.capability_expertise[agent_idx][task_idx][1] += 1
             self.myknowledge.total_interactions[agent_idx] += 1
 
-            msg += '[fsm ' + str(self.simulation.fsm) + '- blocking_call] cap expertise %s\n' % str(
+            msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call] cap expertise %s\n' % str(
                 self.myknowledge.capability_expertise)
 
             if not result == 12:
@@ -454,13 +460,13 @@ class Agent0:
                 if result == 1:
                     self.myknowledge.capability_expertise[agent_idx][task_idx][0] += 1
 
-            msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call] tot interactions %s\n' % str(
+            msg += '[fsm ' + str(self.simulation.fsm) + '- blocking_call] tot interactions %s\n' % str(
                 self.myknowledge.total_interactions)
             msg += '[fsm ' + str(self.simulation.fsm) + '- blocking_call] helping inter %s\n' % str(
                 self.myknowledge.helping_interactions)
             msg += '[fsm ' + str(self.simulation.fsm) + '- blocking_call] cap expertise %s\n' % str(
                 self.myknowledge.capability_expertise)
-            # self.log.write_log_file(self.log.stdout_log, msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
             self.myknowledge.known_people[agent_idx][1] = self.myknowledge.helping_interactions[agent_idx] \
                                                           / float(self.myknowledge.total_interactions[agent_idx])
@@ -477,7 +483,7 @@ class Agent0:
 
             self.myknowledge.lock.release()
 
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
             self.simulation.requests[self.myknowledge.difficulty] = self.simulation.requests[
                                                                         self.myknowledge.difficulty] + 1
             msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call - END] perceived helpfulness %f\n' % \
@@ -488,21 +494,21 @@ class Agent0:
             # self.log.write_log_file(self.log.stdout_log, msg)
             msg += '[fsm ' + str(self.simulation.fsm) + '- blocking_call] Requests ' + str(
                 sum(self.simulation.requests)) + '\n'
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
             self.end += 1
             self.mycore.amIblocking = False
-            msg += '[fsm ' + str(self.simulation.fsm) + '- blocking_call] blocking ' + str(self.mycore.amIblocking) + '\n'
-            rospy.loginfo(msg)
+            msg = '[fsm ' + str(self.simulation.fsm) + '- blocking_call] blocking ' + str(self.mycore.amIblocking) + '\n'
+            self.log.write_log_file(self.log.stdout_log, msg)
 
             return result
         except rospy.ROSInternalException:
-            rospy.loginfo(
-                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            self.log.write_log_file(self.log.stdout_log, msg)
             pass
         except:
-            rospy.loginfo(
-                "Unexpected error: " + str(sys.exc_info()[0]) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected error: " + str(sys.exc_info()[0]) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            self.log.write_log_file(self.log.stdout_log, msg)
             pass
 
     def execute_git(self, goalhandle):
@@ -511,7 +517,7 @@ class Agent0:
         # Task status: 12 ~ REJECT, 0 ~ PENDING, 1 ~ SUCCESS, 2 ~ FAIL 10 ~ no thread active
         # index = -1
         msg = '[execute_git - BEGIN]\n'
-        rospy.loginfo(msg)
+        self.log.write_log_file(self.log.stdout_log, msg)
         self.begin += 1
         try:
             feedback = doMeFavorFeedback()
@@ -522,7 +528,7 @@ class Agent0:
             # self.log.write_log_file(self.log.stdout_log, '[execute_git] getting goal: %s\n' % goal)
             msg = '[execute_git] Goal: %s\n' % (str(goalh.content))
 
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
             goal = self.mycore.string2goalPlan(goalh.content, self.log)
 
@@ -532,11 +538,11 @@ class Agent0:
 
             msg = '[execute_git %d] Goal: %s\n' % (int(goal[0]['senderID']), str(goal))
             # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
             # Check if I have already gotten smth from this sender, in that case it's already in the queue, just change task_status to 0
             try:
-                # self.log.write_log_file(self.log.stdout_log, '[execute_git] check if guy is in list\n')
+                self.log.write_log_file(self.log.stdout_log, '[execute_git] check if guy is in list\n')
                 index = next(
                     index for (index, d) in enumerate(self.keep_track_threads) if
                     d['senderId'] == int(goal[0]['senderID']))
@@ -544,7 +550,6 @@ class Agent0:
                 # print 'Guy currently in list: %d' % index
                 msg = '[execute_git %d] Guy currently in list: %d\n' % (int(goal[0]['senderID']), index)
                 self.log.write_log_file(self.log.stdout_log, msg)
-                rospy.loginfo(msg)
 
             except StopIteration:
                 # we can check first element in potential array goal, because the sender for each task is the same
@@ -552,14 +557,12 @@ class Agent0:
                 index = len(self.keep_track_threads) - 1
                 msg = '[execute_git %d] New guy: %d\n' % (int(goal[0]['senderID']), index)
                 self.log.write_log_file(self.log.stdout_log, msg)
-                rospy.loginfo(msg)
                 # It is assumed that the senderId is unique, that is the server cannot get 2 a second task from an agent, without returning with the first.
                 # {senderID:task_status}
                 # self.keep_track_threads.append({data.sender:0})
 
             msg = '[execute_git %d] Threads: %s\n' % (int(goal[0]['senderID']), str(self.keep_track_threads))
             self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
 
             # it seems that I have mixed up the queues. goalhandles I need only manipulate in execute_git. the goal themselves and the keep_track_threads are manipulated by the main thread!
             # self.queueGoalHandles.put(goalhandle)
@@ -568,16 +571,15 @@ class Agent0:
             # self.log.write_log_file(self.log.stdout_log, '[execute_git %d] %s\n' % (int(goal[0]['senderID']), str(self.myknowledge.plan_pending_eval)))
             self.myknowledge.lock.release()
 
-            timeout = time.time() + 20  # set timeout to be 10 seconds
-            # self.log.write_log_file(self.log.stdout_log, '[execute_git %d] timeout: %s\n' % (int(goal[0]['senderID']), str(timeout)))
+            timeout = time.time() + 50  # set timeout to be 10 seconds
+            self.log.write_log_file(self.log.stdout_log, '[execute_git %d] timeout: %s\n' % (int(goal[0]['senderID']), str(timeout)))
 
             msg = '[execute_git %d] Current goal status: %s\n' % (
                 int(goal[0]['senderID']), goalhandle.get_goal_status())
             self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
 
             while self.keep_track_threads[index]['task_status'] == 0:
-                # self.log.write_log_file(self.log.stdout_log, '[execute_git] Current goal status: %s\n' % goalhandle.get_goal_status())
+                self.log.write_log_file(self.log.stdout_log, '[execute_git] Current goal status: %s\n' % goalhandle.get_goal_status())
                 # Let the thread wait for 10 sec, if nothing then return with -1 ~ FAIL
                 #if time.time() > timeout:
                 if self.mycore.amIblocking or time.time() > timeout:
@@ -587,7 +589,6 @@ class Agent0:
                     msg = '[execute_git %d] request dropped, because I am waiting on another agent. Threads %s\n' % (
                         int(goal[0]['senderID']), str(self.keep_track_threads))
                     self.log.write_log_file(self.log.stdout_log, msg)
-                    rospy.loginfo(msg)
                     self.myknowledge.timeouts += 1
                     break
 
@@ -596,7 +597,6 @@ class Agent0:
             msg = '[execute_git %d] Current goal status: %s. Threads %s\n' % (
                 int(goal[0]['senderID']), goalhandle.get_goal_status(), str(self.keep_track_threads))
             self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
 
             result.act_outcome = self.keep_track_threads[index]['task_status']
 
@@ -604,7 +604,6 @@ class Agent0:
             msg = '[execute_git %d] Current goal status: %s. Threads %s\n' % (
                 int(goal[0]['senderID']), goalhandle.get_goal_status(), str(self.keep_track_threads))
             self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
 
             # self.server.set_succeeded(goalhandle)
             self.myknowledge.lock.acquire()
@@ -614,17 +613,16 @@ class Agent0:
             msg = '[execute_git %d - END] Threads: %s\nResult %s\n' % (
                 int(goal[0]['senderID']), str(self.keep_track_threads), str(result))
             self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
         except rospy.ROSInternalException:
-            rospy.loginfo(
-                "Unexpected internal error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected internal error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            self.log.write_log_file(self.log.stdout_log, msg)
             pass
         except:
-            rospy.loginfo(
-                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            self.log.write_log_file(self.log.stdout_log, msg)
             pass
         msg = '[execute_git %d - END]\n' % int(goal[0]['senderID'])
-        rospy.loginfo(msg)
+        self.log.write_log_file(self.log.stdout_log, msg)
         self.end += 1
 
     def execute(self, data):
@@ -665,7 +663,7 @@ class Agent0:
             if not self.myknowledge.plan_pending_eval.empty():
                 msg = '[fsm ' + str(self.simulation.fsm) + '] adaptive state: True\n'
                 # self.log.write_log_file(self.log.stdout_log, msg)
-                rospy.loginfo(msg)
+                self.log.write_log_file(self.log.stdout_log, msg)
 
                 self.myknowledge.lock.acquire()
                 self.myknowledge.old_state = self.mycore.state
@@ -673,29 +671,29 @@ class Agent0:
                 msg = '[fsm ' + str(self.simulation.fsm) + '] Old state, and current state:' + str(
                     self.myknowledge.old_state) + ', ' + str(self.mycore.state) + '\n'
                 # self.log.write_log_file(self.log.stdout_log, msg)
-                rospy.loginfo(msg)
+                self.log.write_log_file(self.log.stdout_log, msg)
                 self.myknowledge.lock.release()
             else:
                 msg = '[fsm ' + str(self.simulation.fsm) + '] adaptive state: False\n'
                 # self.log.write_log_file(self.log.stdout_log, msg)
-                rospy.loginfo(msg)
+                self.log.write_log_file(self.log.stdout_log, msg)
 
     def eval_temp_2(self):
         try:
             self.begin += 1
             msg = '[adapt ' + str(self.simulation.interact) + ' BEGIN]\n'
             # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
             msg = '[adapt ' + str(self.simulation.interact) + ' BEGIN]\n'
             # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
             ## Take plan-request out of queue, and put the tasks into the queue for tasks the agent has committed to
             # careful with the queues below, there is no handling if it is empty!!
             # pdb.set_trace()
             plan = self.myknowledge.plan_pending_eval.get()
             msg = '[adapt' + str(self.simulation.interact) + '] plan gotten from queue \n' + str(plan)
             # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
             # print 'This is the newly gotten plan ' + str(plan)
             aID = int(plan[0]['senderID'])
             aIDx = -1
@@ -706,7 +704,7 @@ class Agent0:
                     aIDx = self.myknowledge.known_people.index(x)
                     msg = '[adapt %d] aIDX = %d\n' % (self.simulation.interact, aIDx)
                     # self.log.write_log_file(self.log.stdout_log, msg)
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
                     break
             if not aIDx == -1:
                 # It is not success but PERCEIVED WILLINGNESS
@@ -715,19 +713,19 @@ class Agent0:
                 msg += '[adapt %d] In known people, %s\n' % (
                     self.simulation.interact, str(self.myknowledge.known_people))
                 # self.log.write_log_file(self.log.stdout_log, msg)
-                rospy.loginfo(msg)
+                self.log.write_log_file(self.log.stdout_log, msg)
             else:
                 success = -1.0
                 msg = '[adapt %d] Not in known people, success = %f\n' % (self.simulation.interact, success)
                 # self.log.write_log_file(self.log.stdout_log, msg)
-                rospy.loginfo(msg)
+                self.log.write_log_file(self.log.stdout_log, msg)
 
             # pdb.set_trace()
             # abil, equip, knowled, tools, env_risk, diff_task_tradeoff = self.simulation.simulate_give_params()
             abil = 1
             msg = '[adapt %d] task abilities: %s\n own abilities: %s\n' % (
                 self.simulation.interact, plan[0]['abilities'], self.abilities)
-            # self.log.write_log_file(self.log.stdout_log, msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
             for x in plan[0]['abilities']:
                 if not x in self.abilities:
                     abil = 0
@@ -738,7 +736,7 @@ class Agent0:
             knowled = 1
             tools = 1
 
-            msg += '[adapt %d] task resources: %s\n own resources: %s\n' % (
+            msg = '[adapt %d] task resources: %s\n own resources: %s\n' % (
                 self.simulation.interact, plan[0]['resources'], self.resources)
             # pdb.set_trace()
             for x in plan[0]['resources']:
@@ -755,7 +753,7 @@ class Agent0:
             msg += '[adapt %d] task resources: %s\n own resources: %s\n' % (
                 self.simulation.interact, plan[0]['resources'], self.resources)
             msg += '[adapt %d] abil: %d\n tools: %d\n' % (self.simulation.interact, abil, tools)
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
             env_risk = 0
             if self.myknowledge.old_state == 2 and self.myknowledge.service:
@@ -781,7 +779,7 @@ class Agent0:
 
             msg += '[adapt %d] energy diff = %f\n' % (self.simulation.interact, energy_diff)
             # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
             # if not sum(self.simulation.no_self_tasks_attempted) == 0:
             if not sum(self.simulation.no_tasks_attempted) == 0:
@@ -794,14 +792,14 @@ class Agent0:
             self.simulation.culture.append(culture)
             msg = '[adapt %d] performance = %f\n' % (self.simulation.interact, performance)
             msg += '[adapt %d] ag_risk = %f, culture = %f\n' % (self.simulation.interact, ag_risk, culture)
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
             # pdb.set_trace()
             if self.static[1] == 0:
                 self.myknowledge.lock.acquire()
                 # accept, delta = self.mycore.b_delta(energy_diff, abil, equip, knowled, tools, env_risk, [ag_risk, 0], performance, diff_task_tradeoff, culture, aID)
                 # accept, delta = self.mycore.deltaD_no_chain(energy_diff, abil, equip, knowled, tools, env_risk, [ag_risk, 0], performance, diff_task_tradeoff, old_reward, culture, aID)
                 # accept, delta = self.mycore.deltaD(energy_diff, abil, equip, knowled, tools, env_risk, [ag_risk, 0], performance, diff_task_tradeoff, old_reward, culture, aID)
-                accept, delta = self.mycore.delta5(energy_diff, abil, equip, knowled, tools, env_risk, [ag_risk, 0],
+                accept, delta = self.mycore.delta5(self.log, energy_diff, abil, equip, knowled, tools, env_risk, [ag_risk, 0],
                                                    performance, diff_task_tradeoff, culture, aID)
                 self.myknowledge.lock.release()
 
@@ -831,7 +829,7 @@ class Agent0:
             msg += 'Plan ' + str(plan) + '\n'
 
             # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
             self.myknowledge.lock.acquire()
             # CAREFUL - appended performance with respect to dependent jobs
@@ -857,14 +855,14 @@ class Agent0:
 
                     msg = '[adapt ' + str(self.simulation.interact) + '] Adopted plan: ' + str(plan) + '\n'
                     # self.log.write_log_file(self.log.stdout_log, msg)
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
 
                     for x in plan:
                         msg = '[adapt ' + str(self.simulation.interact) + '] Task in plan: ' + str(x) + '\n'
                         # self.log.write_log_file(self.log.stdout_log, msg)
                         x['ac_senders'].append(self.mycore.ID)
                         msg += '[adapt ' + str(self.simulation.interact) + '] senders: ' + str(x['ac_senders']) + '\n'
-                        rospy.loginfo(msg)
+                        self.log.write_log_file(self.log.stdout_log, msg)
                         self.myknowledge.task_queue.put(x)
 
                     # put the service that I am doing back in the queue back in the queue, updating the iterations left ##
@@ -886,9 +884,9 @@ class Agent0:
                             self.simulation.no_self_tasks_attempted[0] -= 1
                     ########
 
-                    msg += '[adapt %d] Tasks put in queue\n' % self.simulation.interact
+                    msg = '[adapt %d] Tasks put in queue\n' % self.simulation.interact
                     # self.log.write_log_file(self.log.stdout_log, msg)
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
 
                     self.myknowledge.lock.acquire()
                     self.mycore.state = 2
@@ -898,12 +896,12 @@ class Agent0:
                     self.myknowledge.lock.acquire()
                     self.mycore.state = 0
                     self.myknowledge.lock.release()
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
             else:
                 # print 'keep at what you\'re doing'
                 msg = '[adapt %d] Do not adapt\n' % self.simulation.interact
                 # self.log.write_log_file(self.log.stdout_log, msg)
-                rospy.loginfo(msg)
+                self.log.write_log_file(self.log.stdout_log, msg)
 
                 index = next(index for (index, d) in enumerate(self.keep_track_threads) if d['senderId'] == aID)
 
@@ -911,14 +909,14 @@ class Agent0:
                     self.keep_track_threads[index]['task_status'] = 12
                     msg = '[adapt' + str(self.simulation.interact) + '] Threads %s\n' % str(self.keep_track_threads)
                     # self.log.write_log_file(self.log.stdout_log, msg)
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
                 else:
                     self.keep_track_threads[index]['task_status'] = 10
                     msg = '[adapt' + str(
                         self.simulation.interact) + '] Not adapted, but thread not active anymore. Threads %s\n' % str(
                         self.keep_track_threads)
                     # self.log.write_log_file(self.log.stdout_log, msg)
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
 
                 self.myknowledge.lock.acquire()
                 self.mycore.state = self.myknowledge.old_state
@@ -929,17 +927,17 @@ class Agent0:
             self.simulation.delta.append(delta)
             self.simulation.delta_bool.append(accept)
         except rospy.ROSInternalException:
-            rospy.loginfo(
-                "Unexpected internal error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected internal error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            self.log.write_log_file(self.log.stdout_log, msg)
             pass
         except:
-            rospy.loginfo(
-                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            self.log.write_log_file(self.log.stdout_log, msg)
             pass
 
         msg = '[adapt' + str(self.simulation.interact) + ' END] \n'
         # self.log.write_log_file(self.log.stdout_log, msg)
-        rospy.loginfo(msg)
+        self.log.write_log_file(self.log.stdout_log, msg)
         self.end += 1
 
     def amIHelping(self, sender):
@@ -978,11 +976,11 @@ class Agent0:
             msg += '[get_visible_fires] visible: %s\n' % str(np.array(visible_fires))
             # self.log.write_log_file(self.log.stdout_log, msg)
 
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
             return np.transpose(np.array(visible_fires))
         except:
-            rospy.loginfo(
-                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
     def get_visible_victims(self):
         try:
@@ -993,18 +991,18 @@ class Agent0:
             msg = '[get_visible_victims] all victims: %s \n' % str(np.transpose(np.array(self.simulation.fires)))
             msg += '[get_visible_victims] visible victims: %s\n' % str(np.array(visible_fires))
             # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
             return np.transpose(np.array(visible_fires))
         except:
-            rospy.loginfo(
-                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
     def idle(self):
         try:
             # print 'im in idle'
             self.simulation.idle = self.simulation.inc_iterationstamps(self.simulation.idle)
             msg = '[idle ' + str(self.simulation.idle) + '] idle\n'
-            # self.log.write_log_file(self.log.stdout_log, msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
             start = time.time()
             # self.generate_goal_v2()
@@ -1029,13 +1027,13 @@ class Agent0:
                 self.generate_goal_v3()
 
             elapsed = time.time() - start
-            msg += '[fsm ' + str(self.simulation.fsm) + '] generate_goal exec time: ' + str(elapsed) + '\n'
+            msg = '[fsm ' + str(self.simulation.fsm) + '] generate_goal exec time: ' + str(elapsed) + '\n'
             # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
             self.commit2goal()
         except:
-            rospy.loginfo(
-                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
     def interact(self):
         # print 'im in interact'
@@ -1052,7 +1050,8 @@ class Agent0:
         for x in self.keep_track_threads:
             if int(x['senderId']) == senderID:
                 if int(x['task_status']) == 0:
-                    rospy.loginfo('thread active %d\n' % int(x['senderId']))
+                    msg = 'thread active %d\n' % int(x['senderId'])
+                    self.log.write_log_file(self.log.stdout_log, msg)
                     return True
         return False
 
@@ -1067,7 +1066,7 @@ class Agent0:
             msg += '[execute ' + str(self.simulation.execute) + '] nr of iterations ' + str(
                 self.myknowledge.iteration) + '\n'
             # self.log.write_log_file(self.log.stdout_log, msg)
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
             if self.myknowledge.service_id == -1 and self.myknowledge.iteration == -1:
                 if not self.myknowledge.task_queue.empty():
@@ -1075,13 +1074,13 @@ class Agent0:
                     active_senders = [self.mycore.ID]
                     msg = '[execute ' + str(self.simulation.execute) + ']' + str(
                         self.myknowledge.service) + '\n'
-                    # self.log.write_log_file(self.log.stdout_log, msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
                     self.simulation.counted_d = 0
                     self.simulation.current_fire = -1
                     self.simulation.current_victim = -1
 
                     if "fire_extinguishing" in self.abilities:
-                        msg += '[execute ' + str(self.simulation.execute) + '] water:' + str(
+                        msg = '[execute ' + str(self.simulation.execute) + '] water:' + str(
                             self.resources['water']) + '\n'
                         if self.resources['water'] <= 0:
                             # self.goto_base(1)
@@ -1090,7 +1089,7 @@ class Agent0:
                         msg += '[execute ' + str(self.simulation.execute) + '] water:' + str(
                             self.resources['water']) + '\n'
                     elif "transport_victim" or "proxy" in self.abilities:
-                        msg += '[execute ' + str(self.simulation.execute) + '] spots:' + str(
+                        msg = '[execute ' + str(self.simulation.execute) + '] spots:' + str(
                             self.resources['spotxPerson']) + '\n'
                         if self.resources['spotxPerson'] <= 0:
                             # self.goto_base(2)
@@ -1114,7 +1113,7 @@ class Agent0:
                     msg += '[execute ' + str(self.simulation.execute) + '] iterations' + str(
                         self.myknowledge.service['iterations']) + '\n'
 
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
 
                     # self.simulation.time = self.simulation.delay[self.myknowledge.difficulty] / float(self.myknowledge.service['iterations'])
 
@@ -1122,13 +1121,13 @@ class Agent0:
 
                     msg = '[execute ' + str(self.simulation.execute) + '] Difficulty: ' + str(
                         self.myknowledge.difficulty) + '\n'
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
 
                     if not int(self.myknowledge.service['senderID'] == self.mycore.ID):
                         if self.is_thread_active(int(self.myknowledge.service['senderID'])):
                             msg = '[execute ' + str(
                                 self.simulation.execute) + ']I am helping someone and their thread is still active\n'
-                            rospy.loginfo(msg)
+                            self.log.write_log_file(self.log.stdout_log, msg)
 
                             self.execute_step_v6()
                         else:
@@ -1137,30 +1136,30 @@ class Agent0:
                             self.myknowledge.service_id = -1
                             self.myknowledge.iteration = -1
                             self.simulation.no_tasks_attempted[self.myknowledge.difficulty] -= 1
-                            rospy.loginfo(msg)
+                            self.log.write_log_file(self.log.stdout_log, msg)
                     else:
                         msg = '[execute ' + str(self.simulation.execute) + '] Working for myself\n'
                         self.simulation.no_self_tasks_attempted[self.myknowledge.difficulty] += 1
-                        rospy.loginfo(msg)
+                        self.log.write_log_file(self.log.stdout_log, msg)
                         self.execute_step_v6()
                 else:
                     self.myknowledge.lock.acquire()
                     self.mycore.state = 0
                     self.myknowledge.lock.release()
                     msg = '[execute ' + str(self.simulation.execute) + '] My state: ' + str(self.mycore.state) + '\n'
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
             else:
                 msg = '[execute ' + str(self.simulation.execute) + '] continue working\n'
-                rospy.loginfo(msg)
+                self.log.write_log_file(self.log.stdout_log, msg)
                 self.execute_step_v6()
 
             msg = '[execute ' + str(self.simulation.execute) + 'END]\n'
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
             self.end += 1
 
         except:
-            rospy.loginfo(
-                "Unexpected error: " + str(sys.exc_info()[0]) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected error: " + str(sys.exc_info()[0]) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            self.log.write_log_file(self.log.stdout_log, msg)
             pass
 
     def execute_step_v2(self):
@@ -2048,17 +2047,16 @@ class Agent0:
         try:
             self.begin += 1
             msg = '[run_step ' + str(self.simulation.execute) + ' BEGIN] in execute_step\n'
-            rospy.loginfo(msg)
+            #self.log.write_log_file(self.log.stdout_log, msg)
             success_chance = -1
             # print 'in execute_step'
             # pdb.set_trace()
 
             # This returns the best candidate id, and success measure
-            agents2ask = self.mycore.best_candidate_list(self.myknowledge.known_people, self.myknowledge.service,
-                                                         self.log, int(self.myknowledge.service['senderID']))
+            agents2ask = self.mycore.best_candidate_list(self.myknowledge.known_people, self.myknowledge.service, self.log, int(self.myknowledge.service['senderID']))
             msg = '[run_step ' + str(
                 self.simulation.execute) + ' BEGIN] agents2ask %s\n' % (str(agents2ask))
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
             # abil, equip, knowled, tools, env_risk, diff_task_progress = self.simulation.simulate_ask_params()
 
@@ -2089,7 +2087,7 @@ class Agent0:
 
             msg += '[run_step %d] abil: %d, tools: %d, no_att_tasks: %d\n' % (
                 self.simulation.execute, abil, tools, sum(self.simulation.no_tasks_attempted))
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
             env_risk = 0
 
@@ -2121,7 +2119,7 @@ class Agent0:
                 self.myknowledge.lock.acquire()
                 # depend, gamma = self.mycore.b_gamma(energy_diff, abil, equip, knowled, tools, env_risk, ag_risk,performance, diff_task_progress)
                 # depend, gamma = self.mycore.gammaG(energy_diff, abil, equip, knowled, tools, env_risk, ag_risk,performance, diff_task_progress,self.myknowledge.service['iterations'], 0, candidate_id)
-                depend, gamma = self.mycore.gamma3(energy_diff, abil, equip, knowled, tools, env_risk, ag_risk,
+                depend, gamma = self.mycore.gamma3(self.log, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk,
                                                    performance, diff_task_progress, 0, agents2ask[0][0])
                 self.myknowledge.lock.release()
                 self.myknowledge.service['simulation_finish'] = 1.0
@@ -2144,7 +2142,7 @@ class Agent0:
                 self.simulation.execute, abil, equip, knowled, tools, env_risk, diff_task_progress, gamma,
                 self.myknowledge.service['simulation_finish'], self.static[0]) + '\n'
 
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
             self.myknowledge.lock.acquire()
             # CAREFUL - appended performance with respect to dependent jobs
@@ -2172,7 +2170,7 @@ class Agent0:
                 self.simulation.no_tasks_depend_attempted[self.myknowledge.difficulty] += 1
                 msg = '[run_step ' + str(self.simulation.execute) + 'tasks depend: ' + str(
                     sum(self.simulation.no_tasks_depend_attempted)) + '\n'
-                rospy.loginfo(msg)
+                self.log.write_log_file(self.log.stdout_log, msg)
 
                 if self.mycore.ID == self.myknowledge.service['senderID']:
                     self.simulation.no_tasks_depend_own_attempted[self.myknowledge.difficulty] += 1
@@ -2182,17 +2180,17 @@ class Agent0:
                         self.myknowledge.difficulty,
                         self.simulation.delay[self.myknowledge.difficulty],
                         self.simulation.additional_delay[self.myknowledge.difficulty])
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
                     # pdb.set_trace()
 
                     for x in agents2ask:
                         msg = '[run_step ' + str(
                             self.simulation.execute) + '] agent2ask is: ' + str(x) + '\n'
-                        rospy.loginfo(msg)
+                        self.log.write_log_file(self.log.stdout_log, msg)
                         agent2ask = '/robot' + str(x[0]) + '/brain_node'
                         msg = '[run_step ' + str(
                             self.simulation.execute) + '] agent2ask is: ' + str(agent2ask) + '\n'
-                        rospy.loginfo(msg)
+                        self.log.write_log_file(self.log.stdout_log, msg)
                         ######### Make request to action_server
                         # self.call_action_server(self.myknowledge.service, agent2ask)
                         # print 'before blocking call'
@@ -2212,8 +2210,14 @@ class Agent0:
                                 self.myknowledge.service['noAgents'])
                             break
 
+                        if result == -1:
+                            msg = '[run_step ' + str(
+                                self.simulation.execute) + '] result -1, server cannot connect, assume end of simulation - CAREFUL, it may not be the cause\n'
+                            self.log.write_log_file(self.log.stdout_log, msg)
+                            break
+
                         msg = '[run_step ' + str(self.simulation.execute) + '] exec_time: ' + str(exec_time) + '\n'
-                        rospy.loginfo(msg)
+                        self.log.write_log_file(self.log.stdout_log, msg)
 
                     self.myknowledge.service_id = -1
                     self.myknowledge.iteration = -1
@@ -2225,7 +2229,7 @@ class Agent0:
                         msg = '[run_step ' + str(self.simulation.execute) + '] depend SUCCESS\n'
                         self.simulation.requests_success[self.myknowledge.difficulty] += 1
 
-                        rospy.loginfo(msg)
+                        self.log.write_log_file(self.log.stdout_log, msg)
                         self.simulation.exec_times[self.myknowledge.difficulty] = self.simulation.exec_times[
                                                                                       self.myknowledge.difficulty] + exec_time
                         self.simulation.exec_times_depend.append(exec_time)
@@ -2247,12 +2251,12 @@ class Agent0:
 
                     msg = '[run_step ' + str(self.simulation.execute) + '] No one to ask. Known people ' + str(
                         self.myknowledge.known_people) + '\n'
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
 
                 # In case I am helping some other agent, trigger response here
                 msg = '[run_step ' + str(self.simulation.execute) + '] sender: %d, result: %d\n' % (
                     int(self.myknowledge.service['senderID']), result)
-                rospy.loginfo(msg)
+                self.log.write_log_file(self.log.stdout_log, msg)
 
                 # pdb.set_trace()
                 if self.amIHelping(int(self.myknowledge.service['senderID'])):
@@ -2261,7 +2265,7 @@ class Agent0:
                     # You need to count loops
                     msg = '[run_step ' + str(self.simulation.execute) + '] service %s, threads: %s\n' % (
                         self.myknowledge.service, str(self.keep_track_threads))
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
 
                     index = next(index for (index, d) in enumerate(self.keep_track_threads) if
                                  d['senderId'] == int(self.myknowledge.service['senderID']))
@@ -2274,13 +2278,13 @@ class Agent0:
 
                         msg = '[run_step ' + str(self.simulation.execute) + '] Threads %s\n' % str(
                             self.keep_track_threads)
-                        rospy.loginfo(msg)
+                        self.log.write_log_file(self.log.stdout_log, msg)
                     else:
                         self.keep_track_threads[index]['task_status'] = 10
                         msg = '[run_step ' + str(
                             self.simulation.execute) + '] End of task, but thread not active anymore. Threads %s\n' % str(
                             self.keep_track_threads)
-                        rospy.loginfo(msg)
+                        self.log.write_log_file(self.log.stdout_log, msg)
                 else:
                     if result == 1:
                         self.simulation.no_self_tasks_completed[self.myknowledge.difficulty] += 1
@@ -2293,7 +2297,7 @@ class Agent0:
                 # Inc to reach stop of simulation
 
                 msg = '[run_step ' + str(self.simulation.execute) + ' END] \n'
-                rospy.loginfo(msg)
+                self.log.write_log_file(self.log.stdout_log, msg)
                 self.end += 1
 
             else:
@@ -2305,7 +2309,7 @@ class Agent0:
                     # it is possible to check current known value for intensity
                     msg = '[run_step ' + str(self.simulation.execute) + '] Running task: %d, iteration: %d\n' % (
                         self.myknowledge.service_id, self.myknowledge.iteration)
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
 
                     if self.myknowledge.iteration == 1:
                         self.walk(self.myknowledge.service['endLoc'][0], self.myknowledge.service['endLoc'][1])
@@ -2325,7 +2329,7 @@ class Agent0:
                                 msg = '[run_step ' + str(self.simulation.execute) + '] ' + str(
                                     self.simulation.fires) + ', simulation-finish: ' + str(
                                     self.myknowledge.service['simulation_finish']) + '\n'
-                                rospy.loginfo(msg)
+                                self.log.write_log_file(self.log.stdout_log, msg)
 
                                 resp1 = pof(id, 1)
                                 # msg = ''
@@ -2347,10 +2351,10 @@ class Agent0:
                                 msg += '[run_step ' + str(self.simulation.execute) + '] after putting out: ' + str(
                                     id) + ': ' + str(resp1.current_intensity) + '\n'
                                 msg += '\n' + str(self.myknowledge.service) + '\n'
-                                rospy.loginfo(msg)
+                                self.log.write_log_file(self.log.stdout_log, msg)
                             except rospy.ServiceException, e:
                                 msg = '[run_step ' + str(self.simulation.execute) + '] unexpected: %s\n' % e
-                                rospy.loginfo(msg)
+                                self.log.write_log_file(self.log.stdout_log, msg)
                     else:
                         if self.myknowledge.service['simulation_finish'] > 0:
                             rospy.wait_for_service('/environment/put_out')
@@ -2360,13 +2364,13 @@ class Agent0:
                                 msg = '[run_step ' + str(
                                     self.simulation.execute) + '] before calling carrying victims service: ' + str(
                                     self.simulation.fires) + '\n'
-                                rospy.loginfo(msg)
+                                self.log.write_log_file(self.log.stdout_log, msg)
                                 resp1 = sv(id, 1)
                                 for x in self.simulation.fires[0]:
                                     msg = '\n...' + str(x) + ', ' + str(
                                         int(self.myknowledge.service['id'])) + ' :' + str(
                                         x) + '\n'
-                                    rospy.loginfo(msg)
+                                    self.log.write_log_file(self.log.stdout_log, msg)
                                     if x == int(self.myknowledge.service['id']):
                                         msg += '\n...>' + str(x) + ', ' + str(
                                             int(self.myknowledge.service['id'])) + '\n'
@@ -2376,7 +2380,7 @@ class Agent0:
                                         self.resources['spotxPerson'] -= 1
                                         msg = '[run_step ' + str(self.simulation.execute) + '] : ' + str(
                                             self.simulation.fires) + ' :' + str(x) + '\n'
-                                        rospy.loginfo(msg)
+                                        self.log.write_log_file(self.log.stdout_log, msg)
                                         self.myknowledge.lock_cb.release()
                                         self.simulation.current_victim = resp1.current_victims
                                         self.myknowledge.service['resources'][
@@ -2385,16 +2389,16 @@ class Agent0:
                                 msg = '[run_step ' + str(self.simulation.execute) + '] after carrying out: ' + str(
                                     id) + ': ' + str(resp1.current_victims) + '\n'
                                 msg += '\n' + str(self.myknowledge.service) + '\n'
-                                rospy.loginfo(msg)
+                                self.log.write_log_file(self.log.stdout_log, msg)
                             except rospy.ServiceException, e:
                                 msg = '[run_step ' + str(self.simulation.execute) + '] unexpected: %s\n' % e
-                                rospy.loginfo(msg)
+                                self.log.write_log_file(self.log.stdout_log, msg)
 
                 else:
                     msg = '[run_step ' + str(
                         self.simulation.execute) + '] Task: %d done, other finish: %f, %f\n' % (
                         self.myknowledge.service_id, self.simulation.current_fire, self.simulation.current_victim)
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
 
                     if random.random() < self.myknowledge.service['simulation_finish']:
                         result = 1
@@ -2413,7 +2417,7 @@ class Agent0:
                     # In case I am helping some other agent, trigger response here
                     msg = '[run_step ' + str(self.simulation.execute) + '] sender: %d, result: %d\n' % (
                         int(self.myknowledge.service['senderID']), result)
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
 
                     # pdb.set_trace()
                     if self.amIHelping(int(self.myknowledge.service['senderID'])):
@@ -2423,7 +2427,7 @@ class Agent0:
                         # You need to count loops
                         msg = '[run_step ' + str(self.simulation.execute) + '] service %s, threads: %s\n' % (
                             self.myknowledge.service, str(self.keep_track_threads))
-                        rospy.loginfo(msg)
+                        self.log.write_log_file(self.log.stdout_log, msg)
 
                         index = next(index for (index, d) in enumerate(self.keep_track_threads) if
                                      d['senderId'] == int(self.myknowledge.service['senderID']))
@@ -2437,13 +2441,13 @@ class Agent0:
 
                             msg = '[run_step ' + str(self.simulation.execute) + '] Threads %s\n' % str(
                                 self.keep_track_threads)
-                            rospy.loginfo(msg)
+                            self.log.write_log_file(self.log.stdout_log, msg)
                         else:
                             self.keep_track_threads[index]['task_status'] = 10
                             msg = '[run_step ' + str(
                                 self.simulation.execute) + '] End of task, but thread not active anymore. Threads %s\n' % str(
                                 self.keep_track_threads)
-                            rospy.loginfo(msg)
+                            self.log.write_log_file(self.log.stdout_log, msg)
                     else:
                         if result == 1:
                             self.simulation.no_self_tasks_completed[self.myknowledge.difficulty] += 1
@@ -2456,7 +2460,7 @@ class Agent0:
                     # Inc to reach stop of simulation
 
                     msg = '[run_step ' + str(self.simulation.execute) + ' END] \n'
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
                     self.end += 1
 
             if self.myknowledge.service_id == -1 and self.myknowledge.iteration == -1:
@@ -2472,8 +2476,8 @@ class Agent0:
                     # self.resources['spotxPerson'] = 5
 
         except:
-            rospy.loginfo(
-                "Unexpected error: " + str(sys.exc_info()[0]) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected error: " + str(sys.exc_info()[0]) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            self.log.write_log_file(self.log.stdout_log, msg)
             pass
 
     def regenerate(self):
@@ -2486,7 +2490,7 @@ class Agent0:
         self.mycore.battery = 1
         msg = '[fsm_INFO] I am in regenrate, switch to idle, state changed to %d, energy acquired %d' % (
             self.mycore.state, self.mycore.battery)
-        rospy.loginfo(msg)
+        self.log.write_log_file(self.log.stdout_log, msg)
         self.simulation.count_recharge += 1
         self.debug_self()
         self.fix_bugs()
@@ -2505,7 +2509,7 @@ class Agent0:
         self.myknowledge.lock.release()
 
         msg = '[fsm_INFO] I am in dead, switch to regenerate, state changed to %d' % self.mycore.state
-        rospy.loginfo(msg)
+        self.log.write_log_file(self.log.stdout_log, msg)
 
         '''
         self.publish_bcast[0].publish(self.mycore.create_message('DIE', 'DIE'))
@@ -2552,7 +2556,7 @@ class Agent0:
                 self.myknowledge.position2D[1] + f * math.sin(theta), oldX, oldY, self.myknowledge.position2D[0],
                 self.myknowledge.position2D[1])
 
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
             self.simulation.levywalk.append([self.myknowledge.position2D[0], self.myknowledge.position2D[1]])
         else:  # bounded within the whole grid
             # pdb.set_trace()
@@ -2574,7 +2578,7 @@ class Agent0:
                 self.myknowledge.position2D[1] + f * math.sin(theta), oldX, oldY, self.myknowledge.position2D[0],
                 self.myknowledge.position2D[1])
 
-            rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
             self.simulation.levywalk.append([self.myknowledge.position2D[0], self.myknowledge.position2D[1]])
 
         distance = math.sqrt(
@@ -2585,7 +2589,7 @@ class Agent0:
         # self.mycore.battery -= distance
 
         msg += '[levy_walk] d: %f, time: %f\n' % (distance, time_for_walk)
-        rospy.loginfo(msg)
+        self.log.write_log_file(self.log.stdout_log, msg)
 
         location = Track_Loc()
         location.id = self.mycore.ID
@@ -2624,7 +2628,7 @@ class Agent0:
         msg = '[random_walk] oldx: %f, oldy: %f, dx: %f, dy: %f, x: %f, y:%f\n' % (
             oldx, oldy, dx, dy, self.myknowledge.position2D[0], self.myknowledge.position2D[1])
 
-        rospy.loginfo(msg)
+        self.log.write_log_file(self.log.stdout_log, msg)
 
         location = Track_Loc()
         location.id = self.mycore.ID
@@ -2655,7 +2659,7 @@ class Agent0:
         msg = '[random_walk] oldx: %f, oldy: %f, dx: %f, dy: %f, x: %f, y:%f\n' % (
             oldx, oldy, dx, dy, self.myknowledge.position2D[0], self.myknowledge.position2D[1])
 
-        rospy.loginfo(msg)
+        self.log.write_log_file(self.log.stdout_log, msg)
 
         location = Track_Loc()
         location.id = self.mycore.ID
@@ -2676,7 +2680,7 @@ class Agent0:
         time.sleep(time_for_walk)
 
         msg += '[walk] d: %f, time: %f\n' % (distance, time_for_walk)
-        rospy.loginfo(msg)
+        self.log.write_log_file(self.log.stdout_log, msg)
         self.simulation.walk.append([self.myknowledge.position2D[0], self.myknowledge.position2D[1]])
         location = Track_Loc()
         location.id = self.mycore.ID
@@ -2702,7 +2706,7 @@ class Agent0:
             time.sleep(self.simulation.drop_victims_base)
         else:
             pass
-        rospy.loginfo(msg)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
     # MUST be overridden in the child class, depending on the different types of inputs!
     def init_inputs(self, inputs):
@@ -2827,12 +2831,12 @@ class Agent0:
                         self.simulation.idle) + '] iterations: %f, energy x iteration: %f, total energy: %f, battery level: %f\n' % (
                         visible_tasks[idx][3], self.simulation.energy_iteration,
                         visible_tasks[idx][3] * self.simulation.energy_iteration, self.mycore.battery)
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
                     pick = True
             return idx
         except:
-            rospy.loginfo(
-                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            self.log.write_log_file(self.log.stdout_log, msg)
 
     def generate_goal_v3(self):
         try:
@@ -2845,7 +2849,7 @@ class Agent0:
                         self.simulation.time_started = time.time()
                     # Pick a fire randomly
                     msg = '[generate goal ' + str(self.simulation.idle) + '] ' + str(visible_fires) + '\n'
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
                     vf_id = self.pick_task(visible_fires)
 
                     senderId = self.mycore.ID
@@ -2876,11 +2880,11 @@ class Agent0:
                               'ac_senders': acSenderId}]
 
                     msg = '[generate goal ' + str(self.simulation.idle) + '] Chosen service: ' + str(tasks) + '\n'
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
 
                     for x in tasks:
                         msg = '[generate goal ' + str(self.simulation.idle) + '] ' + str(x) + '\n'
-                        rospy.loginfo(msg)
+                        self.log.write_log_file(self.log.stdout_log, msg)
                         self.myknowledge.task_queue.put(x)
 
                     now = time.time()
@@ -2898,7 +2902,7 @@ class Agent0:
                         self.simulation.time_started = time.time()
                     # Pick a victim location randomly
                     msg = '[generate goal ' + str(self.simulation.idle) + '] ' + str(visible_victims) + '\n'
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
                     vf_id = self.pick_task(visible_victims)
 
                     senderId = self.mycore.ID
@@ -2929,11 +2933,11 @@ class Agent0:
                               'ac_senders': acSenderId}]
 
                     msg = '[generate goal ' + str(self.simulation.idle) + '] Chosen service: ' + str(tasks) + '\n'
-                    rospy.loginfo(msg)
+                    self.log.write_log_file(self.log.stdout_log, msg)
 
                     for x in tasks:
                         msg = '[generate goal ' + str(self.simulation.idle) + '] ' + str(x) + '\n'
-                        rospy.loginfo(msg)
+                        self.log.write_log_file(self.log.stdout_log, msg)
                         self.myknowledge.task_queue.put(x)
 
                     now = time.time()
@@ -2944,8 +2948,8 @@ class Agent0:
                     self.mycore.state = 2
                     self.myknowledge.lock.release()
         except:
-            rospy.loginfo(
-                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            self.log.write_log_file(self.log.stdout_log, msg)
             pass
 
     def plan2goal(self):

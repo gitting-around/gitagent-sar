@@ -16,7 +16,9 @@ import pdb
 
 class GitAgent(agent0.Agent0):
     def bcasts_brain_callback(self, data):
-        rospy.loginfo(rospy.get_caller_id() + " Callback-from-env-mpunit %s, %s", data.sender, data.content)
+        msg = rospy.get_caller_id() + " Callback-from-env-mpunit %s, %s" % (data.sender, data.content)
+        #self.log.write_log_file(self.log.stdout_log, msg)
+        rospy.loginfo(msg)
 
         # callback_bc modified ONLY here
         self.simulation.callback_bc = self.simulation.inc_iterationstamps(self.simulation.callback_bc)
@@ -28,6 +30,8 @@ class GitAgent(agent0.Agent0):
     def process_bc_request(self, data):
         msg = '[callback ' + str(self.simulation.callback_bc) + '][ROSPY] I am: %d, I heard %d\n' % (
                                 self.mycore.ID, int(data.sender))
+
+        #self.log.write_log_file(self.log.stdout_log, msg)
         rospy.loginfo(msg)
         # Register new individual - Note that what comes from msg_PUnit is always new
         # However, in the case additional planners are added this code must be changed appropriately
@@ -275,9 +279,8 @@ class GitAgent(agent0.Agent0):
 
 if __name__ == '__main__':
 
-    # sys.stdout = s
-
     rospy.init_node('agent', anonymous=True, disable_signals=True)
+    #rospy.init_node('agent', anonymous=True, disable_signals=False)
     # define the three core elements of the agent, its id, delta and theta value ###
     agent_id = rospy.get_param('brain_node/myID')
     delta = rospy.get_param('brain_node/myDelta')
@@ -356,7 +359,7 @@ if __name__ == '__main__':
         results_filename = '/home/mfi01/catkin_ws/' + 'results_' + str(agent_id) + '_' + str(delta) + '_' + str(theta) + '_' + str(pressure) + '_' + str(static)
 
         msg = results_filename
-        rospy.loginfo(msg)
+        agent.log.write_log_file(agent.log.stdout_log, msg)
         # TA  TDA TC  TDC
         for x in agent.simulation.no_tasks_attempted:
             agent.log.write_log_file(results_filename, str(x) + ' ')
@@ -441,17 +444,21 @@ if __name__ == '__main__':
 
         # pdb.set_trace()
         msg = '\n--------> %d' % int(len(agent.simulation.time_per_task))
-        rospy.loginfo(msg)
+
+        agent.log.write_log_file(agent.log.stdout_log, msg)
         if int(len(agent.simulation.time_per_task)) > 0:
             ave = sum(agent.simulation.time_per_task)/float(len(agent.simulation.time_per_task))
         else:
             ave = -1
-        rospy.loginfo(ave)
+
+        agent.log.write_log_file(agent.log.stdout_log, msg)
         agent.log.write_log_file(results_filename, '\nrunning time: %s ' % str(agent.simulation_end))
-        rospy.loginfo('\n before last')
+        msg = '\n before last'
+        agent.log.write_log_file(agent.log.stdout_log, msg)
         agent.log.write_log_file(results_filename, '\nall visible time: %s ' % time.strftime("%H:%M:%S", time.gmtime(agent.simulation.time_all_visible)))
         agent.fires_sub.unregister()
-        rospy.loginfo('\n last')
+        msg = '\n last'
+        agent.log.write_log_file(agent.log.stdout_log, msg)
 
         # Unsubscribe to /environment/fires
         #agent.publish_loc.unregister()

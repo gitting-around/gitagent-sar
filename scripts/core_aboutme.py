@@ -254,7 +254,7 @@ class Core:
 
                 print subset
                 msg = "subset of known people that can do the job: %s" % str(subset)
-                rospy.loginfo(msg)
+                log.write_log_file(log.stdout_log, msg)
                 if subset:
                     if random.random() < 0.4:
                         # Choose an agent randomly
@@ -293,18 +293,18 @@ class Core:
                 else:
                     # In case ambulance agents cannot find other ambulances, then can ask police officers for help
                     msg = 'looking for proxies\n'
-                    rospy.loginfo(msg)
+                    log.write_log_file(log.stdout_log, msg)
                     if 'transport_victim' in task['abilities']:
                         #pdb.set_trace()
                         if subset_proxies:
                             msg = 'No ambulance to ask, try fire police\n'
-                            rospy.loginfo(msg)
+                            log.write_log_file(log.stdout_log, msg)
                             agent_idx = random.randint(0, len(subset_proxies) - 1)
                             print subset_proxies[agent_idx][0]
                             success_chance = subset_proxies[agent_idx][1]
                             print success_chance
                             msg = 'Randomly chosen proxy: %d\n' % subset_proxies[agent_idx][0]
-                            rospy.loginfo(msg)
+                            log.write_log_file(log.stdout_log, msg)
                             agent_id = subset_proxies[agent_idx][0]
                             for x in known_people:
                                 if x[0] == agent_id:
@@ -314,10 +314,10 @@ class Core:
                                     msg = 'index: %d\n' % agent_idx
                         else:
                             msg = 'No proxies for this task\n'
-                            rospy.loginfo(msg)
+                            log.write_log_file(log.stdout_log, msg)
                     else:
                         msg = 'No one to ask for this task\n'
-                        rospy.loginfo(msg)
+                        log.write_log_file(log.stdout_log, msg)
                     #print 'no one for this task'
             else:
                 #print 'no one'
@@ -325,8 +325,8 @@ class Core:
 
             return success_chance, agent_id, agent_idx
         except:
-            rospy.loginfo(
-            "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            log.write_log_file(log.stdout_log, msg)
 
     def best_candidate_list(self, known_people, task, log, senderID):
         try:
@@ -336,7 +336,7 @@ class Core:
             subset_proxies = []
             sorted_subset = []
             msg = "known_people: %s" % str(known_people)
-            rospy.loginfo(msg)
+            log.write_log_file(log.stdout_log, msg)
             if known_people:
                 # print 'known people not empty'
                 # print 'task id type ' + str(type(task['id']))
@@ -360,34 +360,33 @@ class Core:
                 # put -1 ones first
                 sorted_subset = sorted(subset, key=lambda x: int(x[1]))
 
-                msg = "subset of known people that can do the job: %s, sorted: %s" % (str(subset), str(sorted_subset))
-                rospy.loginfo(msg)
+                msg += "subset of known people that can do the job: %s, sorted: %s" % (str(subset), str(sorted_subset))
+                log.write_log_file(log.stdout_log, msg)
 
                 if subset:
                     # In case ambulance agents cannot find other ambulances, then can ask police officers for help
-                    msg = 'looking for proxies\n'
-                    rospy.loginfo(msg)
+                    msg += 'looking for proxies\n'
+                    log.write_log_file(log.stdout_log, msg)
                     if 'transport_victim' in task['abilities']:
                         if subset_proxies:
                             sorted_proxies = sorted(subset_proxies, key=lambda x: int(x[1]))
-                            msg = 'No ambulance to ask, try fire police\n'
+                            msg += 'No ambulance to ask, try fire police\n'
                             sorted_subset = sorted_subset + sorted_proxies
-                            rospy.loginfo(msg)
+                            log.write_log_file(log.stdout_log, msg)
                         else:
-                            msg = 'No proxies for this task\n'
-                            rospy.loginfo(msg)
+                            msg += 'No proxies for this task\n'
+                            log.write_log_file(log.stdout_log, msg)
                 else:
-                    msg = 'No one to ask for this task\n'
-                    rospy.loginfo(msg)
+                    msg += 'No one to ask for this task\n'
+                    log.write_log_file(log.stdout_log, msg)
                     #print 'no one for this task'
             else:
                 #print 'no one'
                 log.write_log_file(log.stdout_log, 'No one to ask \n')
-
             return sorted_subset
         except:
-            rospy.loginfo(
-            "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg += "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            log.write_log_file(log.stdout_log, msg)
 
     def battery_change(self, change):
         self.battery = self.battery - change
@@ -424,7 +423,7 @@ class Core:
                 content = content + str(x) + '|'
         return content
 
-    def goal2string(self, goal):
+    def goal2string(self, log, goal):
         #pdb.set_trace()
         try:
             abil = ''
@@ -453,10 +452,12 @@ class Core:
                        'name'] + ' ' + eloc + ' ' + str(goal['planID']) + ' ' + equip + ' ' + sloc + ' ' + str(
                 goal['reward']) + ' ' + res + ' ' + str(goal['noAgents']) + ' ' + str(goal['simulation_finish']) + ' ' + ac_snd + '\n'
 
-            rospy.loginfo("CORE: goal2string: " + str(goal))
+            msg = "CORE: goal2string: " + str(goal)
+            log.write_log_file(log.stdout_log, msg)
             return goal
         except:
-            rospy.loginfo("CORE: Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "CORE: Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            log.write_log_file(log.stdout_log, msg)
 
     def string2goal(self, line, log):
         try:
@@ -498,8 +499,6 @@ class Core:
                     'reward': reward, 'name': tName, 'startLoc': startLoc, 'endLoc': endLoc, 'noAgents': noAgents,
                     'equipment': equipment, 'abilities': abilities, 'resources': res, 'estim_time': estim_time, 'ac_senders': ac_snd}
         except:
-            rospy.loginfo(
-                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
             log.write_log_file(log.stdout_log, "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
 
     def string2goalPlan(self, lines, log):
@@ -562,7 +561,6 @@ class Core:
 
             return plan
         except:
-            rospy.loginfo("CORE: Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
             log.write_log_file(log.stdout_log, "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
     '''
     def willing2ask_fuzzy(self, inputs):
@@ -695,7 +693,7 @@ class Core:
 
     # Willingness to give help
 
-    def delta5(self, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_tradeoff,  culture, aID):
+    def delta5(self, log, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_tradeoff,  culture, aID):
         try:
             self.delta = 0
             if energy_diff < 0:
@@ -703,31 +701,31 @@ class Core:
             else:
                 f1 = energy_diff
             msg = "energy: %f, f1: %f\n" % (energy_diff,f1)
-            rospy.loginfo(msg)
+            log.write_log_file(log.stdout_log, msg)
             if abil == 0:
                 f2 = -1
             else:
                 f2 = abil
             msg = "abil: %f, f2: %f\n" % (abil, f2)
-            rospy.loginfo(msg)
+            log.write_log_file(log.stdout_log, msg)
             if equip == 0:
                 f3 = -1
             else:
                 f3 = equip
             msg = "equip: %f, f3: %f\n" % (equip, f3)
-            rospy.loginfo(msg)
+            log.write_log_file(log.stdout_log, msg)
             if knowled == 0:
                 f4 = -1
             else:
                 f4 = knowled
             msg = "knowled: %f, f4: %f\n" % (knowled, f4)
-            rospy.loginfo(msg)
+            log.write_log_file(log.stdout_log, msg)
             if tools == 0:
                 f5 = -1
             else:
                 f5 = tools
             msg = "tools: %f, f4: %f\n" % (tools, f5)
-            rospy.loginfo(msg)
+            log.write_log_file(log.stdout_log, msg)
             f6 = performance-self.LOW
             f7 = dif_task_tradeoff-self.LOW
             f8 = self.LOW-env_risk
@@ -738,7 +736,7 @@ class Core:
             msg += "env: %f, f8: %f\n" % (env_risk, f8)
             msg += "arisk: %f, f9: %f\n" % (ag_risk[0], f9)
             msg += "delta: %f, delta0: %f\n" % (self.delta, self.willingness[1])
-            rospy.loginfo(msg)
+            log.write_log_file(log.stdout_log, msg)
             self.delta_in_time.append([self.delta, time.strftime("%H:%M:%S", time.gmtime(time.time()))])
             if self.delta > 1.0:
                 self.delta = 1.0
@@ -750,62 +748,62 @@ class Core:
             else:
                 return False, self.delta
         except:
-            rospy.loginfo(
-                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            log.write_log_file(log.stdout_log, msg)
 
-    def gamma3(self, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_progress, culture, aID):
+    def gamma3(self, log, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_progress, culture, aID):
         try:
             self.gamma = 0
             if energy_diff > 0:
                 self.gamma = 1.0
                 msg = "energy: %f" % (energy_diff)
                 self.gamma_in_time.append([self.gamma,time.strftime("%H:%M:%S", time.gmtime(time.time()))])
-                rospy.loginfo(msg)
+                log.write_log_file(log.stdout_log, msg)
                 return True, self.gamma
             else:
                 f1 = energy_diff
                 msg = "energy: %f, f1: %f" % (energy_diff, f1)
-                rospy.loginfo(msg)
+                log.write_log_file(log.stdout_log, msg)
                 if abil == 0:
                     self.gamma = 1.0
                     msg = "abil: %f" % (abil)
                     self.gamma_in_time.append([self.gamma,time.strftime("%H:%M:%S", time.gmtime(time.time()))])
-                    rospy.loginfo(msg)
+                    log.write_log_file(log.stdout_log, msg)
                     return True, self.gamma
                 else:
                     f2 = -abil
                     msg = "abil: %f, f2: %f" % (abil, f2)
-                    rospy.loginfo(msg)
+                    log.write_log_file(log.stdout_log, msg)
                     if equip == 0:
                         self.gamma = 1.0
                         msg = "equip: %f" % (equip)
                         self.gamma_in_time.append([self.gamma,time.strftime("%H:%M:%S", time.gmtime(time.time()))])
-                        rospy.loginfo(msg)
+                        log.write_log_file(log.stdout_log, msg)
                         return True, self.gamma
                     else:
                         f3 = -equip
                         msg = "equip: %f, f3: %f" % (equip, f3)
-                        rospy.loginfo(msg)
+                        log.write_log_file(log.stdout_log, msg)
                         if knowled == 0:
                             self.gamma = 1.0
                             msg = "knowled: %f" % (knowled)
                             self.gamma_in_time.append([self.gamma,time.strftime("%H:%M:%S", time.gmtime(time.time()))])
-                            rospy.loginfo(msg)
+                            log.write_log_file(log.stdout_log, msg)
                             return True, self.gamma
                         else:
                             f4 = -knowled
                             msg = "knowled: %f, f4: %f" % (knowled, f4)
-                            rospy.loginfo(msg)
+                            log.write_log_file(log.stdout_log, msg)
                             if tools == 0:
                                 self.gamma = 1.0
                                 msg = "tools: %f" % (tools)
                                 self.gamma_in_time.append([self.gamma,time.strftime("%H:%M:%S", time.gmtime(time.time()))])
-                                rospy.loginfo(msg)
+                                log.write_log_file(log.stdout_log, msg)
                                 return True, self.gamma
                             else:
                                 f5 = -tools
                                 msg = "tools: %f, f5: %f" % (tools, f5)
-                                rospy.loginfo(msg)
+                                log.write_log_file(log.stdout_log, msg)
                                 #pdb.set_trace()
                                 f6 = self.LOW-performance
                                 f7 = self.LOW-dif_task_progress
@@ -818,7 +816,7 @@ class Core:
                                 msg += "env: %f, f8: %f\n" % (env_risk, f8)
                                 msg += "arisk: %f, f9: %f\n" % (ag_risk, f9)
                                 msg += "gamma: %f, gammma0: %f\n" % (self.gamma, self.willingness[0])
-                                rospy.loginfo(msg)
+                                log.write_log_file(log.stdout_log, msg)
                                 self.gamma_in_time.append([self.gamma,time.strftime("%H:%M:%S", time.gmtime(time.time()))])
                                 if self.gamma > 1.0:
                                     self.gamma = 1.0
@@ -830,8 +828,8 @@ class Core:
                                 else:
                                     return False, self.gamma
         except:
-            rospy.loginfo(
-                "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+            msg = "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            log.write_log_file(log.stdout_log, msg)
 
     def deltaD(self, energy_diff, abil, equip, knowled, tools, env_risk, ag_risk, performance, dif_task_tradeoff, _tradeoff, culture, aID):
         try:
