@@ -277,7 +277,7 @@ if __name__ == '__main__':
 
     # sys.stdout = s
 
-    rospy.init_node('agent', anonymous=True)
+    rospy.init_node('agent', anonymous=True, disable_signals=True)
     # define the three core elements of the agent, its id, delta and theta value ###
     agent_id = rospy.get_param('brain_node/myID')
     delta = rospy.get_param('brain_node/myDelta')
@@ -393,7 +393,7 @@ if __name__ == '__main__':
 
         agent.log.write_log_file(results_filename, str(agent.simulation.neto_tasks_completed) + ' ')
 
-        agent.log.write_log_file(results_filename, str(agent.simulation.count_recharge) + ' ')
+        agent.log.write_log_file(results_filename, str(agent.simulation.rejection_blocking) + ' ')
 
         agent.log.write_log_file(results_filename, '\n')
 
@@ -447,15 +447,15 @@ if __name__ == '__main__':
         else:
             ave = -1
         rospy.loginfo(ave)
-        agent.log.write_log_file(results_filename, '\nrunning time: %s ' % time.strftime("%H:%M:%S", agent.simulation_end))
+        agent.log.write_log_file(results_filename, '\nrunning time: %s ' % str(agent.simulation_end))
         rospy.loginfo('\n before last')
         agent.log.write_log_file(results_filename, '\nall visible time: %s ' % time.strftime("%H:%M:%S", time.gmtime(agent.simulation.time_all_visible)))
+        agent.fires_sub.unregister()
         rospy.loginfo('\n last')
 
         # Unsubscribe to /environment/fires
         #agent.publish_loc.unregister()
         #agent.publish_fires.unregister()
-        agent.fires_sub.unregister()
 
         sys.stderr = orig_stderr
         f.close()

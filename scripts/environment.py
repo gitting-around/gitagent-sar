@@ -274,7 +274,6 @@ class Environment:
                 self.lock.acquire()
                 x['intensity'] -= req.put_out_step
 
-
                 if x['intensity'] > 0:
                     # x['intensity'] += 1
                     pass
@@ -284,7 +283,6 @@ class Environment:
                         self.extinguished += 1
                         x['once'] = 1
                         x['status'] = 0
-
 
                 self.lock.release()
                 return x['intensity']

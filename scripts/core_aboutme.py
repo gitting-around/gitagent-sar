@@ -328,6 +328,67 @@ class Core:
             rospy.loginfo(
             "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
 
+    def best_candidate_list(self, known_people, task, log, senderID):
+        try:
+
+            # Find in known people the subset of agents that can do the task
+            subset = []
+            subset_proxies = []
+            sorted_subset = []
+            msg = "known_people: %s" % str(known_people)
+            rospy.loginfo(msg)
+            if known_people:
+                # print 'known people not empty'
+                # print 'task id type ' + str(type(task['id']))
+                #pdb.set_trace()
+                for x in known_people:
+                    print x[2]
+                    #if task['id'] in x[2]:
+                    #CAREFUL - does not consider case when x[2] is a list itself, i.e. when there are multiple abilities required
+                    if x[2][0] in task['abilities']:
+                        if not senderID == x[0] and not x[0] in task['ac_senders']:
+                            t = list(x)
+                            t.append(known_people.index(x))
+                            subset.append(t)
+                    if x[2][0] == 'proxy':
+                        if not senderID == x[0] and not x[0] in task['ac_senders']:
+                            t = list(x)
+                            t.append(known_people.index(x))
+                            subset_proxies.append(t)
+
+                # [ [9, -1, ['transport_victim'], [-1]], ... ]
+                # put -1 ones first
+                sorted_subset = sorted(subset, key=lambda x: int(x[1]))
+
+                msg = "subset of known people that can do the job: %s, sorted: %s" % (str(subset), str(sorted_subset))
+                rospy.loginfo(msg)
+
+                if subset:
+                    # In case ambulance agents cannot find other ambulances, then can ask police officers for help
+                    msg = 'looking for proxies\n'
+                    rospy.loginfo(msg)
+                    if 'transport_victim' in task['abilities']:
+                        if subset_proxies:
+                            sorted_proxies = sorted(subset_proxies, key=lambda x: int(x[1]))
+                            msg = 'No ambulance to ask, try fire police\n'
+                            sorted_subset = sorted_subset + sorted_proxies
+                            rospy.loginfo(msg)
+                        else:
+                            msg = 'No proxies for this task\n'
+                            rospy.loginfo(msg)
+                else:
+                    msg = 'No one to ask for this task\n'
+                    rospy.loginfo(msg)
+                    #print 'no one for this task'
+            else:
+                #print 'no one'
+                log.write_log_file(log.stdout_log, 'No one to ask \n')
+
+            return sorted_subset
+        except:
+            rospy.loginfo(
+            "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno))
+
     def battery_change(self, change):
         self.battery = self.battery - change
 
@@ -678,7 +739,7 @@ class Core:
             msg += "arisk: %f, f9: %f\n" % (ag_risk[0], f9)
             msg += "delta: %f, delta0: %f\n" % (self.delta, self.willingness[1])
             rospy.loginfo(msg)
-            self.delta_in_time.append(self.delta)
+            self.delta_in_time.append([self.delta, time.strftime("%H:%M:%S", time.gmtime(time.time()))])
             if self.delta > 1.0:
                 self.delta = 1.0
             elif self.delta < 0.0:
@@ -698,7 +759,7 @@ class Core:
             if energy_diff > 0:
                 self.gamma = 1.0
                 msg = "energy: %f" % (energy_diff)
-                self.gamma_in_time.append(self.gamma)
+                self.gamma_in_time.append([self.gamma,time.strftime("%H:%M:%S", time.gmtime(time.time()))])
                 rospy.loginfo(msg)
                 return True, self.gamma
             else:
@@ -708,7 +769,7 @@ class Core:
                 if abil == 0:
                     self.gamma = 1.0
                     msg = "abil: %f" % (abil)
-                    self.gamma_in_time.append(self.gamma)
+                    self.gamma_in_time.append([self.gamma,time.strftime("%H:%M:%S", time.gmtime(time.time()))])
                     rospy.loginfo(msg)
                     return True, self.gamma
                 else:
@@ -718,7 +779,7 @@ class Core:
                     if equip == 0:
                         self.gamma = 1.0
                         msg = "equip: %f" % (equip)
-                        self.gamma_in_time.append(self.gamma)
+                        self.gamma_in_time.append([self.gamma,time.strftime("%H:%M:%S", time.gmtime(time.time()))])
                         rospy.loginfo(msg)
                         return True, self.gamma
                     else:
@@ -728,7 +789,7 @@ class Core:
                         if knowled == 0:
                             self.gamma = 1.0
                             msg = "knowled: %f" % (knowled)
-                            self.gamma_in_time.append(self.gamma)
+                            self.gamma_in_time.append([self.gamma,time.strftime("%H:%M:%S", time.gmtime(time.time()))])
                             rospy.loginfo(msg)
                             return True, self.gamma
                         else:
@@ -738,7 +799,7 @@ class Core:
                             if tools == 0:
                                 self.gamma = 1.0
                                 msg = "tools: %f" % (tools)
-                                self.gamma_in_time.append(self.gamma)
+                                self.gamma_in_time.append([self.gamma,time.strftime("%H:%M:%S", time.gmtime(time.time()))])
                                 rospy.loginfo(msg)
                                 return True, self.gamma
                             else:
@@ -758,7 +819,7 @@ class Core:
                                 msg += "arisk: %f, f9: %f\n" % (ag_risk, f9)
                                 msg += "gamma: %f, gammma0: %f\n" % (self.gamma, self.willingness[0])
                                 rospy.loginfo(msg)
-                                self.gamma_in_time.append(self.gamma)
+                                self.gamma_in_time.append([self.gamma,time.strftime("%H:%M:%S", time.gmtime(time.time()))])
                                 if self.gamma > 1.0:
                                     self.gamma = 1.0
                                 elif self.gamma < 0.0:
