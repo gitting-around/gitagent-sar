@@ -1,7 +1,9 @@
 <launch>
 	<arg name="id"/>
+	<arg name="rand"/>
 	<node pkg="gitagent" type="agent_run.py" name="brain_node" output="log">
 		<param name="myID" value="$(arg id)" />
+		<param name="rand" value="$(arg rand)" />
 		<param name="myTheta" value="0.2" />
 		<param name="myDelta" value="0.8" />
 		<param name="pressure" value="0.05" />

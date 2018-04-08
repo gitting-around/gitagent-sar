@@ -28,6 +28,9 @@ class Environment:
 
         self.lock = Lock()
 
+        self.fires_in_time = []
+        self.victims_in_time = []
+
         self.width = width_height[0]
         self.height = width_height[1]
         # Place initial fires uniformly accross the space
@@ -64,35 +67,54 @@ class Environment:
         #print [x['xpos'] for x in self.fires]
         self.saved = 0
         self.extinguished = 0
+
+        self.init_ids = []
+        self.init_xpos = []
+        self.init_ypos = []
+
         # Generate initial positions for agents
         self.init_agentXY(20, 3, points)
         # Generate bases
         self.init_bases([1,1], points)
-        #Generate 2D space
-        self.fig, self.ax = plt.subplots()
-        self.ln_fire, = plt.plot([],[], 'ro')
-        self.ln_agents, = plt.plot([],[], 'bs')
-
-        self.result = plt.text(2.,29., 'extinguished: ' + str(self.extinguished) + ', saved: ' + str(self.saved))
-
-        ani = animation.FuncAnimation(self.fig, self.draw_agents, self.new_data, init_func=self.init_2DSpace, interval=200)#interval=2000
-        plt.grid()
-        plt.show()
-        '''
-        rospy.loginfo(msg="environment is closing")
-        env.msgtopic.unregister()
-        rospy.loginfo(msg="unregistered msgtopic")
-        env.tracktopic.unregister()
-        rospy.loginfo(msg="unregistered track")
-        env.publish_fires.unregister()
-        rospy.loginfo(msg="unregistered publish fires")
-        env.publish_init_loc.unregister()
-        rospy.loginfo(msg="unregistered publish init loc")
-        '''
-        # sys.exit()
+        #self.init_2DSpace()
+        self.run = True
 
     def run_env(self):
-        pass
+        msg = 'number of connections: %d' % self.publish_fires.get_num_connections()
+        if self.publish_fires.get_num_connections() < 1:
+            msg = "about to close"
+            rospy.loginfo(msg)
+            with open("/home/ubuntu/catkin_ws/results_final", 'a+') as final:
+                final.write(str(self.extinguished) + ' ' + str(self.saved) + ' ' + str(self.no_victims) + '\n')
+            with open("/home/ubuntu/catkin_ws/results_fires_in_time", 'a+') as final:
+                for x in self.fires_in_time:
+                    final.write(str(x) + ' ')
+                final.write('\n')
+            with open("/home/ubuntu/catkin_ws/results_victims_in_time", 'a+') as final:
+                for x in self.victims_in_time:
+                    final.write(str(x) + ' ')
+                final.write('\n')
+            self.run = False
+
+        fire = Fires_Info()
+        fire.id = [x['id'] for x in self.fires]
+        fire.xpos = [x['xpos'] for x in self.fires]
+        fire.ypos = [x['ypos'] for x in self.fires]
+        fire.intensity = [x['intensity'] for x in self.fires]
+        fire.victims = [x['victims'] for x in self.fires]
+        fire.status = [x['status'] for x in self.fires]
+        self.publish_fires.publish(fire)
+        rospy.loginfo(rospy.get_caller_id() + ' current state: %s', str(self.fires))
+        msg += "Fires: %s" % self.fires
+        rospy.loginfo(msg)
+        print [x['intensity'] for x in self.fires]
+
+        if self.publish_init_loc.get_num_connections() >= 1:
+            initLoc_msg = Init_Loc()
+            initLoc_msg.ids = self.init_ids
+            initLoc_msg.xpos = self.init_xpos
+            initLoc_msg.ypos = self.init_ypos
+            self.publish_init_loc.publish(initLoc_msg)
 
     def init_2DSpace(self):
         self.ax.set_xlabel('x-points')
@@ -182,6 +204,11 @@ class Environment:
         ids = [x['id'] for x in self.agents_XY]
         xpos = [x['xpos'] for x in self.agents_XY]
         ypos = [x['ypos'] for x in self.agents_XY]
+        
+        self.init_ids = ids
+        self.init_xpos = xpos
+        self.init_ypos = ypos
+
         print self.agents_XY
         print ids
         print forbidden_points
@@ -207,7 +234,12 @@ class Environment:
             rospy.loginfo(msg)
             with open("/home/mfi01/catkin_ws/results_final", 'a+') as final:
                 final.write(str(self.extinguished) + ' ' + str(self.saved) + ' ' + str(self.no_victims) + '\n')
+            with open("/home/mfi01/catkin_ws/results_fires_in_time", 'a+') as final:
+                final.write(str(self.fires_in_time) + '\n')
             plt.close()
+            #print self.should_exit
+            #self.should_exit = True
+            #rospy.signal_shutdown("end of simulation")
             #sys.exit()
         self.ln_agents.set_xdata(np.array(points[0]))
         self.ln_agents.set_ydata(np.array(points[1]))
@@ -281,6 +313,7 @@ class Environment:
                     x['intensity'] = -1000
                     if x['once'] == 0:
                         self.extinguished += 1
+                        self.fires_in_time.append([self.no_fires-self.extinguished, time.strftime("%H:%M:%S", time.gmtime(time.time()))])
                         x['once'] = 1
                         x['status'] = 0
 
@@ -295,10 +328,15 @@ class Environment:
                 x['victims'] -= req.get_victim
                 if x['victims'] > 0:
                     self.saved += 1
+
+                    self.victims_in_time.append(
+                        [self.no_victims - self.saved, time.strftime("%H:%M:%S", time.gmtime(time.time()))])
                 else:
                     x['victims'] = -1000
                     if x['once'] == 1:
                         self.saved += 1
+                        self.victims_in_time.append(
+                            [self.no_victims - self.saved, time.strftime("%H:%M:%S", time.gmtime(time.time()))])
                         x['once'] = 2
 
                 self.lock.release()
@@ -317,8 +355,9 @@ if __name__ == '__main__':
         msg = "fires: %d, intensity: %d, victims: %d" % (f,w,v)
         rospy.loginfo(msg)
         env = Environment([30,30], [0.005], f, w, v)
-        time.sleep(5)
-        #rospy.spin()
+        while env.run:
+            env.run_env()
+            rospy.sleep(0.5)
+        time.sleep(2)
     except:
         rospy.loginfo("Unexpected error: " + str(sys.exc_info()) + ". Line: " + str(sys.exc_info()[2].tb_lineno))
-

@@ -9,6 +9,7 @@ from gitagent.msg import *
 from gitagent.srv import *
 import traceback
 import time
+import os
 from threading import Lock
 import numpy as np
 import pdb
@@ -287,6 +288,26 @@ if __name__ == '__main__':
     theta = rospy.get_param('brain_node/myTheta')
     pressure = rospy.get_param('brain_node/pressure')
     static_string = rospy.get_param('brain_node/static')
+    #rand = rospy.get_param('brain_node/rand')
+    rand = int(os.environ['SIMULATION_RAND'])
+    msg = ""
+    if rand:
+        msg = "rand: %d\n" % (rand)
+        with open("/home/ubuntu/catkin_ws/src/gitagent/scripts/random_delta0", 'r') as f:
+            lines = f.readlines()
+            delta = float(lines[agent_id - 1])
+            msg += "delta: %f, type delta: %s" % (float(delta), type(delta))
+        with open("/home/ubuntu/catkin_ws/src/gitagent/scripts/random_gamma0", 'r') as f:
+            lines = f.readlines()
+            theta = float(lines[agent_id - 1])
+            msg += "gamma: %f, type gamma: %s" % (float(theta), type(theta))
+    else:
+        msg = "rand: %d\n" % (rand)
+        delta = rospy.get_param('brain_node/myDelta')
+        msg += "delta: %f, type delta: %s" % (float(delta), type(delta))
+        theta = rospy.get_param('brain_node/myTheta')
+        msg += "gamma: %f, type gamma: %s" % (float(theta), type(theta))
+    rospy.loginfo(msg)
     ##############################################################################
     static = [int(x) for x in static_string.split('|')]
     # Either restart delta and gamma on each computation to the original values, in that case memory = 0; or use the past value for delta and gamma to compute the current ones, in that case memory = 1
@@ -294,12 +315,12 @@ if __name__ == '__main__':
     #abrupt = rospy.get_param('brain_node/abrupt')
     abrupt = -1.0
 
-    stderr_file = '/home/mfi01/catkin_ws/results/error_brain' + str(agent_id)
+    stderr_file = '/home/ubuntu/catkin_ws/results/error_brain' + str(agent_id)
     f = open(stderr_file, 'a+')
     orig_stderr = sys.stderr
     sys.stderr = f
 
-    stdout_file = '/home/mfi01/catkin_ws/results/stdout_brain'
+    stdout_file = '/home/ubuntu/catkin_ws/results/stdout_brain'
     s = open(stdout_file, 'a+')
     orig_stdout = sys.stdout
     rospy.loginfo('Agent with id: %d, delta: %f, theta: %f, has started successfully', agent_id, delta, theta)
@@ -336,6 +357,7 @@ if __name__ == '__main__':
     agent = GitAgent(agent_id, agent_conf, active_servs, [theta, delta], sim, popSize, provaNr, depends, battery, sensors,
                      actuators, motors, static, memory)
     agent.log.write_log_file(agent.log.stdout_log, 'active_serve ' + str(active_servs) + '\n')
+    agent.log.write_log_file(agent.log.stdout_log, 'rand: '+str(rand) + '\n')
 
     try:
         agent.fsm()
@@ -356,7 +378,10 @@ if __name__ == '__main__':
         # Write out number of help requests and approx finishing time
         agent.log.write_log_file(agent.log.stdout_log, 'in finally')
         #pdb.set_trace()
-        results_filename = '/home/mfi01/catkin_ws/' + 'results_' + str(agent_id) + '_' + str(delta) + '_' + str(theta) + '_' + str(pressure) + '_' + str(static)
+        if rand:
+            results_filename = '/home/ubuntu/catkin_ws/' + 'results_' + str(agent_id) + '_rand_' + str(pressure) + '_' + str(static)
+        else:
+            results_filename = '/home/ubuntu/catkin_ws/' + 'results_' + str(agent_id) + '_' + str(delta) + '_' + str(theta) + '_' + str(pressure) + '_' + str(static)
 
         msg = results_filename
         agent.log.write_log_file(agent.log.stdout_log, msg)
@@ -455,7 +480,15 @@ if __name__ == '__main__':
         agent.log.write_log_file(results_filename, '\nrunning time: %s ' % str(agent.simulation_end))
         msg = '\n before last'
         agent.log.write_log_file(agent.log.stdout_log, msg)
-        agent.log.write_log_file(results_filename, '\nall visible time: %s ' % time.strftime("%H:%M:%S", time.gmtime(agent.simulation.time_all_visible)))
+        agent.log.write_log_file(results_filename, '\nall visible time: %s\n ' % time.strftime("%H:%M:%S", time.gmtime(agent.simulation.time_all_visible)))
+
+        for x in agent.simulation.time_to_base:
+            agent.log.write_log_file(results_filename, str(x) + ' ')
+        agent.log.write_log_file(results_filename, '\n')
+
+        for x in agent.simulation.depend_success_time:
+            agent.log.write_log_file(results_filename, str(x) + ' ')
+        agent.log.write_log_file(results_filename, '\n')
         agent.fires_sub.unregister()
         msg = '\n last'
         agent.log.write_log_file(agent.log.stdout_log, msg)

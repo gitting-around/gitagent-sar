@@ -9,9 +9,11 @@ def write_launch_file(theta, delta, pressure, static, memory):
         launch.write('<launch>\n')
 
         launch.write('	<arg name="id"/>\n')
+        launch.write('	<arg name="rand"/>\n')
         launch.write(
             '	<node pkg="gitagent" type="agent_run.py" name="brain_node" output="log">\n')
         launch.write('		<param name="myID" value="$(arg id)" />\n')
+        launch.write('		<param name="rand" value="$(arg rand)" />\n')
         launch.write('		<param name="myTheta" value="' + str(theta) + '" />\n')
         launch.write('		<param name="myDelta" value="' + str(delta) + '" />\n')
         launch.write('		<param name="pressure" value="' + str(pressure) + '" />\n')

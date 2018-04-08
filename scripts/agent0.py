@@ -135,6 +135,7 @@ class Agent0:
                 if np.sum(self.simulation.fires[3]) == -1000 * 40 and np.sum(self.simulation.fires[4]) == -1000 * 40:
                     if not self.simulation.all_out:
                         self.simulation.all_out = True
+
             else:
                 self.simulation.fires = np.zeros((7, 40))
                 self.simulation.fires[0] = data.id
@@ -236,7 +237,7 @@ class Agent0:
             # if sum(self.simulation.generated_tasks) + 1 > self.simulation.STOP:
 
             # Stop the simulation when all fires and victims are rescued
-            if self.simulation.all_out or (time.time() - self.start) > 600:
+            if self.simulation.all_out or (time.time() - self.start) > 300:
                 # if (time.time() - self.start) > 120:
                 # pdb.set_trace()
                 msg = '[fsm %d] Simulation finished. Number of self generated tasks: %d\n' % (
@@ -294,12 +295,12 @@ class Agent0:
         temp = np.array(self.simulation.levywalk)
         plt.figure()
         plt.plot(temp[:, [0]], temp[:, [1]])
-        plt.savefig('/home/mfi01/catkin_ws/levy_walk_' + str(self.mycore.ID) + '.jpeg')
+        plt.savefig('/home/ubuntu/catkin_ws/levy_walk_' + str(self.mycore.ID) + '.jpeg')
         if self.simulation.walk:
             temp = np.array(self.simulation.walk)
             plt.figure()
             plt.plot(temp[:, [0]], temp[:, [1]])
-            plt.savefig('/home/mfi01/catkin_ws/walk_' + str(self.mycore.ID) + '.jpeg')
+            plt.savefig('/home/ubuntu/catkin_ws/walk_' + str(self.mycore.ID) + '.jpeg')
         '''
 
         self.simulation_end = time.time() - self.start
@@ -571,7 +572,7 @@ class Agent0:
             # self.log.write_log_file(self.log.stdout_log, '[execute_git %d] %s\n' % (int(goal[0]['senderID']), str(self.myknowledge.plan_pending_eval)))
             self.myknowledge.lock.release()
 
-            timeout = time.time() + 50  # set timeout to be 10 seconds
+            timeout = time.time() + 10  # set timeout to be 10 seconds
             self.log.write_log_file(self.log.stdout_log, '[execute_git %d] timeout: %s\n' % (int(goal[0]['senderID']), str(timeout)))
 
             msg = '[execute_git %d] Current goal status: %s\n' % (
@@ -758,7 +759,7 @@ class Agent0:
             env_risk = 0
             if self.myknowledge.old_state == 2 and self.myknowledge.service:
                 diff_task_tradeoff = (plan[0]['reward'] - self.myknowledge.service['reward']) / float(
-                    self.myknowledge.service['reward'])
+                    self.myknowledge.service['reward']+plan[0]['reward'])
                 msg = '[adapt %d] new rew %f, old reward %f, trade-off %f:' % (
                     self.simulation.interact, plan[0]['reward'], self.myknowledge.service['reward'], diff_task_tradeoff)
                 old_reward = self.myknowledge.service['reward']
@@ -953,6 +954,17 @@ class Agent0:
             ((x[1] - self.myknowledge.position2D[0]) ** 2 + (x[2] - self.myknowledge.position2D[1]) ** 2)
             < self.simulation.visible_distance ** 2 or x[6] == 1) and not x[3] <= 0]
 
+            # set the visibility equal to 1
+            for x in self.simulation.fires[6]:
+                if not x == 1:
+                    x = 1
+
+            # Check when all fires are discovered
+            if not self.simulation.time_all_visible_set:
+                if np.sum(self.simulation.fires[6]) == 40:
+                    self.simulation.time_all_visible = time.time()
+                    self.simulation.time_all_visible_set = True
+
             '''
             msg = str(np.transpose(np.array(self.simulation.fires))) + '\n'
             for x in np.transpose(np.array(self.simulation.fires)):
@@ -988,6 +1000,18 @@ class Agent0:
                              ((((x[1] - self.myknowledge.position2D[0]) ** 2 + (
                                  x[2] - self.myknowledge.position2D[1]) ** 2) < self.simulation.visible_distance ** 2 or
                                x[6] == 1) and x[5] == 0) and x[4] > 0]
+
+            i = 0
+            for x in self.simulation.fires[6]:
+                if not x == 1 and self.simulation.fires[5][i] == 0:
+                    x = 1
+                i += 1
+
+            if not self.simulation.time_all_visible_set:
+                if np.sum(self.simulation.fires[6]) == 40 and np.sum(self.simulation.fires[5]) == 0:
+                    self.simulation.time_all_visible = time.time()
+                    self.simulation.time_all_visible_set = True
+
             msg = '[get_visible_victims] all victims: %s \n' % str(np.transpose(np.array(self.simulation.fires)))
             msg += '[get_visible_victims] visible victims: %s\n' % str(np.array(visible_fires))
             # self.log.write_log_file(self.log.stdout_log, msg)
@@ -2046,7 +2070,7 @@ class Agent0:
     def execute_step_v6(self):
         try:
             self.begin += 1
-            msg = '[run_step ' + str(self.simulation.execute) + ' BEGIN] in execute_step\n'
+            msg = '[run_step v6, ' + str(self.simulation.execute) + ' BEGIN] in execute_step\n'
             #self.log.write_log_file(self.log.stdout_log, msg)
             success_chance = -1
             # print 'in execute_step'
@@ -2100,10 +2124,13 @@ class Agent0:
             # energy_diff = float(self.myknowledge.service['energy']-self.simulation.energy_iteration*self.myknowledge.iteration) - (self.mycore.battery - self.mycore.battery_min)
             energy_diff = self.simulation.energy_iteration - (self.mycore.battery - self.mycore.battery_min)
 
-            if agents2ask[0][1] == -1.0:
-                ag_risk = 0.0
+            if agents2ask:
+                if agents2ask[0][1] == -1.0:
+                    ag_risk = 0.0
+                else:
+                    ag_risk = 1.0 - agents2ask[0][1]
             else:
-                ag_risk = 1.0 - agents2ask[0][1]
+                ag_risk = 0.0
 
             # if not sum(self.simulation.no_self_tasks_attempted) == 0:
             if not sum(self.simulation.no_tasks_attempted) == 0:
@@ -2166,8 +2193,15 @@ class Agent0:
             #################################
             #################################
             #################################
+            self.simulation.theta_bool.append(depend)
             if depend:
-                self.simulation.no_tasks_depend_attempted[self.myknowledge.difficulty] += 1
+                if self.static[0] == 0:
+                    self.simulation.no_tasks_depend_attempted[self.myknowledge.difficulty] += 1
+                else:
+                    if not self.simulation.counted_d:
+                        self.simulation.no_tasks_depend_attempted[self.myknowledge.difficulty] += 1
+                        self.simulation.counted_d += 1
+                #self.simulation.no_tasks_depend_attempted[self.myknowledge.difficulty] += 1
                 msg = '[run_step ' + str(self.simulation.execute) + 'tasks depend: ' + str(
                     sum(self.simulation.no_tasks_depend_attempted)) + '\n'
                 self.log.write_log_file(self.log.stdout_log, msg)
@@ -2219,6 +2253,8 @@ class Agent0:
                         msg = '[run_step ' + str(self.simulation.execute) + '] exec_time: ' + str(exec_time) + '\n'
                         self.log.write_log_file(self.log.stdout_log, msg)
 
+                    self.simulation.depend_success_time.append(
+                        [result, time.strftime("%H:%M:%S", time.gmtime(time.time()))])
                     self.myknowledge.service_id = -1
                     self.myknowledge.iteration = -1
 
@@ -2293,7 +2329,7 @@ class Agent0:
                 self.simulation.theta_esteem.append(performance)
                 self.simulation.theta_candidate.append(success_chance)
                 self.simulation.theta.append(gamma)
-                self.simulation.theta_bool.append(depend)
+                #self.simulation.theta_bool.append(depend)
                 # Inc to reach stop of simulation
 
                 msg = '[run_step ' + str(self.simulation.execute) + ' END] \n'
@@ -2456,7 +2492,7 @@ class Agent0:
                     self.simulation.theta_esteem.append(performance)
                     self.simulation.theta_candidate.append(success_chance)
                     self.simulation.theta.append(gamma)
-                    self.simulation.theta_bool.append(depend)
+                    #self.simulation.theta_bool.append(depend)
                     # Inc to reach stop of simulation
 
                     msg = '[run_step ' + str(self.simulation.execute) + ' END] \n'
@@ -2692,21 +2728,37 @@ class Agent0:
     # for now we have one of each
     def goto_base(self, type):
         # pdb.set_trace()
-        msg = 'goto_base'
-        self.simulation.count_gotobase += 1
-        if type == 1:
-            self.walk(self.simulation.fbase[1][0], self.simulation.fbase[2][0])
-            self.resources['water'] = 25
-            msg = '[goto_base ' + str(self.simulation.execute) + '] water:' + str(self.resources['water']) + '\n'
-            time.sleep(self.simulation.water_refurnish_time)
-        elif type == 2:
-            self.walk(self.simulation.abase[1][0], self.simulation.fbase[2][0])
-            self.resources['spotxPerson'] = 5
-            msg = '[goto_base ' + str(self.simulation.execute) + '] spots:' + str(self.resources['spotxPerson']) + '\n'
-            time.sleep(self.simulation.drop_victims_base)
-        else:
-            pass
+        try:
+            msg = 'goto_base'
+            self.simulation.count_gotobase += 1
+            self.simulation.time_to_base.append(time.strftime("%H:%M:%S", time.gmtime(time.time())))
+            msg = '[goto_base ' + str(self.simulation.execute) + '] fbase:' + str(self.simulation.fbase)+', abase: '+str(self.simulation.abase) + '\n'
             self.log.write_log_file(self.log.stdout_log, msg)
+            if type == 1:
+                if not self.simulation.fbase:
+                    self.simulation.fbase = [(0.0,), (0.0,), (0.0,)]
+                msg = '[goto_base ' + str(self.simulation.execute) + '] fbase pos:' + str(self.simulation.fbase[1][0]) + '\n'
+                self.walk(self.simulation.fbase[1][0], self.simulation.fbase[2][0])
+                self.resources['water'] = 25
+                msg += '[goto_base ' + str(self.simulation.execute) + '] water:' + str(self.resources['water']) + '\n'
+                time.sleep(self.simulation.water_refurnish_time)
+                self.log.write_log_file(self.log.stdout_log, msg)
+            elif type == 2:
+                if not self.simulation.abase:
+                    self.simulation.abase = [(0.0,), (0.0,), (0.0,)]
+                msg = '[goto_base ' + str(self.simulation.execute) + '] abase pos:' + str(self.simulation.abase[1][0]) + '\n'
+                self.walk(self.simulation.abase[1][0], self.simulation.abase[2][0])
+                self.resources['spotxPerson'] = 5
+                msg += '[goto_base ' + str(self.simulation.execute) + '] spots:' + str(self.resources['spotxPerson']) + '\n'
+                self.log.write_log_file(self.log.stdout_log, msg)
+                time.sleep(self.simulation.drop_victims_base)
+            else:
+                pass
+                self.log.write_log_file(self.log.stdout_log, msg)
+        except:
+            msg = "Unexpected error: " + str(sys.exc_info()) + ". Line nr: " + str(sys.exc_info()[2].tb_lineno)
+            self.log.write_log_file(self.log.stdout_log, msg)
+            pass
 
     # MUST be overridden in the child class, depending on the different types of inputs!
     def init_inputs(self, inputs):

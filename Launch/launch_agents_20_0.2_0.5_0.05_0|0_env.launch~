@@ -81,6 +81,7 @@
 	</group>
 	<!-- BEGIN ENV-->
 	<group ns="environment">
+		<include file="$(find gitagent)/Launch/env.launch"></include>
 	</group>
 	<group ns="pseudo-planner">
 	</group>

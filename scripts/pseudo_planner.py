@@ -123,12 +123,12 @@ class PseudoPlanner:
 
 
 if __name__ == '__main__':
-    stderr_file = '/home/mfi01/.ros/RESULT/error_plan'
+    stderr_file = '/home/ubuntu/.ros/RESULT/error_plan'
     f = open(stderr_file, 'w+')
     orig_stderr = sys.stderr
     sys.stderr = f
 
-    stdout_file = '/home/mfi01/.ros/RESULT/stdout_plan'
+    stdout_file = '/home/ubuntu/.ros/RESULT/stdout_plan'
     s = open(stdout_file, 'w+')
     orig_stdout = sys.stdout
     try:

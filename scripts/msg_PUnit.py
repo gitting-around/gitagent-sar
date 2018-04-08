@@ -95,12 +95,12 @@ class PUnit:
 
 if __name__ == '__main__':
 
-    stderr_file = '/home/mfi01/catkin_ws/results/error_msg_punit'
+    stderr_file = '/home/ubuntu/catkin_ws/results/error_msg_punit'
     f = open(stderr_file, 'w+')
     orig_stderr = sys.stderr
     sys.stderr = f
 
-    stdout_file = '/home/mfi01/catkin_ws/results/stdout_msg_unit'
+    stdout_file = '/home/ubuntu/catkin_ws/results/stdout_msg_unit'
     s = open(stdout_file, 'w+')
     orig_stdout = sys.stdout
     # sys.stdout = s

@@ -8,7 +8,7 @@ import random
 # trick to emulate the selection of a couple of services the agent can provide
 def select_services(agent_id, depend_nr):
     try:  # try to do it with relative paths
-        filename = '/home/mfi01/catkin_ws/src/GITagent/scripts/services_list_' + str(depend_nr)
+        filename = '/home/ubuntu/catkin_ws/src/GITagent/scripts/services_list_' + str(depend_nr)
         service_file = open(filename, 'r')
 
         active_servs = []

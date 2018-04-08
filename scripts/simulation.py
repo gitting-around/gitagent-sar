@@ -159,11 +159,14 @@ class Simulation0:
         self.time_running = 0
 
         self.time_all_visible = 0
+        self.time_all_visible_set = False
 
         self.all_out = False
         self.counted_d = 0
 
         self.count_gotobase = 0
+        self.time_to_base = []
+        self.depend_success_time = []
 
         self.energy_iteration = 0.0001
 
@@ -291,7 +294,7 @@ class Simulation0:
 
     def read_agent_conf(self, filename):
 
-        with open('/home/mfi01/catkin_ws/src/gitagent/scripts/' + filename) as f:
+        with open('/home/ubuntu/catkin_ws/src/gitagent/scripts/' + filename) as f:
             lines = f.read().splitlines()
 
         battery = int(lines[0])
@@ -394,7 +397,7 @@ class Simulation0:
         # id iter energy reward name startLocation endLocation noAgents equipment[[sensors],[actuators], [motors]] abilities resources estimated_time
         # pdb.set_trace()
         tasks = []
-        with open('/home/mfi01/catkin_ws/src/gitagent/scripts/service_spec/' + filename) as f:
+        with open('/home/ubuntu/catkin_ws/src/gitagent/scripts/service_spec/' + filename) as f:
             lines = f.read().splitlines()
 
         for line in lines:
@@ -446,7 +449,7 @@ class Simulation0:
         # Anatomy of service
         # [id, iterations, energy, reward, [mandatory resources], [optional resources], permission, urgency, estimated_time, [known dependencies (no array for now, just one)]]
         try:  # try to do it with relative paths
-            filename = '/home/mfi01/catkin_ws/src/gitagent/scripts/service_spec/services_list_' + str(depend_nr)
+            filename = '/home/ubuntu/catkin_ws/src/gitagent/scripts/service_spec/services_list_' + str(depend_nr)
             service_file = open(filename, 'r')
 
             active_servs = []
