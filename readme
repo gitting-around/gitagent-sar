@@ -1,0 +1,29 @@
+Instructions on how to run multi-agent search an drescue simulations.
+
+Modify the following paths in the following files to your preferred destination:
+
+mylogging.py ---> line 6, 7, and 8.
+simulation.py ---> line 297, 400, and 452.
+environment.py ---> line 87, 89, and 93.
+msg_PUnit.py ---> line 98, and 103.
+agent_run.py ---> 296, 300, 318, 323, 382, and 384.
+
+Put aamas-res.sh, plot_4.py, run-loop.sh, and saso.sh in the catkin_ws folder. 
+In order to run a batch of the simulations, run the following script:
+
+./run-loop.sh $nr_of_trials saso.sh
+
+saso.sh is the simulation script, to run the batch only once, execute run-loop as follows:
+./run-loop.sh 1 saso.sh
+
+Note that in the scripts the directory structure is assumed as follows:
+~/catkin_ws/src/gitagent
+Moreover the results shall be moved to the following path:
+~/catkin_ws/results/sandr/w\=25\,v\=5/trial$1
+
+Check both run-loop.sh and saso.sh in order to make sure the paths fit what you need.
+Once the simulations finish -- the length of one trial can vary dependending on the platform it is being run on -- run the following scripts to get the results. (Make sure that the paths match, for minimal confusion the best would be to keep close to the already defined paths).
+
+Put the bar2.sh and get_means.py script in the sandr folder. Open bar2.sh, and change the input argument related to the number of trials (the second to last argument). If you ran run-loop.sh with ./run-loop.sh 1 saso.sh, then set that number to 1 on all lines. Then run:
+
+./bar2.sh
